@@ -60,7 +60,7 @@ Run:
 
 ```
       --amount int           amount to craft
-  -c, --config string        config file (default is $HOME/.xivcrafter.yaml)
+  -c, --config string        config file (default is $HOME\.xivcrafter.yaml)
       --confirm string       confirm hotkey
       --food string          food hotkey
       --foodDuration int     food duration (30/40/45)
