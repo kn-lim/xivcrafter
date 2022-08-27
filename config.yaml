@@ -1,0 +1,12 @@
+food: ""
+foodDuration: 0
+potion: ""
+amount: 0
+macro1: ""
+macro1Duration: 0
+macro2: ""
+macro2Duration: 0
+confirm: ""
+quit: ""
+startPause: ""
+stop: ""
