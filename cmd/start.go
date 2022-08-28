@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	hook "github.com/robotn/gohook"
 	"github.com/spf13/cobra"
@@ -35,6 +36,11 @@ var startCmd = &cobra.Command{
 
 		xiv := new(crafter.XIVCrafter)
 		xiv.Init(food, foodDuration, potion, amount, macro1, macro1Duration, macro2, macro2Duration, confirm, cancel, startPause, stop)
+
+		// check if all keys are valid
+		if !crafter.CheckKeys(*xiv) {
+			os.Exit(1)
+		}
 
 		go xiv.Run(VERBOSE)
 

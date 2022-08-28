@@ -1,0 +1,60 @@
+# package: crafter
+
+## Required Flags
+
+```
+  "macro1"
+  "confirm"
+  "cancel"
+  "startPause"
+  "stop"
+```
+
+## Accepted Keys
+
+```
+  "a"
+  "b"
+  "c"
+  "d"
+  "e"
+  "f"
+  "g"
+  "h"
+  "i"
+  "j"
+  "k"
+  "l"
+  "m"
+  "n"
+  "o"
+  "p"
+  "q"
+  "r"
+  "s"
+  "t"
+  "u"
+  "v"
+  "w"
+  "x"
+  "y"
+  "z"
+  "insert"
+  "delete"
+  "home"
+  "end"
+  "pageup"
+  "pagedown"
+  "f1"
+  "f2"
+  "f3"
+  "f4"
+  "f5"
+  "f6"
+  "f7"
+  "f8"
+  "f9"
+  "f10"
+  "f11"
+  "f12"
+```
