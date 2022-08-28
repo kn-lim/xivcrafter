@@ -36,7 +36,7 @@ func init() {
 
 	// Flags
 	rootCmd.PersistentFlags().String("food", "", "food hotkey")
-	rootCmd.PersistentFlags().Int("foodDuration", 0, "food duration (30/40/45)")
+	rootCmd.PersistentFlags().Int("foodDuration", 30, "food duration (30/40/45)")
 	rootCmd.PersistentFlags().String("potion", "", "potion hotkey")
 	rootCmd.PersistentFlags().Int("amount", 0, "amount to craft")
 	rootCmd.PersistentFlags().String("macro1", "", "macro 1 hotkey")
@@ -44,7 +44,7 @@ func init() {
 	rootCmd.PersistentFlags().String("macro2", "", "macro 2 hotkey")
 	rootCmd.PersistentFlags().Int("macro2Duration", 0, "macro 2 duration")
 	rootCmd.PersistentFlags().String("confirm", "", "confirm hotkey")
-	rootCmd.PersistentFlags().String("quit", "", "quit hotkey")
+	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
 	rootCmd.PersistentFlags().String("startPause", "", "start/pause xivcrafter hotkey")
 	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
 
@@ -58,7 +58,7 @@ func init() {
 	viper.BindPFlag("macro2", rootCmd.PersistentFlags().Lookup("macro2"))
 	viper.BindPFlag("macro2Duration", rootCmd.PersistentFlags().Lookup("macro2Duration"))
 	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
-	viper.BindPFlag("quit", rootCmd.PersistentFlags().Lookup("quit"))
+	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
 	viper.BindPFlag("startPause", rootCmd.PersistentFlags().Lookup("startPause"))
 	viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop"))
 }

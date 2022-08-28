@@ -70,7 +70,7 @@ Run:
       --macro2 string        macro 2 hotkey
       --macro2Duration int   macro 2 duration
       --potion string        potion hotkey
-      --quit string          quit hotkey
+      --cancel string        cancel hotkey
       --startPause string    start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
   -v, --verbose              verbose output
