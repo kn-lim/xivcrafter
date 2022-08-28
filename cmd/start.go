@@ -31,7 +31,7 @@ type XIVCrafter struct {
 	macro2          string
 	macro2Duration  int
 	confirm         string
-	quit            string
+	cancel          string
 	startPause      string
 	stop            string
 }
@@ -55,12 +55,12 @@ var startCmd = &cobra.Command{
 		macro2 := viper.GetString("macro2")
 		macro2Duration := viper.GetInt("macro2Duration")
 		confirm := viper.GetString("confirm")
-		quit := viper.GetString("quit")
+		cancel := viper.GetString("cancel")
 		startPause := viper.GetString("startPause")
 		stop := viper.GetString("stop")
 
 		xiv := new(XIVCrafter)
-		*xiv = create(food, foodDuration, potion, amount, macro1, macro1Duration, macro2, macro2Duration, confirm, quit, startPause, stop)
+		*xiv = create(food, foodDuration, potion, amount, macro1, macro1Duration, macro2, macro2Duration, confirm, cancel, startPause, stop)
 
 		go run(xiv, VERBOSE)
 
@@ -154,7 +154,7 @@ func run(xiv *XIVCrafter, VERBOSE bool) {
 
 // Helper Functions
 
-func create(food string, foodDuration int, potion string, maxAmount int, macro1 string, macro1Duration int, macro2 string, macro2Duration int, confirm string, quit string, startPause string, stop string) XIVCrafter {
+func create(food string, foodDuration int, potion string, maxAmount int, macro1 string, macro1Duration int, macro2 string, macro2Duration int, confirm string, cancel string, startPause string, stop string) XIVCrafter {
 	// Convert Minutes to Seconds
 	foodDurationSeconds := foodDuration * 60
 
@@ -173,7 +173,7 @@ func create(food string, foodDuration int, potion string, maxAmount int, macro1 
 		macro2:          strings.ToLower(macro2),
 		macro2Duration:  macro2Duration,
 		confirm:         strings.ToLower(confirm),
-		quit:            strings.ToLower(quit),
+		cancel:          strings.ToLower(cancel),
 		startPause:      strings.ToLower(startPause),
 		stop:            strings.ToLower(stop),
 	}
@@ -222,7 +222,7 @@ func stopCraft(xiv *XIVCrafter, VERBOSE bool) {
 
 	robotgo.KeyTap(xiv.confirm)
 	delay(DELAY)
-	robotgo.KeyTap(xiv.quit)
+	robotgo.KeyTap(xiv.cancel)
 	delay(DELAY)
 	robotgo.KeyTap(xiv.confirm)
 	delay(DELAY)
