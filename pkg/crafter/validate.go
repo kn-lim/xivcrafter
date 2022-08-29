@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// required flags cannot use empty strings
 var REQUIRED_FLAGS = [5]string{
 	"macro1",
 	"confirm",
@@ -70,6 +71,7 @@ var ACCEPTED_KEYS = [55]string{
 	"f12",
 }
 
+// CheckKeys calls checkKey to verify user input keys as valid
 func CheckKeys(xiv XIVCrafter) bool {
 	SUCCESS := 0
 
@@ -85,6 +87,7 @@ func CheckKeys(xiv XIVCrafter) bool {
 	return SUCCESS == 0
 }
 
+// checkKey validates user input keys
 func checkKey(flag string, key string) int {
 	for _, KEY := range ACCEPTED_KEYS {
 		if KEY == key {
@@ -110,6 +113,7 @@ func checkKey(flag string, key string) int {
 	return 1
 }
 
+// CheckFlags calls checkFlag to verify flag values as valid
 func CheckFlags(xiv XIVCrafter) bool {
 	SUCCESS := 0
 
@@ -129,6 +133,7 @@ func CheckFlags(xiv XIVCrafter) bool {
 	return SUCCESS == 0
 }
 
+// checkFlag validates flag value
 func checkFlag(flag string, duration int) int {
 	if flag == "macro1Duration" || flag == "macro2Duration" {
 		if duration <= 0 {
