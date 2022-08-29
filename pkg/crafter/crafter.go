@@ -33,6 +33,7 @@ type XIVCrafter struct {
 	Stop            string
 }
 
+// Run provides the main logic to handle crafting
 func (xiv *XIVCrafter) Run(VERBOSE bool) {
 	for xiv.ProgramRunning {
 		for xiv.Running {
@@ -86,18 +87,21 @@ func (xiv *XIVCrafter) Run(VERBOSE bool) {
 	os.Exit(0)
 }
 
+// StartProgram sets the Running value to true
 func (xiv *XIVCrafter) StartProgram() {
 	fmt.Println("STARTING XIVCRAFTER")
 
 	xiv.Running = true
 }
 
+// StopProgram sets the Running value to false
 func (xiv *XIVCrafter) StopProgram() {
 	fmt.Println("STOPPING XIVCRAFTER")
 
 	xiv.Running = false
 }
 
+// ExitProgram sets the Running and ProgramRunning value to false
 func (xiv *XIVCrafter) ExitProgram() {
 	fmt.Println("EXITING XIVCRAFTER")
 
@@ -105,6 +109,7 @@ func (xiv *XIVCrafter) ExitProgram() {
 	xiv.ProgramRunning = false
 }
 
+// StartCraft sets up the crafting action
 func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 	if VERBOSE {
 		fmt.Println("STARTING CRAFT")
@@ -118,6 +123,7 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 	delay(DELAY)
 }
 
+// StopCraft closes the crafting action
 func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 	if VERBOSE {
 		fmt.Println("STOPPING CRAFT")
@@ -131,6 +137,7 @@ func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 	delay(DELAY)
 }
 
+// CheckFood checks to see whether the food buff needs to be renewed
 func (xiv *XIVCrafter) CheckFood(VERBOSE bool) {
 	if VERBOSE {
 		fmt.Println("CHECKING FOOD")
@@ -147,6 +154,7 @@ func (xiv *XIVCrafter) CheckFood(VERBOSE bool) {
 	}
 }
 
+// ConsumeFood renews the food buff
 func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 	xiv.StopCraft(VERBOSE)
 
@@ -161,6 +169,7 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 	xiv.StartCraft(VERBOSE)
 }
 
+// CheckPotion checks to see whether the potion buff needs to be renewed
 func (xiv *XIVCrafter) CheckPotion(VERBOSE bool) {
 	if VERBOSE {
 		fmt.Println("CHECKING POTION")
@@ -177,6 +186,7 @@ func (xiv *XIVCrafter) CheckPotion(VERBOSE bool) {
 	}
 }
 
+// ConsumePotion renews the potion buff
 func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	xiv.StopCraft(VERBOSE)
 
@@ -191,7 +201,7 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	xiv.StartCraft(VERBOSE)
 }
 
-// Helper Functions
+// Init initializes the XIVCrafter struct with variables provided from flags
 func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmount int, macro1 string, macro1Duration int, macro2 string, macro2Duration int, confirm string, cancel string, startPause string, stop string) {
 	// Convert Minutes to Seconds
 	foodDurationSeconds := foodDuration * 60
@@ -217,6 +227,7 @@ func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmo
 	}
 }
 
+// delay adds a delay
 func delay(delay int) {
 	time.Sleep(time.Duration(delay) * time.Second)
 }
