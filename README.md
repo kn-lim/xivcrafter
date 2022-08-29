@@ -60,17 +60,17 @@ Run:
 
 ```
       --amount int           amount to craft
+      --cancel string        cancel hotkey
   -c, --config string        config file (default is $HOME\.xivcrafter.yaml)
       --confirm string       confirm hotkey
       --food string          food hotkey
-      --foodDuration int     food duration (30/40/45)
+      --foodDuration int     food duration (30/40/45) (default 30)
   -h, --help                 help for xivcrafter
       --macro1 string        macro 1 hotkey
       --macro1Duration int   macro 1 duration
       --macro2 string        macro 2 hotkey
       --macro2Duration int   macro 2 duration
       --potion string        potion hotkey
-      --cancel string        cancel hotkey
       --startPause string    start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
   -v, --verbose              verbose output
@@ -97,6 +97,9 @@ Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
   - Yes. Otherwise, whatever program is in focus will receive the inputs.
 - **Am I able to use the keyboard to type/move while the program is active?**
   - No, since XIVCrafter tracks all key presses and may act accordingly to the flags provided.
+- **How do I get the macro duration?**
+  - Count all the seconds the macro steps delays for.
+  - General Rule: # of Lines * 3
 
 # TODO
 
