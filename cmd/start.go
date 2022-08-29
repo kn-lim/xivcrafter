@@ -37,8 +37,8 @@ var startCmd = &cobra.Command{
 		xiv := new(crafter.XIVCrafter)
 		xiv.Init(food, foodDuration, potion, amount, macro1, macro1Duration, macro2, macro2Duration, confirm, cancel, startPause, stop)
 
-		// check if all keys are valid
-		if !crafter.CheckKeys(*xiv) {
+		// check if all keys and flags are valid
+		if !(crafter.CheckKeys(*xiv) && crafter.CheckFlags(*xiv)) {
 			os.Exit(1)
 		}
 
