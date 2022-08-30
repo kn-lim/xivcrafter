@@ -18,8 +18,8 @@ var startCmd = &cobra.Command{
 	Short:   "Starts XIVCrafter",
 	Long:    `Starts XIVCrafter`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var VERBOSE bool
-		VERBOSE, _ = rootCmd.PersistentFlags().GetBool("verbose")
+		VERBOSE, _ := rootCmd.PersistentFlags().GetBool("verbose")
+		RANDOM, _ := rootCmd.PersistentFlags().GetBool("random")
 
 		food := viper.GetString("food")
 		foodDuration := viper.GetInt("foodDuration")
@@ -42,7 +42,7 @@ var startCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		go xiv.Run(VERBOSE)
+		go xiv.Run(VERBOSE, RANDOM)
 
 		hook.Register(hook.KeyDown, []string{xiv.StartPause}, func(e hook.Event) {
 			if xiv.Running {

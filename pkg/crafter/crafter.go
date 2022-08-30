@@ -2,6 +2,7 @@ package crafter
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -12,7 +13,13 @@ import (
 // Constants
 const DELAY = 2
 const POTION_DURATION = 900
+const RANDOM_MAX = 3
+const RANDOM_MIN = 1
 
+// Global Variables
+var RANDOM_DELAY bool
+
+// XIVCrafter Struct
 type XIVCrafter struct {
 	Running         bool
 	ProgramRunning  bool
@@ -34,7 +41,17 @@ type XIVCrafter struct {
 }
 
 // Run provides the main logic to handle crafting
-func (xiv *XIVCrafter) Run(VERBOSE bool) {
+func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
+	if RANDOM {
+		if VERBOSE {
+			fmt.Println("ADDING RANDOM DELAY")
+		}
+
+		RANDOM_DELAY = RANDOM
+
+		rand.Seed(time.Now().UnixNano())
+	}
+
 	for xiv.ProgramRunning {
 		for xiv.Running {
 			xiv.StartCraft(VERBOSE)
@@ -73,10 +90,18 @@ func (xiv *XIVCrafter) Run(VERBOSE bool) {
 				xiv.ExitProgram()
 			}
 
-			delay(DELAY)
+			if RANDOM_DELAY {
+				delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+			} else {
+				delay(DELAY)
+			}
 		}
 
-		delay(DELAY)
+		if RANDOM_DELAY {
+			delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+		} else {
+			delay(DELAY)
+		}
 	}
 
 	if VERBOSE {
@@ -115,12 +140,33 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 		fmt.Println("STARTING CRAFT")
 	}
 
+	if RANDOM_DELAY {
+		rand.Seed(time.Now().UnixNano())
+	}
+
 	robotgo.KeyTap(xiv.Confirm)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
+
 	robotgo.KeyTap(xiv.Confirm)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
+
 	robotgo.KeyTap(xiv.Confirm)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
 }
 
 // StopCraft closes the crafting action
@@ -129,18 +175,43 @@ func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 		fmt.Println("STOPPING CRAFT")
 	}
 
+	if RANDOM_DELAY {
+		rand.Seed(time.Now().UnixNano())
+	}
+
 	robotgo.KeyTap(xiv.Confirm)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
+
 	robotgo.KeyTap(xiv.Cancel)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
+
 	robotgo.KeyTap(xiv.Confirm)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
 }
 
 // CheckFood checks to see whether the food buff needs to be renewed
 func (xiv *XIVCrafter) CheckFood(VERBOSE bool) {
 	if VERBOSE {
 		fmt.Println("CHECKING FOOD")
+	}
+
+	if RANDOM_DELAY {
+		rand.Seed(time.Now().UnixNano())
 	}
 
 	if xiv.StartFoodTime > 0 {
@@ -162,9 +233,18 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 		fmt.Println("CONSUMING FOOD")
 	}
 
+	if RANDOM_DELAY {
+		rand.Seed(time.Now().UnixNano())
+	}
+
 	xiv.StartFoodTime = time.Now().Unix()
 	robotgo.KeyTap(xiv.Food)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
 
 	xiv.StartCraft(VERBOSE)
 }
@@ -194,9 +274,18 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 		fmt.Println("CONSUMING POTION")
 	}
 
+	if RANDOM_DELAY {
+		rand.Seed(time.Now().UnixNano())
+	}
+
 	xiv.StartPotionTime = time.Now().Unix()
 	robotgo.KeyTap(xiv.Potion)
-	delay(DELAY)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
 
 	xiv.StartCraft(VERBOSE)
 }
