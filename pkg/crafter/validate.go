@@ -143,9 +143,9 @@ func checkFlag(flag string, duration int) int {
 		}
 	} else if flag == "foodDuration" {
 		switch duration {
-		case 30:
-		case 40:
-		case 45:
+		case 1800:
+		case 2400:
+		case 2700:
 		default:
 			s := fmt.Sprintf("ERROR: FLAG %s SET WITH INVALID DURATION %d", flag, duration)
 			fmt.Println(s)
