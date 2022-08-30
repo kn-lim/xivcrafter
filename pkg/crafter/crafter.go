@@ -210,10 +210,6 @@ func (xiv *XIVCrafter) CheckFood(VERBOSE bool) {
 		fmt.Println("CHECKING FOOD")
 	}
 
-	if RANDOM_DELAY {
-		rand.Seed(time.Now().UnixNano())
-	}
-
 	if xiv.StartFoodTime > 0 {
 		difference := time.Now().Unix() - xiv.StartFoodTime
 
