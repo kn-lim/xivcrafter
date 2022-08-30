@@ -64,13 +64,14 @@ Run:
   -c, --config string        config file (default is $HOME\.xivcrafter.yaml)
       --confirm string       confirm hotkey
       --food string          food hotkey
-      --foodDuration int     food duration (30/40/45) (default 30)
+      --foodDuration int     food duration (minutes)
   -h, --help                 help for xivcrafter
       --macro1 string        macro 1 hotkey
-      --macro1Duration int   macro 1 duration
+      --macro1Duration int   macro 1 duration (seconds)
       --macro2 string        macro 2 hotkey
-      --macro2Duration int   macro 2 duration
+      --macro2Duration int   macro 2 duration (seconds)
       --potion string        potion hotkey
+  -r, --random               use random delay
       --startPause string    start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
   -v, --verbose              verbose output

@@ -34,31 +34,34 @@ func init() {
 	// Verbose
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 
+	// Random
+	rootCmd.PersistentFlags().BoolP("random", "r", false, "use random delay")
+
 	// Flags
-	rootCmd.PersistentFlags().String("food", "", "food hotkey")
-	rootCmd.PersistentFlags().Int("foodDuration", 30, "food duration (30/40/45)")
-	rootCmd.PersistentFlags().String("potion", "", "potion hotkey")
 	rootCmd.PersistentFlags().Int("amount", 0, "amount to craft")
-	rootCmd.PersistentFlags().String("macro1", "", "macro 1 hotkey")
-	rootCmd.PersistentFlags().Int("macro1Duration", 0, "macro 1 duration")
-	rootCmd.PersistentFlags().String("macro2", "", "macro 2 hotkey")
-	rootCmd.PersistentFlags().Int("macro2Duration", 0, "macro 2 duration")
-	rootCmd.PersistentFlags().String("confirm", "", "confirm hotkey")
 	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
+	rootCmd.PersistentFlags().String("confirm", "", "confirm hotkey")
+	rootCmd.PersistentFlags().String("food", "", "food hotkey")
+	rootCmd.PersistentFlags().Int("foodDuration", 0, "food duration (minutes)")
+	rootCmd.PersistentFlags().String("macro1", "", "macro 1 hotkey")
+	rootCmd.PersistentFlags().Int("macro1Duration", 0, "macro 1 duration (seconds)")
+	rootCmd.PersistentFlags().String("macro2", "", "macro 2 hotkey")
+	rootCmd.PersistentFlags().Int("macro2Duration", 0, "macro 2 duration (seconds)")
+	rootCmd.PersistentFlags().String("potion", "", "potion hotkey")
 	rootCmd.PersistentFlags().String("startPause", "", "start/pause xivcrafter hotkey")
 	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
 
 	// Viper
+	viper.BindPFlag("amount", rootCmd.PersistentFlags().Lookup("amount"))
+	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
+	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
 	viper.BindPFlag("food", rootCmd.PersistentFlags().Lookup("food"))
 	viper.BindPFlag("foodDuration", rootCmd.PersistentFlags().Lookup("foodDuration"))
-	viper.BindPFlag("potion", rootCmd.PersistentFlags().Lookup("potion"))
-	viper.BindPFlag("amount", rootCmd.PersistentFlags().Lookup("amount"))
 	viper.BindPFlag("macro1", rootCmd.PersistentFlags().Lookup("macro1"))
 	viper.BindPFlag("macro1Duration", rootCmd.PersistentFlags().Lookup("macro1Duration"))
 	viper.BindPFlag("macro2", rootCmd.PersistentFlags().Lookup("macro2"))
 	viper.BindPFlag("macro2Duration", rootCmd.PersistentFlags().Lookup("macro2Duration"))
-	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
-	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
+	viper.BindPFlag("potion", rootCmd.PersistentFlags().Lookup("potion"))
 	viper.BindPFlag("startPause", rootCmd.PersistentFlags().Lookup("startPause"))
 	viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop"))
 }
