@@ -79,7 +79,7 @@ Run:
 
 ## Supported Keys
 
-https://github.com/go-vgo/robotgo/blob/master/docs/keys.md
+https://github.com/kn-lim/xivcrafter/tree/main/pkg/crafter#accepted-keys
 
 ## Prepping the Game
 
@@ -104,6 +104,5 @@ Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
 # TODO
 
-- Sanitize user input properly
 - Show estimated time to complete the craft
 - Game no longer needs to be in focus
