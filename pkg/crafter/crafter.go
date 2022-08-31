@@ -13,8 +13,8 @@ import (
 // Constants
 const DELAY = 2
 const POTION_DURATION = 900
-const RANDOM_MAX = 3
-const RANDOM_MIN = 1
+const RANDOM_MAX = 5
+const RANDOM_MIN = DELAY
 
 // Global Variables
 var RANDOM_DELAY bool
@@ -142,6 +142,14 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 
 	if RANDOM_DELAY {
 		rand.Seed(time.Now().UnixNano())
+	}
+
+	robotgo.KeyTap(xiv.Confirm)
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
 	}
 
 	robotgo.KeyTap(xiv.Confirm)
