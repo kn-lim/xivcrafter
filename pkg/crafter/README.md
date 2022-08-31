@@ -13,6 +13,7 @@
 ## Accepted Keys
 
 ```
+  ""
   "a"
   "b"
   "c"
