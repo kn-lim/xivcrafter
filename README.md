@@ -1,17 +1,14 @@
 # XIVCrafter
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/kn-lim/xivcrafter)](https://goreportcard.com/report/github.com/kn-lim/xivcrafter)
+
 Automatically activates multiple crafting macros while refreshing food and potion buffs.
 
-Works on Windows and Keyboard only.
-
-## Requirements
-
-| Name | Version |
-|------|---------|
-| go   | 1.19    |
+Tested on Windows and Keyboard only.
 
 ## Packages
 
+- go 1.19
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
 - [robotgo](https://github.com/go-vgo/robotgo)
@@ -22,6 +19,9 @@ Download the Windows 64-bit binary in the [Releases](https://github.com/kn-lim/x
 
 ## How to Build
 
+Make sure to follow the [robotgo installation instructions](https://github.com/go-vgo/robotgo#requirements) in order to build.
+
+Run:
 ```yml
 GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build
 ```
@@ -52,6 +52,7 @@ Run:
 ## Available Commands
 
 ```
+  config      Prints XIVCrafter's configuration
   help        Help about any command
   start       Starts XIVCrafter
 ```
@@ -98,11 +99,16 @@ Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
   - Yes. Otherwise, whatever program is in focus will receive the inputs.
 - **Am I able to use the keyboard to type/move while the program is active?**
   - No, since XIVCrafter tracks all key presses and may act accordingly to the flags provided.
+- **Am I able to use the mouse while the program is active?**
+  - No, as it may cause the crafter to malfunction and not start the craft properly.
 - **How do I get the macro duration?**
   - Count all the seconds the macro steps delays for.
   - General Rule: # of Lines * 3
+- **Will this work with any craft?**
+  - As long as you are able to start the craft, the program will work on any craft.
 
 # TODO
 
+- Add Terminal UI
 - Show estimated time to complete the craft
 - Game no longer needs to be in focus
