@@ -13,8 +13,8 @@ import (
 // Constants
 const DELAY = 2
 const POTION_DURATION = 900
-const RANDOM_MAX = 3
-const RANDOM_MIN = 1
+const RANDOM_MAX = 5
+const RANDOM_MIN = DELAY
 
 // Global Variables
 var RANDOM_DELAY bool
