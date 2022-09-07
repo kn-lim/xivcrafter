@@ -18,15 +18,19 @@ const RANDOM_MIN = DELAY
 
 // Global Variables
 var RANDOM_DELAY bool
+var START_TIME int64 = 0
+var END_TIME int64 = 0
 
 // XIVCrafter Struct
 type XIVCrafter struct {
 	Running         bool
 	ProgramRunning  bool
 	Food            string
+	FoodCount       int
 	FoodDuration    int
 	StartFoodTime   int64
 	Potion          string
+	PotionCount     int
 	StartPotionTime int64
 	CurrentAmount   int
 	MaxAmount       int
@@ -53,6 +57,11 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 	}
 
 	for xiv.ProgramRunning {
+		// Set the crafting start time
+		if START_TIME == 0 {
+			START_TIME = time.Now().Unix()
+		}
+
 		for xiv.Running {
 			xiv.StartCraft(VERBOSE)
 
@@ -107,6 +116,12 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 	if VERBOSE {
 		fmt.Println("XIVCRAFTER STOPPED")
 	}
+
+	// Set the craft ending time
+	END_TIME = time.Now().Unix()
+
+	// Print results
+	xiv.result()
 
 	// TODO: Find a cleaner way of doing this
 	os.Exit(0)
@@ -235,6 +250,7 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 
 	xiv.StartFoodTime = time.Now().Unix()
 	robotgo.KeyTap(xiv.Food)
+	xiv.FoodCount++
 
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
@@ -276,6 +292,7 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 
 	xiv.StartPotionTime = time.Now().Unix()
 	robotgo.KeyTap(xiv.Potion)
+	xiv.PotionCount++
 
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
@@ -295,9 +312,11 @@ func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmo
 		Running:         false,
 		ProgramRunning:  true,
 		Food:            strings.ToLower(food),
+		FoodCount:       0,
 		FoodDuration:    foodDurationSeconds,
 		StartFoodTime:   0,
 		Potion:          strings.ToLower(potion),
+		PotionCount:     0,
 		StartPotionTime: 0,
 		CurrentAmount:   0,
 		MaxAmount:       maxAmount,
@@ -309,6 +328,29 @@ func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmo
 		Cancel:          strings.ToLower(cancel),
 		StartPause:      strings.ToLower(startPause),
 		Stop:            strings.ToLower(stop),
+	}
+}
+
+// result prints out statistics
+func (xiv *XIVCrafter) result() {
+	fmt.Println("\nRESULTS:")
+
+	s := fmt.Sprintf("CRAFTED: %d", xiv.CurrentAmount)
+	fmt.Println(s)
+
+	TIME_SECONDS := END_TIME - START_TIME
+	TIME_MINUTES := float64(TIME_SECONDS) / 60
+	s = fmt.Sprintf("TIME SPENT: %f minutes", TIME_MINUTES)
+	fmt.Println(s)
+
+	if xiv.PotionCount > 0 {
+		s = fmt.Sprintf("POTIONS USED: %d", xiv.PotionCount)
+		fmt.Println(s)
+	}
+
+	if xiv.FoodCount > 0 {
+		s = fmt.Sprintf("FOOD USED: %d", xiv.FoodCount)
+		fmt.Println(s)
 	}
 }
 
