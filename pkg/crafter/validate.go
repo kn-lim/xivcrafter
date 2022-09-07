@@ -147,7 +147,7 @@ func checkFlag(flag string, duration int) int {
 		case 2400:
 		case 2700:
 		default:
-			s := fmt.Sprintf("ERROR: FLAG %s SET WITH INVALID DURATION %d", flag, duration)
+			s := fmt.Sprintf("ERROR: FLAG %s SET WITH INVALID DURATION %d", flag, (duration / 60))
 			fmt.Println(s)
 			return 1
 		}
