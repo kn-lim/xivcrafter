@@ -1,4 +1,4 @@
-name: goreleaser
+name: build
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - v*.*.*
 
 jobs:
-  goreleaser:
+  build:
     runs-on: windows-latest
     steps:
       - name: Checkout
