@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/kn-lim/xivcrafter/pkg/ui"
 )
 
 // Constants
@@ -73,7 +74,7 @@ func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmo
 }
 
 // Run provides the main logic to handle crafting
-func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
+func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 	if RANDOM {
 		if VERBOSE {
 			fmt.Println("ADDING RANDOM DELAY")
@@ -84,13 +85,25 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 		rand.Seed(time.Now().UnixNano())
 	}
 
+	xiv.printControls()
+
+	// Main crafting loop
 	for xiv.ProgramRunning {
 		// Set the crafting start time
 		if START_TIME == 0 {
 			START_TIME = time.Now().Unix()
 		}
 
+		// Start UI
+		if !VERBOSE && xiv.CurrentAmount == 0 {
+			ui.Start()
+		}
+
 		for xiv.Running {
+			if !VERBOSE {
+				ui.SetStart()
+			}
+
 			xiv.StartCraft(VERBOSE)
 
 			if xiv.Food != "" {
@@ -119,12 +132,15 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 			}
 
 			xiv.CurrentAmount++
-
-			s := fmt.Sprintf("CRAFTED: %d / %d", xiv.CurrentAmount, xiv.MaxAmount)
-			fmt.Println(s)
+			if VERBOSE {
+				s := fmt.Sprintf("CRAFTED: %d / %d", xiv.CurrentAmount, xiv.MaxAmount)
+				fmt.Println(s)
+			} else {
+				ui.Increment()
+			}
 
 			if xiv.CurrentAmount >= xiv.MaxAmount {
-				xiv.ExitProgram()
+				xiv.ExitProgram(ui, VERBOSE)
 			}
 
 			if RANDOM_DELAY {
@@ -139,10 +155,17 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 		} else {
 			delay(DELAY)
 		}
+
+		if !xiv.Running && !VERBOSE && xiv.ProgramRunning {
+			ui.SetStop()
+		}
 	}
 
 	if VERBOSE {
 		fmt.Println("XIVCRAFTER STOPPED")
+	} else {
+		ui.SetDone()
+		fmt.Println()
 	}
 
 	// Set the craft ending time
@@ -156,22 +179,34 @@ func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 }
 
 // StartProgram sets the Running value to true
-func (xiv *XIVCrafter) StartProgram() {
-	fmt.Println("STARTING XIVCRAFTER")
+func (xiv *XIVCrafter) StartProgram(ui *ui.UI, VERBOSE bool) {
+	if VERBOSE {
+		fmt.Println("STARTING XIVCRAFTER")
+	} else {
+		ui.SetStart()
+	}
 
 	xiv.Running = true
 }
 
 // StopProgram sets the Running value to false
-func (xiv *XIVCrafter) StopProgram() {
-	fmt.Println("STOPPING XIVCRAFTER")
+func (xiv *XIVCrafter) StopProgram(ui *ui.UI, VERBOSE bool) {
+	if VERBOSE {
+		fmt.Println("STOPPING XIVCRAFTER")
+	} else {
+		ui.SetPause()
+	}
 
 	xiv.Running = false
 }
 
 // ExitProgram sets the Running and ProgramRunning value to false
-func (xiv *XIVCrafter) ExitProgram() {
-	fmt.Println("EXITING XIVCRAFTER")
+func (xiv *XIVCrafter) ExitProgram(ui *ui.UI, VERBOSE bool) {
+	if VERBOSE {
+		fmt.Println("EXITING XIVCRAFTER")
+	} else {
+		ui.SetExit()
+	}
 
 	xiv.Running = false
 	xiv.ProgramRunning = false
@@ -331,6 +366,17 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	xiv.StartCraft(VERBOSE)
 }
 
+// printControls prints out the program hotkeys
+func (xiv *XIVCrafter) printControls() {
+	s := fmt.Sprintf("Press \"%s\" to Start/Pause", xiv.StartPause)
+	fmt.Println(s)
+
+	s = fmt.Sprintf("Press \"%s\" to Stop", xiv.Stop)
+	fmt.Println(s)
+
+	fmt.Println()
+}
+
 // result prints out statistics
 func (xiv *XIVCrafter) result() {
 	fmt.Println("\nRESULTS:")
@@ -338,9 +384,9 @@ func (xiv *XIVCrafter) result() {
 	s := fmt.Sprintf("CRAFTED: %d", xiv.CurrentAmount)
 	fmt.Println(s)
 
-	TIME_SECONDS := END_TIME - START_TIME
-	TIME_MINUTES := float64(TIME_SECONDS) / 60
-	s = fmt.Sprintf("TIME SPENT: %f minutes", TIME_MINUTES)
+	TIME_MINUTES := (END_TIME - START_TIME) / 60
+	TIME_SECONDS := (END_TIME - START_TIME) % 60
+	s = fmt.Sprintf("TIME ELAPSED: %dmin %dsec", TIME_MINUTES, TIME_SECONDS)
 	fmt.Println(s)
 
 	if xiv.PotionCount > 0 {
