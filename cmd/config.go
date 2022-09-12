@@ -12,8 +12,8 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Prints XIVCrafter's configuration",
-	Long:  `Prints XIVCrafter's configuration`,
+	Short: "Prints and validates XIVCrafter's configuration",
+	Long:  `Prints and validates XIVCrafter's configuration`,
 	Run: func(cmd *cobra.Command, args []string) {
 		food := viper.GetString("food")
 		s := fmt.Sprintf("food: %s", food)
