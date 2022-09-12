@@ -8,7 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	crafter "github.com/kn-lim/xivcrafter/pkg/crafter"
+	"github.com/kn-lim/xivcrafter/pkg/crafter"
+	"github.com/kn-lim/xivcrafter/pkg/ui"
 )
 
 // startCmd represents the start command
@@ -42,7 +43,13 @@ var startCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		go xiv.Run(VERBOSE, RANDOM)
+		// Start UI
+		ui := new(ui.UI)
+		if !VERBOSE {
+			ui.Init(xiv.MaxAmount)
+		}
+
+		go xiv.Run(ui, VERBOSE, RANDOM)
 
 		hook.Register(hook.KeyDown, []string{xiv.StartPause}, func(e hook.Event) {
 			if xiv.Running {
@@ -50,13 +57,13 @@ var startCmd = &cobra.Command{
 					fmt.Println("PAUSE XIVCRAFTER HOTKEY DETECTED")
 				}
 
-				xiv.StopProgram()
+				xiv.StopProgram(ui, VERBOSE)
 			} else {
 				if VERBOSE {
 					fmt.Println("START XIVCRAFTER HOTKEY DETECTED")
 				}
 
-				xiv.StartProgram()
+				xiv.StartProgram(ui, VERBOSE)
 			}
 		})
 
@@ -65,7 +72,7 @@ var startCmd = &cobra.Command{
 				fmt.Println("STOP XIVCRAFTER HOTKEY DETECTED")
 			}
 
-			xiv.ExitProgram()
+			xiv.ExitProgram(ui, VERBOSE)
 			hook.StopEvent()
 		})
 
