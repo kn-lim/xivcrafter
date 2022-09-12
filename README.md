@@ -96,14 +96,14 @@ In order for XIVCrafter to work properly:
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
-## UI
+## User Interface
 
 The progress bar indicates the crafting progress. It looks like the following:
 ```
 STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_ELAPSED:ESTIMATED_TIME]
 ```
 - **STATUS**: Current status of XIVCrafter.
-  - <span style="color:green">**Crafting**</span>: Currently crafting
+  - **Crafting**: Currently crafting
   - <span style="color:red">**Pausing**</span>: Will pause as soon as the current craft is completed
   - <span style="color:red">**Paused**</span>: Currently paused and waiting to be started
   - <span style="color:red">**Stopping**</span>: Will stop as soon as the current craft is completed
@@ -113,6 +113,8 @@ STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_E
 - **MAX_AMOUNT**: Maximum amount to be crafted
 - **TIME_ELAPSED**: How much time elapsed while crafting
 - **ESTIMATED_TIME**: Estimate of how much time till completion
+
+**NOTE**: Using verbose mode `-v` will hide the progress bar.
 
 # FAQ
 
