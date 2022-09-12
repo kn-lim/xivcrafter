@@ -104,10 +104,9 @@ STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_E
 ```
 - **STATUS**: Current status of XIVCrafter.
   - **Crafting**: Currently crafting
-  - <span style="color:red">**Pausing**</span>: Will pause as soon as the current craft is completed
-  - <span style="color:red">**Paused**</span>: Currently paused and waiting to be started
-  - <span style="color:red">**Stopping**</span>: Will stop as soon as the current craft is completed
-  - <span style="color:green">**Done**</span>: Crafting is completed
+  - **Pausing**: Will pause as soon as the current craft is completed
+  - **Paused**: Currently paused and waiting to be started
+  - **Stopping**: Will stop as soon as the current craft is completed
 - **CURR_%**: Percentage of completion
 - **CURR_AMOUNT**: Current amount crafted
 - **MAX_AMOUNT**: Maximum amount to be crafted
