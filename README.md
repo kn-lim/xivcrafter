@@ -1,6 +1,9 @@
 # XIVCrafter
-
+![Go](https://img.shields.io/github/go-mod/go-version/kn-lim/xivcrafter)
+[![Release](https://img.shields.io/github/v/release/kn-lim/xivcrafter)](https://github.com/kn-lim/xivcrafter/releases)
+![Build](https://github.com/kn-lim/xivcrafter/actions/workflows/goreleaser.yaml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kn-lim/xivcrafter)](https://goreportcard.com/report/github.com/kn-lim/xivcrafter)
+![License](https://img.shields.io/github/license/kn-lim/xivcrafter)
 
 Automatically activates multiple crafting macros while refreshing food and potion buffs.
 
@@ -8,10 +11,10 @@ Tested on Windows and Keyboard only.
 
 ## Packages
 
-- go 1.19
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
 - [robotgo](https://github.com/go-vgo/robotgo)
+- [progressbar](https://github.com/schollz/progressbar)
 
 # Using the Tool
 
@@ -52,7 +55,7 @@ Run:
 ## Available Commands
 
 ```
-  config      Prints XIVCrafter's configuration
+  config      Prints and validates XIVCrafter's configuration
   help        Help about any command
   start       Starts XIVCrafter
 ```
@@ -93,6 +96,24 @@ In order for XIVCrafter to work properly:
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
+## UI
+
+The progress bar indicates the crafting progress. It looks like the following:
+```
+STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_ELAPSED:ESTIMATED_TIME]
+```
+- **STATUS**: Current status of XIVCrafter.
+  - <span style="color:green">**Crafting**</span>: Currently crafting
+  - <span style="color:red">**Pausing**</span>: Will pause as soon as the current craft is completed
+  - <span style="color:red">**Paused**</span>: Currently paused and waiting to be started
+  - <span style="color:red">**Stopping**</span>: Will stop as soon as the current craft is completed
+  - <span style="color:green">**Done**</span>: Crafting is completed
+- **CURR_%**: Percentage of completion
+- **CURR_AMOUNT**: Current amount crafted
+- **MAX_AMOUNT**: Maximum amount to be crafted
+- **TIME_ELAPSED**: How much time elapsed while crafting
+- **ESTIMATED_TIME**: Estimate of how much time till completion
+
 # FAQ
 
 - **Does the game need to be in focus?**
@@ -109,6 +130,4 @@ Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
 # TODO
 
-- Add Terminal UI
-- Show estimated time to complete the craft
 - Game no longer needs to be in focus
