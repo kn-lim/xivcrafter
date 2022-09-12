@@ -8,8 +8,8 @@ import (
 const START = "[green]Crafting[reset]"
 const PAUSE = "[red]Pausing[reset]"
 const STOP = "[red]Paused[reset]"
-const EXIT = "[red]Exiting[reset]"
-const DONE = "[green]Exited[reset]"
+const EXIT = "[red]Stopping[reset]"
+const DONE = "[green]Done[reset]"
 const WIDTH = 30
 
 // UI Struct
