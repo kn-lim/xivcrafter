@@ -9,7 +9,6 @@ const START = "[green]Crafting[reset]"
 const PAUSE = "[red]Pausing[reset]"
 const STOP = "[red]Paused[reset]"
 const EXIT = "[red]Stopping[reset]"
-const DONE = "[green]Done[reset]"
 const WIDTH = 30
 
 // UI Struct
@@ -61,11 +60,6 @@ func (ui *UI) SetStop() {
 // SetExit sets the description of the progress bar to EXIT
 func (ui *UI) SetExit() {
 	ui.PB.Describe(EXIT)
-}
-
-// SetDone sets the description of the progress bar to DONE
-func (ui *UI) SetDone() {
-	ui.PB.Describe(DONE)
 }
 
 // Start renders the blank progress bar

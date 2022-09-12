@@ -132,15 +132,15 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 			}
 
 			xiv.CurrentAmount++
+			if xiv.CurrentAmount >= xiv.MaxAmount {
+				xiv.ExitProgram(ui, VERBOSE)
+			}
+
 			if VERBOSE {
 				s := fmt.Sprintf("CRAFTED: %d / %d", xiv.CurrentAmount, xiv.MaxAmount)
 				fmt.Println(s)
 			} else {
 				ui.Increment()
-			}
-
-			if xiv.CurrentAmount >= xiv.MaxAmount {
-				xiv.ExitProgram(ui, VERBOSE)
 			}
 
 			if RANDOM_DELAY {
@@ -164,7 +164,6 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 	if VERBOSE {
 		fmt.Println("XIVCRAFTER STOPPED")
 	} else {
-		ui.SetDone()
 		fmt.Println()
 	}
 
