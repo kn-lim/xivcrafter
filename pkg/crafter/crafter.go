@@ -44,6 +44,34 @@ type XIVCrafter struct {
 	Stop            string
 }
 
+// Init initializes the XIVCrafter struct with variables provided from flags
+func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmount int, macro1 string, macro1Duration int, macro2 string, macro2Duration int, confirm string, cancel string, startPause string, stop string) {
+	// Convert Minutes to Seconds
+	foodDurationSeconds := foodDuration * 60
+
+	*xiv = XIVCrafter{
+		Running:         false,
+		ProgramRunning:  true,
+		Food:            strings.ToLower(food),
+		FoodCount:       0,
+		FoodDuration:    foodDurationSeconds,
+		StartFoodTime:   0,
+		Potion:          strings.ToLower(potion),
+		PotionCount:     0,
+		StartPotionTime: 0,
+		CurrentAmount:   0,
+		MaxAmount:       maxAmount,
+		Macro1:          strings.ToLower(macro1),
+		Macro1Duration:  macro1Duration,
+		Macro2:          strings.ToLower(macro2),
+		Macro2Duration:  macro2Duration,
+		Confirm:         strings.ToLower(confirm),
+		Cancel:          strings.ToLower(cancel),
+		StartPause:      strings.ToLower(startPause),
+		Stop:            strings.ToLower(stop),
+	}
+}
+
 // Run provides the main logic to handle crafting
 func (xiv *XIVCrafter) Run(VERBOSE bool, RANDOM bool) {
 	if RANDOM {
@@ -301,34 +329,6 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	}
 
 	xiv.StartCraft(VERBOSE)
-}
-
-// Init initializes the XIVCrafter struct with variables provided from flags
-func (xiv *XIVCrafter) Init(food string, foodDuration int, potion string, maxAmount int, macro1 string, macro1Duration int, macro2 string, macro2Duration int, confirm string, cancel string, startPause string, stop string) {
-	// Convert Minutes to Seconds
-	foodDurationSeconds := foodDuration * 60
-
-	*xiv = XIVCrafter{
-		Running:         false,
-		ProgramRunning:  true,
-		Food:            strings.ToLower(food),
-		FoodCount:       0,
-		FoodDuration:    foodDurationSeconds,
-		StartFoodTime:   0,
-		Potion:          strings.ToLower(potion),
-		PotionCount:     0,
-		StartPotionTime: 0,
-		CurrentAmount:   0,
-		MaxAmount:       maxAmount,
-		Macro1:          strings.ToLower(macro1),
-		Macro1Duration:  macro1Duration,
-		Macro2:          strings.ToLower(macro2),
-		Macro2Duration:  macro2Duration,
-		Confirm:         strings.ToLower(confirm),
-		Cancel:          strings.ToLower(cancel),
-		StartPause:      strings.ToLower(startPause),
-		Stop:            strings.ToLower(stop),
-	}
 }
 
 // result prints out statistics
