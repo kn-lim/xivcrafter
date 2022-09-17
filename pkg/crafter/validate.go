@@ -13,7 +13,7 @@ var REQUIRED_FLAGS = [5]string{
 	"stop",
 }
 
-var ACCEPTED_KEYS = [55]string{
+var ACCEPTED_KEYS = [65]string{
 	"",
 	"1",
 	"2",
@@ -69,6 +69,16 @@ var ACCEPTED_KEYS = [55]string{
 	"f10",
 	"f11",
 	"f12",
+	"num0",
+	"num1",
+	"num2",
+	"num3",
+	"num4",
+	"num5",
+	"num6",
+	"num7",
+	"num8",
+	"num9",
 }
 
 // CheckKeys calls checkKey to verify user input keys as valid
