@@ -310,6 +310,12 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 		rand.Seed(time.Now().UnixNano())
 	}
 
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
+	}
+
 	xiv.StartFoodTime = time.Now().Unix()
 	robotgo.KeyTap(xiv.Food)
 	xiv.FoodCount++
@@ -350,6 +356,12 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 
 	if RANDOM_DELAY {
 		rand.Seed(time.Now().UnixNano())
+	}
+
+	if RANDOM_DELAY {
+		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+	} else {
+		delay(DELAY)
 	}
 
 	xiv.StartPotionTime = time.Now().Unix()
