@@ -18,7 +18,7 @@ Tested on Windows and Keyboard only.
 
 # Using the Tool
 
-Download the Windows 64-bit binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.
+**Download the Windows 64-bit binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.**
 
 ## How to Build
 
@@ -81,9 +81,22 @@ Run:
   -v, --verbose              verbose output
 ```
 
+### Example Command
+
+```
+.\xivcrafter.exe start -c config.yaml --amount=10 --food="f" --potion="" --macro2=""
+```
+
+The above command will:
+- Start XIVCrafter
+- Use `config.yaml` as its configuration file
+- Set the amount to craft to 10, rather than the value in the config file
+- Sets the food hotkey to "**f**", rather than the value in the config file
+- Sets the potion hotkey to "" (Empty string indicates no hotkey), rather than the value in the config file
+
 ## Supported Keys
 
-https://github.com/kn-lim/xivcrafter/tree/main/pkg/crafter#accepted-keys
+https://github.com/kn-lim/xivcrafter/blob/main/pkg/crafter/README.md#accepted-keys
 
 ## Prepping the Game
 
@@ -128,6 +141,8 @@ STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_E
   - General Rule: # of Lines * 3
 - **Will this work with any craft?**
   - As long as you are able to start the craft, the program will work on any craft.
+- **My craft didn't complete! What happened?**
+  - Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft and wait till the program completes the "craft". It should continue without having to reapply food and potion buffs.
 
 # TODO
 
