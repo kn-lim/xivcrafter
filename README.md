@@ -91,7 +91,7 @@ The above command will:
 - Start XIVCrafter
 - Use `config.yaml` as its configuration file
 - Set the amount to craft to 10, rather than the value in the config file
-- Sets the food hotkey to "**f**", rather than the value in the config file
+- Sets the food hotkey to "f", rather than the value in the config file
 - Sets the potion hotkey to "" (Empty string indicates no hotkey), rather than the value in the config file
 
 ## Supported Keys
@@ -135,7 +135,7 @@ STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_E
 - **Am I able to use the keyboard to type/move while the program is active?**
   - No, since XIVCrafter tracks all key presses and may act accordingly to the flags provided.
 - **Am I able to use the mouse while the program is active?**
-  - No, as it may cause the crafter to malfunction and not start the craft properly.
+  - No, as it may cause XIVCrafter to malfunction and not start the craft properly.
 - **How do I get the macro duration?**
   - Count all the seconds the macro steps delays for.
   - General Rule: # of Lines * 3
