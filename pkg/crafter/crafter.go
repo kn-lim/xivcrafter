@@ -12,13 +12,16 @@ import (
 )
 
 // Constants
-const DELAY = 2
+
+const CRAFT_DELAY = 3
+const KEY_DELAY = 1
 const POTION_DURATION = 900
 const RANDOM_MAX = 5
-const RANDOM_MIN = DELAY
+const RANDOM_MIN = KEY_DELAY
 
 // Global Variables
-var RANDOM_DELAY bool
+
+var RANDOM_DELAY bool = false
 var START_TIME int64 = 0
 var END_TIME int64 = 0
 
@@ -119,6 +122,7 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 				fmt.Println("ACTIVATING MACRO 1")
 			}
 			robotgo.KeyTap(xiv.Macro1)
+			delay(KEY_DELAY)
 			delay(xiv.Macro1Duration)
 
 			// Activate Macro 2
@@ -128,6 +132,7 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 				}
 
 				robotgo.KeyTap(xiv.Macro2)
+				delay(KEY_DELAY)
 				delay(xiv.Macro2Duration)
 			}
 
@@ -144,16 +149,16 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 			}
 
 			if RANDOM_DELAY {
-				delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+				delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
 			} else {
-				delay(DELAY)
+				delay(CRAFT_DELAY)
 			}
 		}
 
 		if RANDOM_DELAY {
 			delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 		} else {
-			delay(DELAY)
+			delay(KEY_DELAY)
 		}
 
 		if !xiv.Running && !VERBOSE && xiv.ProgramRunning {
@@ -173,7 +178,6 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 	// Print results
 	xiv.result()
 
-	// TODO: Find a cleaner way of doing this
 	os.Exit(0)
 }
 
@@ -226,7 +230,7 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	robotgo.KeyTap(xiv.Confirm)
@@ -234,15 +238,15 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	robotgo.KeyTap(xiv.Confirm)
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
 	} else {
-		delay(DELAY)
+		delay(CRAFT_DELAY)
 	}
 }
 
@@ -261,7 +265,7 @@ func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	robotgo.KeyTap(xiv.Cancel)
@@ -269,15 +273,15 @@ func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	robotgo.KeyTap(xiv.Confirm)
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
 	} else {
-		delay(DELAY)
+		delay(CRAFT_DELAY)
 	}
 }
 
@@ -308,12 +312,9 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 
 	if RANDOM_DELAY {
 		rand.Seed(time.Now().UnixNano())
-	}
-
-	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	xiv.StartFoodTime = time.Now().Unix()
@@ -321,9 +322,9 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 	xiv.FoodCount++
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
 	} else {
-		delay(DELAY)
+		delay(CRAFT_DELAY)
 	}
 
 	xiv.StartCraft(VERBOSE)
@@ -356,12 +357,9 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 
 	if RANDOM_DELAY {
 		rand.Seed(time.Now().UnixNano())
-	}
-
-	if RANDOM_DELAY {
 		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
 	} else {
-		delay(DELAY)
+		delay(KEY_DELAY)
 	}
 
 	xiv.StartPotionTime = time.Now().Unix()
@@ -369,9 +367,9 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	xiv.PotionCount++
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX) + RANDOM_MIN)
+		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
 	} else {
-		delay(DELAY)
+		delay(CRAFT_DELAY)
 	}
 
 	xiv.StartCraft(VERBOSE)
@@ -395,9 +393,16 @@ func (xiv *XIVCrafter) result() {
 	s := fmt.Sprintf("CRAFTED: %d", xiv.CurrentAmount)
 	fmt.Println(s)
 
-	TIME_MINUTES := (END_TIME - START_TIME) / 60
+	TIME_HOURS := ((END_TIME - START_TIME) / 60) / 60
+	TIME_MINUTES := ((END_TIME - START_TIME) / 60) % 60
 	TIME_SECONDS := (END_TIME - START_TIME) % 60
-	s = fmt.Sprintf("TIME ELAPSED: %dmin %dsec", TIME_MINUTES, TIME_SECONDS)
+	if TIME_HOURS > 0 {
+		s = fmt.Sprintf("TIME ELAPSED: %dhr %dmin %dsec", TIME_HOURS, TIME_MINUTES, TIME_SECONDS)
+	} else if TIME_MINUTES == 0 {
+		s = fmt.Sprintf("TIME ELAPSED: %dsec", TIME_SECONDS)
+	} else {
+		s = fmt.Sprintf("TIME ELAPSED: %dmin %dsec", TIME_MINUTES, TIME_SECONDS)
+	}
 	fmt.Println(s)
 
 	if xiv.PotionCount > 0 {
