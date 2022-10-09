@@ -5,9 +5,10 @@ import (
 )
 
 // Constants
+
 const START = "[green]Crafting[reset]"
-const PAUSE = "[red]Pausing[reset]"
-const STOP = "[red]Paused[reset]"
+const PAUSE = "[red]Pausing [reset]"
+const STOP = "[red]Paused  [reset]"
 const EXIT = "[red]Stopping[reset]"
 const WIDTH = 30
 
