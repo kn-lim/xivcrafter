@@ -13,7 +13,8 @@ import (
 
 // Constants
 
-const CRAFT_DELAY = 3
+const START_CRAFT_DELAY = 2
+const END_CRAFT_DELAY = 3
 const KEY_DELAY = 1
 const POTION_DURATION = 900
 const RANDOM_MAX = 5
@@ -149,9 +150,9 @@ func (xiv *XIVCrafter) Run(ui *ui.UI, VERBOSE bool, RANDOM bool) {
 			}
 
 			if RANDOM_DELAY {
-				delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
+				delay(rand.Intn(RANDOM_MAX+END_CRAFT_DELAY) + END_CRAFT_DELAY)
 			} else {
-				delay(CRAFT_DELAY)
+				delay(END_CRAFT_DELAY)
 			}
 		}
 
@@ -244,9 +245,9 @@ func (xiv *XIVCrafter) StartCraft(VERBOSE bool) {
 	robotgo.KeyTap(xiv.Confirm)
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
+		delay(rand.Intn(RANDOM_MAX+START_CRAFT_DELAY) + START_CRAFT_DELAY)
 	} else {
-		delay(CRAFT_DELAY)
+		delay(START_CRAFT_DELAY)
 	}
 }
 
@@ -279,9 +280,9 @@ func (xiv *XIVCrafter) StopCraft(VERBOSE bool) {
 	robotgo.KeyTap(xiv.Confirm)
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
+		delay(rand.Intn(RANDOM_MAX+END_CRAFT_DELAY) + END_CRAFT_DELAY)
 	} else {
-		delay(CRAFT_DELAY)
+		delay(END_CRAFT_DELAY)
 	}
 }
 
@@ -322,9 +323,9 @@ func (xiv *XIVCrafter) ConsumeFood(VERBOSE bool) {
 	xiv.FoodCount++
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
+		delay(rand.Intn(RANDOM_MAX+END_CRAFT_DELAY) + END_CRAFT_DELAY)
 	} else {
-		delay(CRAFT_DELAY)
+		delay(END_CRAFT_DELAY)
 	}
 
 	xiv.StartCraft(VERBOSE)
@@ -367,9 +368,9 @@ func (xiv *XIVCrafter) ConsumePotion(VERBOSE bool) {
 	xiv.PotionCount++
 
 	if RANDOM_DELAY {
-		delay(rand.Intn(RANDOM_MAX+CRAFT_DELAY) + CRAFT_DELAY)
+		delay(rand.Intn(RANDOM_MAX+END_CRAFT_DELAY) + END_CRAFT_DELAY)
 	} else {
-		delay(CRAFT_DELAY)
+		delay(END_CRAFT_DELAY)
 	}
 
 	xiv.StartCraft(VERBOSE)
