@@ -91,7 +91,7 @@ The above command will:
 - Start XIVCrafter
 - Use `config.yaml` as its configuration file
 - Set the amount to craft to 10, rather than the value in the config file
-- Sets the food hotkey to "f", rather than the value in the config file
+- Sets the food hotkey to "**f**", rather than the value in the config file
 - Sets the potion hotkey to "" (Empty string indicates no hotkey), rather than the value in the config file
 
 ## Supported Keys
@@ -142,8 +142,4 @@ STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_E
 - **Will this work with any craft?**
   - As long as you are able to start the craft, the program will work on any craft.
 - **My craft didn't complete! What happened?**
-  - Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft and wait till the program completes the "craft". It should continue without having to reapply food and potion buffs.
-
-# TODO
-
-- Game no longer needs to be in focus
+  - Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft and wait till the program completes the "craft". Make sure to stop any existing crafting macro before the program starts a new craft. It should continue without having to reapply food and potion buffs.
