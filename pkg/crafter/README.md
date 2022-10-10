@@ -78,4 +78,12 @@
   "num7"
   "num8"
   "num9"
+  "num."
+  "num+"
+  "num-"
+  "num*"
+  "num/"
+  "num_clear"
+  "num_enter"
+  "num_equal"
 ```
