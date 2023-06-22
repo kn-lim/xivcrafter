@@ -1,3 +1,7 @@
+/*
+Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+
+*/
 package cmd
 
 import (
@@ -13,11 +17,20 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "xivcrafter",
-	Short: "A FFXIV Automated Crafting Tool",
-	Long:  `Automatically activates multiple crafting macros while refreshing food and potion buffs.`,
+	Short: "A brief description of your application",
+	Long: `A longer description that spans multiple lines and likely contains
+examples and usage of using your application. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -28,42 +41,15 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Config
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME\\.xivcrafter.yaml)")
+	// Here you will define your flags and configuration settings.
+	// Cobra supports persistent flags, which, if defined here,
+	// will be global for your application.
 
-	// Verbose
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.xivcrafter.yaml)")
 
-	// Random
-	rootCmd.PersistentFlags().BoolP("random", "r", false, "use random delay")
-
-	// Flags
-	rootCmd.PersistentFlags().Int("amount", 0, "amount to craft")
-	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
-	rootCmd.PersistentFlags().String("confirm", "", "confirm hotkey")
-	rootCmd.PersistentFlags().String("food", "", "food hotkey")
-	rootCmd.PersistentFlags().Int("foodDuration", 0, "food duration (minutes)")
-	rootCmd.PersistentFlags().String("macro1", "", "macro 1 hotkey")
-	rootCmd.PersistentFlags().Int("macro1Duration", 0, "macro 1 duration (seconds)")
-	rootCmd.PersistentFlags().String("macro2", "", "macro 2 hotkey")
-	rootCmd.PersistentFlags().Int("macro2Duration", 0, "macro 2 duration (seconds)")
-	rootCmd.PersistentFlags().String("potion", "", "potion hotkey")
-	rootCmd.PersistentFlags().String("startPause", "", "start/pause xivcrafter hotkey")
-	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
-
-	// Viper
-	viper.BindPFlag("amount", rootCmd.PersistentFlags().Lookup("amount"))
-	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
-	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
-	viper.BindPFlag("food", rootCmd.PersistentFlags().Lookup("food"))
-	viper.BindPFlag("foodDuration", rootCmd.PersistentFlags().Lookup("foodDuration"))
-	viper.BindPFlag("macro1", rootCmd.PersistentFlags().Lookup("macro1"))
-	viper.BindPFlag("macro1Duration", rootCmd.PersistentFlags().Lookup("macro1Duration"))
-	viper.BindPFlag("macro2", rootCmd.PersistentFlags().Lookup("macro2"))
-	viper.BindPFlag("macro2Duration", rootCmd.PersistentFlags().Lookup("macro2Duration"))
-	viper.BindPFlag("potion", rootCmd.PersistentFlags().Lookup("potion"))
-	viper.BindPFlag("startPause", rootCmd.PersistentFlags().Lookup("startPause"))
-	viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop"))
+	// Cobra also supports local flags, which will only run
+	// when this action is called directly.
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
