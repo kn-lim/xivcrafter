@@ -29,7 +29,6 @@ Run:
 ## Available Commands
 
 ```
-  config      Prints and validates XIVCrafter's configuration
   help        Help about any command
 ```
 
@@ -61,7 +60,7 @@ Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 - **Does the game need to be in focus?**
   - Yes. Otherwise, whatever program is in focus will receive the inputs.
 - **Am I able to use the keyboard to type/move while the program is active?**
-  - No, since XIVCrafter tracks all key presses and may act accordingly to the flags provided.
+  - No, since XIVCrafter tracks all key presses and may act accordingly to the config provided.
 - **Am I able to use the mouse while the program is active?**
   - No, as it may cause XIVCrafter to malfunction and not start the craft properly.
 - **How do I get the macro duration?**

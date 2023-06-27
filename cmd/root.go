@@ -6,10 +6,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
-	"github.com/kn-lim/xivcrafter/cmd/utils"
+	"github.com/kn-lim/xivcrafter/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -90,7 +89,7 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 		file := home + "/.xivcrafter.json"
-		err = ioutil.WriteFile(file, data, 0644)
+		err = os.WriteFile(file, data, 0644)
 		cobra.CheckErr(err)
 
 		// Set new config file
