@@ -1,13 +1,15 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 
+	"github.com/kn-lim/xivcrafter/cmd/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -17,20 +19,13 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "xivcrafter",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A FFXIV Automated Crafting Tool",
+	Long:  `Automatically activates multiple crafting macros while refreshing food and potion buffs.`,
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -41,15 +36,25 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	// Config
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.xivcrafter.json)")
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.xivcrafter.yaml)")
+	// Verbose
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// XIVCrafter Hotkeys
+	rootCmd.PersistentFlags().String("startPause", "", "start/pause xivcrafter hotkey")
+	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
+
+	// In-Game Hotkeys
+	rootCmd.PersistentFlags().String("confirm", "", "confirm hotkey")
+	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
+
+	// Viper Binds
+	viper.BindPFlag("start_pause", rootCmd.PersistentFlags().Lookup("startPause"))
+	viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop"))
+	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
+	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -64,7 +69,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".xivcrafter" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
+		viper.SetConfigType("json")
 		viper.SetConfigName(".xivcrafter")
 	}
 
@@ -73,5 +78,25 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	} else {
+		// Create config file in home directory
+		config := utils.NewConfig()
+
+		// Convert to JSON
+		data, err := json.MarshalIndent(config, "", "  ")
+		cobra.CheckErr(err)
+
+		// Write to JSON File
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
+		file := home + "/.xivcrafter.json"
+		err = ioutil.WriteFile(file, data, 0644)
+		cobra.CheckErr(err)
+
+		// Set new config file
+		viper.SetConfigFile(file)
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Fprintln(os.Stderr, "Creating new config file:", viper.ConfigFileUsed())
+		}
 	}
 }
