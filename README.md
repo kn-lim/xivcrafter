@@ -14,6 +14,7 @@ Tested on Windows and Keyboard only.
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
 - [robotgo](https://github.com/go-vgo/robotgo)
+- [gohook](https://github.com/robotn/gohook)
 
 # Using the Tool
 
@@ -43,6 +44,10 @@ Run:
       --stop string          stop xivcrafter hotkey
   -v, --verbose              verbose output
 ```
+
+## Accepted Keys
+
+https://github.com/vcaesar/keycode/blob/main/keycode.go
 
 ## Prepping the Game
 

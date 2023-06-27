@@ -6,9 +6,11 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/kn-lim/xivcrafter/pkg/utils"
+	hook "github.com/robotn/gohook"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -21,7 +23,47 @@ var rootCmd = &cobra.Command{
 	Short: "A FFXIV Automated Crafting Tool",
 	Long:  `Automatically activates multiple crafting macros while refreshing food and potion buffs.`,
 
-	Run: func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		// VERBOSE, _ := cmd.PersistentFlags().GetBool("verbose")
+
+		// Get Settings
+		start_pause := viper.GetString("start_pause")
+		stop := viper.GetString("stop")
+		// confirm := viper.GetString("confirm")
+		// cancel := viper.GetString("cancel")
+
+		// Read the 'recipes' field from the config
+		recipesInterface := viper.Get("recipes")
+
+		// Marshal the interface into JSON bytes
+		recipesBytes, err := json.Marshal(recipesInterface)
+		if err != nil {
+			log.Fatalf("Unable to marshal recipes: %v", err)
+		}
+
+		// Unmarshal the JSON bytes into a slice of Recipe structs
+		var recipes []utils.Recipe
+		if err := json.Unmarshal(recipesBytes, &recipes); err != nil {
+			log.Fatalf("Unable to unmarshal recipes: %v", err)
+		}
+
+		// Validate Config
+		// TODO
+
+		// Setup Start/Pause hotkey
+		hook.Register(hook.KeyDown, []string{start_pause}, func(e hook.Event) {
+			fmt.Println("Start/Pause")
+		})
+
+		// Setup Stop hotkey
+		hook.Register(hook.KeyDown, []string{stop}, func(e hook.Event) {
+			fmt.Println("Stop")
+			hook.End()
+		})
+
+		s := hook.Start()
+		<-hook.Process(s)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
