@@ -29,7 +29,11 @@ Run:
 .\xivcrafter
 ```
 
+If `.xivcrafter.json` does not exist in your home directory, running XIVCrafter will create it upon launch.
+
 ## Flags
+
+Only needed if you want different settings than `.xivcrafter.json`.
 
 ```
       --cancel string        cancel hotkey
@@ -51,7 +55,7 @@ In order for XIVCrafter to work properly:
 1. **Make sure you are not near anything that can be interacted with.**
     - This is important to make sure you don't accidentally target something else and thus being unable to craft.
 2. **Open the Crafting Log and select the item you want to craft with XIVCrafter.**
-3. **To ensure your character is in the correct state, <u>start</u> and then <u>cancel</u> the craft without any additional inputs.**
+3. **To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.**
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
