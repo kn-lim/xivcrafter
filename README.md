@@ -15,6 +15,8 @@ Tested on Windows and Keyboard only.
 - [viper](https://github.com/spf13/viper)
 - [robotgo](https://github.com/go-vgo/robotgo)
 - [gohook](https://github.com/robotn/gohook)
+- [bubbletea](https://github.com/charmbracelet/bubbletea)
+- [lipgloss](https://github.com/charmbracelet/lipgloss)
 
 # Using the Tool
 
@@ -27,12 +29,6 @@ Run:
 .\xivcrafter
 ```
 
-## Available Commands
-
-```
-  help        Help about any command
-```
-
 ## Flags
 
 ```
@@ -40,9 +36,8 @@ Run:
   -c, --config string        config file (default is $HOME/.xivcrafter.json)
       --confirm string       confirm hotkey
   -h, --help                 help for xivcrafter
-      --startPause string    start/pause xivcrafter hotkey
+      --start-pause string   start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
-  -v, --verbose              verbose output
 ```
 
 ## Accepted Keys
@@ -56,7 +51,7 @@ In order for XIVCrafter to work properly:
 1. **Make sure you are not near anything that can be interacted with.**
     - This is important to make sure you don't accidentally target something else and thus being unable to craft.
 2. **Open the Crafting Log and select the item you want to craft with XIVCrafter.**
-    - To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.
+3. **To ensure your character is in the correct state, <u>start</u> and then <u>cancel</u> the craft without any additional inputs.**
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 

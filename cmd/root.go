@@ -5,12 +5,12 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
-	"github.com/kn-lim/xivcrafter/pkg/utils"
-	hook "github.com/robotn/gohook"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/kn-lim/xivcrafter/internal/tui"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,8 +27,8 @@ var rootCmd = &cobra.Command{
 		// VERBOSE, _ := cmd.PersistentFlags().GetBool("verbose")
 
 		// Get Settings
-		start_pause := viper.GetString("start_pause")
-		stop := viper.GetString("stop")
+		// start_pause := viper.GetString("start_pause")
+		// stop := viper.GetString("stop")
 		// confirm := viper.GetString("confirm")
 		// cancel := viper.GetString("cancel")
 
@@ -50,19 +50,28 @@ var rootCmd = &cobra.Command{
 		// Validate Config
 		// TODO
 
-		// Setup Start/Pause hotkey
-		hook.Register(hook.KeyDown, []string{start_pause}, func(e hook.Event) {
-			fmt.Println("Start/Pause")
-		})
+		// Setup UI
+		p := tea.NewProgram(tui.Model(10), tea.WithAltScreen())
+		if _, err := p.Run(); err != nil {
+			log.Fatal(err)
+		}
 
-		// Setup Stop hotkey
-		hook.Register(hook.KeyDown, []string{stop}, func(e hook.Event) {
-			fmt.Println("Stop")
-			hook.End()
-		})
+		// Setup Crafter
+		// TODO
 
-		s := hook.Start()
-		<-hook.Process(s)
+		// // Setup Start/Pause hotkey
+		// hook.Register(hook.KeyDown, []string{start_pause}, func(e hook.Event) {
+		// 	fmt.Println("Start/Pause")
+		// })
+
+		// // Setup Stop hotkey
+		// hook.Register(hook.KeyDown, []string{stop}, func(e hook.Event) {
+		// 	fmt.Println("Stop")
+		// 	hook.End()
+		// })
+
+		// s := hook.Start()
+		// <-hook.Process(s)
 	},
 }
 
@@ -81,10 +90,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.xivcrafter.json)")
 
 	// Verbose
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
+	// rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 
 	// XIVCrafter Hotkeys
-	rootCmd.PersistentFlags().String("startPause", "", "start/pause xivcrafter hotkey")
+	rootCmd.PersistentFlags().String("start-pause", "", "start/pause xivcrafter hotkey")
 	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
 
 	// In-Game Hotkeys
@@ -118,7 +127,7 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		// fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	} else {
 		// Create config file in home directory
 		config := utils.NewConfig()
@@ -137,7 +146,7 @@ func initConfig() {
 		// Set new config file
 		viper.SetConfigFile(file)
 		if err := viper.ReadInConfig(); err == nil {
-			fmt.Fprintln(os.Stderr, "Creating new config file:", viper.ConfigFileUsed())
+			// fmt.Fprintln(os.Stderr, "Creating new config file:", viper.ConfigFileUsed())
 		}
 	}
 }
