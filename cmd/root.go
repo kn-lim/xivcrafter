@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -101,10 +98,21 @@ func init() {
 	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
 
 	// Viper Binds
-	viper.BindPFlag("start_pause", rootCmd.PersistentFlags().Lookup("startPause"))
-	viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop"))
-	viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm"))
-	viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel"))
+	if err := viper.BindPFlag("start_pause", rootCmd.PersistentFlags().Lookup("start-pause")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	if err := viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	if err := viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	if err := viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -126,9 +134,7 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		// fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	} else {
+	if err := viper.ReadInConfig(); err != nil {
 		// Create config file in home directory
 		config := utils.NewConfig()
 
@@ -145,8 +151,8 @@ func initConfig() {
 
 		// Set new config file
 		viper.SetConfigFile(file)
-		if err := viper.ReadInConfig(); err == nil {
-			// fmt.Fprintln(os.Stderr, "Creating new config file:", viper.ConfigFileUsed())
+		if err := viper.ReadInConfig(); err != nil {
+			log.Fatalf("Error creating file: %s", file)
 		}
 	}
 }
