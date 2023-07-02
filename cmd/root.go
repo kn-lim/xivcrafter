@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kn-lim/xivcrafter/internal/tui"
 	"github.com/kn-lim/xivcrafter/internal/utils"
@@ -24,10 +25,10 @@ var rootCmd = &cobra.Command{
 		// VERBOSE, _ := cmd.PersistentFlags().GetBool("verbose")
 
 		// Get Settings
-		// start_pause := viper.GetString("start_pause")
-		// stop := viper.GetString("stop")
-		// confirm := viper.GetString("confirm")
-		// cancel := viper.GetString("cancel")
+		start_pause := viper.GetString("start_pause")
+		stop := viper.GetString("stop")
+		confirm := viper.GetString("confirm")
+		cancel := viper.GetString("cancel")
 
 		// Read the 'recipes' field from the config
 		recipesInterface := viper.Get("recipes")
@@ -44,14 +45,16 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Unable to unmarshal recipes: %v", err)
 		}
 
+		// Create config
+		config := utils.NewConfig()
+		config.StartPause = start_pause
+		config.Stop = stop
+		config.Confirm = confirm
+		config.Cancel = cancel
+		config.Recipes = recipes
+
 		// Validate Config
 		// TODO
-
-		// Setup UI
-		p := tea.NewProgram(tui.Model(10), tea.WithAltScreen())
-		if _, err := p.Run(); err != nil {
-			log.Fatal(err)
-		}
 
 		// Setup Crafter
 		// TODO
@@ -69,6 +72,42 @@ var rootCmd = &cobra.Command{
 
 		// s := hook.Start()
 		// <-hook.Process(s)
+
+		// Setup UI
+		items := []list.Item{
+			tui.Item{ItemTitle: "Raspberry Pi’s", ItemDesc: "I have ’em all over my house"},
+			tui.Item{ItemTitle: "Nutella", ItemDesc: "It's good on toast"},
+			tui.Item{ItemTitle: "Bitter melon", ItemDesc: "It cools you down"},
+			tui.Item{ItemTitle: "Nice socks", ItemDesc: "And by that I mean socks without holes"},
+			tui.Item{ItemTitle: "Eight hours of sleep", ItemDesc: "I had this once"},
+			tui.Item{ItemTitle: "Cats", ItemDesc: "Usually"},
+			tui.Item{ItemTitle: "Plantasia, the album", ItemDesc: "My plants love it too"},
+			tui.Item{ItemTitle: "Pour over coffee", ItemDesc: "It takes forever to make though"},
+			tui.Item{ItemTitle: "VR", ItemDesc: "Virtual reality...what is there to say?"},
+			tui.Item{ItemTitle: "Noguchi Lamps", ItemDesc: "Such pleasing organic forms"},
+			tui.Item{ItemTitle: "Linux", ItemDesc: "Pretty much the best OS"},
+			tui.Item{ItemTitle: "Business school", ItemDesc: "Just kidding"},
+			tui.Item{ItemTitle: "Pottery", ItemDesc: "Wet clay is a great feeling"},
+			tui.Item{ItemTitle: "Shampoo", ItemDesc: "Nothing like clean hair"},
+			tui.Item{ItemTitle: "Table tennis", ItemDesc: "It’s surprisingly exhausting"},
+			tui.Item{ItemTitle: "Milk crates", ItemDesc: "Great for packing in your extra stuff"},
+			tui.Item{ItemTitle: "Afternoon tea", ItemDesc: "Especially the tea sandwich part"},
+			tui.Item{ItemTitle: "Stickers", ItemDesc: "The thicker the vinyl the better"},
+			tui.Item{ItemTitle: "20° Weather", ItemDesc: "Celsius, not Fahrenheit"},
+			tui.Item{ItemTitle: "Warm light", ItemDesc: "Like around 2700 Kelvin"},
+			tui.Item{ItemTitle: "The vernal equinox", ItemDesc: "The autumnal equinox is pretty good too"},
+			tui.Item{ItemTitle: "Gaffer’s tape", ItemDesc: "Basically sticky fabric"},
+			tui.Item{ItemTitle: "Terrycloth", ItemDesc: "In other words, towel fabric"},
+		}
+
+		m := tui.Model{List: list.New(items, list.NewDefaultDelegate(), 0, 0)}
+		m.List.Title = "My Fave Things"
+
+		p := tea.NewProgram(m, tea.WithAltScreen())
+
+		if _, err := p.Run(); err != nil {
+			log.Fatalf("Error running program: %v", err)
+		}
 	},
 }
 

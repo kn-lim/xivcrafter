@@ -1,69 +1,45 @@
 package tui
 
 import (
-	"fmt"
-	"time"
-
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
-// type Model struct {
-// }
+var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
-// // NewModel returns a new model used for rendering the TUI
-// func NewModel() *Model {
-// 	return &Model{}
-// }
-
-type Model int
-type tickMsg time.Time
-
-var logo = "\n __  __ ___ __     __ ____               __  _\n\\ \\/ /|_ _|\\ \\   / // ___| _ __  __ _  / _|| |_  ___  _ __\n \\  /  | |  \\ \\ / /| |    | '__|/ _` || |_ | __|/ _ \\| '__|\n /  \\  | |   \\ V / | |___ | |  | (_| ||  _|| |_|  __/| |\n/_/\\_\\|___|   \\_/   \\____||_|   \\__,_||_|   \\__|\\___||_|\n"
-
-func (m Model) Init() tea.Cmd {
-	return tea.Batch(tick(), tea.EnterAltScreen)
+type Item struct {
+	ItemTitle, ItemDesc string
 }
 
-func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := message.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "q", "esc", "ctrl+c":
-			return m, tea.Quit
-		}
+func (i Item) Title() string       { return i.ItemTitle }
+func (i Item) Description() string { return i.ItemDesc }
+func (i Item) FilterValue() string { return i.ItemTitle }
 
-	case tickMsg:
-		m--
-		if m <= 0 {
+type Model struct {
+	List list.Model
+}
+
+func (m Model) Init() tea.Cmd {
+	return nil
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
-		return m, tick()
+	case tea.WindowSizeMsg:
+		h, v := docStyle.GetFrameSize()
+		m.List.SetSize(msg.Width-h, msg.Height-v)
 	}
 
-	return m, nil
+	var cmd tea.Cmd
+	m.List, cmd = m.List.Update(msg)
+	return m, cmd
 }
 
 func (m Model) View() string {
-	message := fmt.Sprintf("Hi. This program will exit in %d seconds...", m)
-
-	// Style message with a border
-	messageStyle := lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		Padding(1).
-		Render(message)
-
-	// Style the full screen with another border
-	screenStyle := lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
-		Align(lipgloss.Center).
-		Render(messageStyle)
-
-	return "\n" + screenStyle
-}
-
-func tick() tea.Cmd {
-	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
-		return tickMsg(t)
-	})
+	return docStyle.Render(m.List.View())
 }
