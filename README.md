@@ -16,6 +16,7 @@ Tested on Windows and Keyboard only.
 - [robotgo](https://github.com/go-vgo/robotgo)
 - [gohook](https://github.com/robotn/gohook)
 - [bubbletea](https://github.com/charmbracelet/bubbletea)
+- [bubbles](https://github.com/charmbracelet/bubbles)
 - [lipgloss](https://github.com/charmbracelet/lipgloss)
 
 # Using the Tool

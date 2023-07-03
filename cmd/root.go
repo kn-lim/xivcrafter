@@ -22,10 +22,8 @@ var rootCmd = &cobra.Command{
 	Long:  `Automatically activates multiple crafting macros while refreshing food and potion buffs.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// VERBOSE, _ := cmd.PersistentFlags().GetBool("verbose")
-
 		// Get Settings
-		start_pause := viper.GetString("start_pause")
+		startPause := viper.GetString("start_pause")
 		stop := viper.GetString("stop")
 		confirm := viper.GetString("confirm")
 		cancel := viper.GetString("cancel")
@@ -47,7 +45,7 @@ var rootCmd = &cobra.Command{
 
 		// Create config
 		config := utils.NewConfig()
-		config.StartPause = start_pause
+		config.StartPause = startPause
 		config.Stop = stop
 		config.Confirm = confirm
 		config.Cancel = cancel
@@ -74,34 +72,13 @@ var rootCmd = &cobra.Command{
 		// <-hook.Process(s)
 
 		// Setup UI
-		items := []list.Item{
-			tui.Item{ItemTitle: "Raspberry Pi’s", ItemDesc: "I have ’em all over my house"},
-			tui.Item{ItemTitle: "Nutella", ItemDesc: "It's good on toast"},
-			tui.Item{ItemTitle: "Bitter melon", ItemDesc: "It cools you down"},
-			tui.Item{ItemTitle: "Nice socks", ItemDesc: "And by that I mean socks without holes"},
-			tui.Item{ItemTitle: "Eight hours of sleep", ItemDesc: "I had this once"},
-			tui.Item{ItemTitle: "Cats", ItemDesc: "Usually"},
-			tui.Item{ItemTitle: "Plantasia, the album", ItemDesc: "My plants love it too"},
-			tui.Item{ItemTitle: "Pour over coffee", ItemDesc: "It takes forever to make though"},
-			tui.Item{ItemTitle: "VR", ItemDesc: "Virtual reality...what is there to say?"},
-			tui.Item{ItemTitle: "Noguchi Lamps", ItemDesc: "Such pleasing organic forms"},
-			tui.Item{ItemTitle: "Linux", ItemDesc: "Pretty much the best OS"},
-			tui.Item{ItemTitle: "Business school", ItemDesc: "Just kidding"},
-			tui.Item{ItemTitle: "Pottery", ItemDesc: "Wet clay is a great feeling"},
-			tui.Item{ItemTitle: "Shampoo", ItemDesc: "Nothing like clean hair"},
-			tui.Item{ItemTitle: "Table tennis", ItemDesc: "It’s surprisingly exhausting"},
-			tui.Item{ItemTitle: "Milk crates", ItemDesc: "Great for packing in your extra stuff"},
-			tui.Item{ItemTitle: "Afternoon tea", ItemDesc: "Especially the tea sandwich part"},
-			tui.Item{ItemTitle: "Stickers", ItemDesc: "The thicker the vinyl the better"},
-			tui.Item{ItemTitle: "20° Weather", ItemDesc: "Celsius, not Fahrenheit"},
-			tui.Item{ItemTitle: "Warm light", ItemDesc: "Like around 2700 Kelvin"},
-			tui.Item{ItemTitle: "The vernal equinox", ItemDesc: "The autumnal equinox is pretty good too"},
-			tui.Item{ItemTitle: "Gaffer’s tape", ItemDesc: "Basically sticky fabric"},
-			tui.Item{ItemTitle: "Terrycloth", ItemDesc: "In other words, towel fabric"},
+		items := []list.Item{}
+		for _, recipe := range config.Recipes {
+			items = append(items, tui.Item{Recipe: recipe})
 		}
 
-		m := tui.Model{List: list.New(items, list.NewDefaultDelegate(), 0, 0)}
-		m.List.Title = "My Fave Things"
+		m := tui.Model{List: list.New(items, tui.NewItemDelegate(), 0, 0)}
+		m.List.Title = "XIVCrafter"
 
 		p := tea.NewProgram(m, tea.WithAltScreen())
 
@@ -125,9 +102,6 @@ func init() {
 	// Config
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.xivcrafter.json)")
 
-	// Verbose
-	// rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
-
 	// XIVCrafter Hotkeys
 	rootCmd.PersistentFlags().String("start-pause", "", "start/pause xivcrafter hotkey")
 	rootCmd.PersistentFlags().String("stop", "", "stop xivcrafter hotkey")
@@ -138,19 +112,19 @@ func init() {
 
 	// Viper Binds
 	if err := viper.BindPFlag("start_pause", rootCmd.PersistentFlags().Lookup("start-pause")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		cobra.CheckErr(err)
 	}
 
 	if err := viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		cobra.CheckErr(err)
 	}
 
 	if err := viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		cobra.CheckErr(err)
 	}
 
 	if err := viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		cobra.CheckErr(err)
 	}
 }
 
@@ -170,7 +144,8 @@ func initConfig() {
 		viper.SetConfigName(".xivcrafter")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// Read in environment variables that match
+	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
