@@ -21,7 +21,7 @@ Tested on Windows and Keyboard only.
 
 # Using the Tool
 
-**Download the Windows binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.**
+Download the Windows binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.
 
 ## How to Run
 
