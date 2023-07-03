@@ -15,9 +15,7 @@ type Config struct {
 
 type Recipe struct {
 	// XIVCrafter Settings
-	Name     string `json:"name"`
-	LastUsed bool   `json:"last_used"`
-	Amount   int    `json:"amount"`
+	Name string `json:"name"`
 
 	// Consumables
 	Food         string `json:"food"`
@@ -39,9 +37,6 @@ func NewConfig() *Config {
 	var recipes []Recipe
 	recipes = append(recipes, *NewRecipe())
 
-	// Set the default recipe to be marked as last used
-	recipes[0].LastUsed = true
-
 	return &Config{
 		StartPause: "",
 		Stop:       "",
@@ -55,8 +50,6 @@ func NewConfig() *Config {
 func NewRecipe() *Recipe {
 	return &Recipe{
 		Name:           "",
-		LastUsed:       false,
-		Amount:         1,
 		Food:           "",
 		FoodDuration:   30,
 		Potion:         "",

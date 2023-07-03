@@ -30,7 +30,7 @@ Run:
 .\xivcrafter
 ```
 
-If `.xivcrafter.json` does not exist in your home directory, running XIVCrafter will create it upon launch.
+If `.xivcrafter.json` does not exist in your home directory, XIVCrafter will create it upon launch.
 
 ## Flags
 
@@ -59,6 +59,59 @@ In order for XIVCrafter to work properly:
 3. **To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.**
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
+
+## Config
+
+Default Location: `$HOME/.xivcrafter.json`
+
+Config File:
+
+```json
+{
+  "start_pause": "",
+  "stop": "",
+  "confirm": "",
+  "cancel": "",
+  "recipes": [
+    {
+      "name": "",
+      "food": "",
+      "food_duration": 30,
+      "potion": "",
+      "macro1": "",
+      "macro1_duration": 1,
+      "macro2": "",
+      "macro2_duration": 1,
+      "macro3": "",
+      "macro3_duration": 1
+    }
+  ]
+}
+```
+
+- `start_pause`: XIVCrafter hotkey to **start or pause the program**
+- `stop`: XIVCrafter hotkey to **stop the program**
+- `confirm`: FFXIV hotkey for the **confirm** action
+- `cancel`: FFXIV hotkey for the **cancel** action
+- `recipes`: JSON list of settings representing a crafting recipe in FFXIV
+  - `name`: Name of the crafting recipe
+  - `food`: FFXIV hotkey for the **food** item to use
+    - Leave as `""` if no food is needed
+  - `food_duration`: How long the food will last (minutes)
+    - Default: `30` minutes
+    - Should be either 30, 40 or 45 minutes depending on whether food buffs are used
+  - `potion`: FFXIV hotkey for the **potion** item to use
+    - Leave as `""` if no potion is needed
+    - The default length of the potion is `15` minutes
+  - `macro1`: FFXIV hotkey for the **first crafting macro**
+    - This field must have a value for the recipe to be valid
+  - `macro1_duration`: Duration the **first crafting macro** (seconds)
+  - `macro2`: FFXIV hotkey for the **second crafting macro**
+    - Leave as `""` if no second crafting macro is needed
+  - `macro2_duration`: Duration the **second crafting macro** (seconds)
+  - `macro3`: FFXIV hotkey for the **third crafting macro**
+    - Leave as `""` if no third crafting macro is needed
+  - `macro3_duration`: Duration the **third crafting macro** (seconds)
 
 # FAQ
 
