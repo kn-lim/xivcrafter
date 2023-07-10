@@ -36,5 +36,5 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Progress) View() string {
-	return fmt.Sprintf("Amount: %s", strconv.Itoa(models[AMOUNT].(Input).amount))
+	return fmt.Sprintf("Amount: %s", strconv.Itoa(models[AMOUNT].(Input).amount)) + "\n" + models[RECIPES].(List).Recipes.SelectedItem().(Recipe).PrintRecipeDetails()
 }

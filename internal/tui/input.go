@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Input struct {
@@ -40,13 +41,13 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				var err error
 				m.amount, err = strconv.Atoi(m.input.Value())
 				if err != nil {
-					m.msg = "Not a valid amount."
+					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Not a valid amount.")
 					return m, nil
 				}
 
 				// Check if user input is greater than 1
 				if m.amount < 1 {
-					m.msg = "Requires an integer greater than 1"
+					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Requires an integer greater than 1.")
 					return m, nil
 				}
 
@@ -64,9 +65,10 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Input) View() string {
-	return fmt.Sprintf(
-		"Enter the Amount to Craft:\n\n%s\n\n%s",
+	view := mainStyle.Render(fmt.Sprintf(
+		"Enter the Amount to Craft:\n\n%s",
 		m.input.View(),
-		m.msg,
-	) + "\n"
+	))
+
+	return view + "\n" + lipgloss.NewStyle().PaddingLeft(3).Bold(true).Foreground(Quaternary).Render(m.msg) + "\n"
 }

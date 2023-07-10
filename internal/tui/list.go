@@ -69,11 +69,11 @@ func (m List) View() string {
 	var detailsStyle string
 	if item != nil {
 		selectedItem := item.(Recipe)
-		detailsView = lipgloss.NewStyle().Foreground(Tertiary).Render(selectedItem.PrintRecipeDetails())
+		detailsView = lipgloss.NewStyle().Render(selectedItem.PrintRecipeDetails())
 		detailsView = mainStyle.Padding(0, 2).Render(detailsView)
 
 		detailsStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
+			Border(lipgloss.ThickBorder()).
 			BorderForeground(Secondary).
 			MarginTop(6).
 			Render(detailsView)
