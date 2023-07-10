@@ -38,7 +38,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Unmarshal the JSON bytes into a slice of Recipe structs
-		var recipes []utils.Recipe
+		var recipes []tui.Recipe
 		if err := json.Unmarshal(recipesBytes, &recipes); err != nil {
 			log.Fatalf("Unable to unmarshal recipes: %v", err)
 		}
@@ -71,20 +71,37 @@ var rootCmd = &cobra.Command{
 		// s := hook.Start()
 		// <-hook.Process(s)
 
-		// Setup UI
+		// Setup Items for List
 		items := []list.Item{}
 		for _, recipe := range config.Recipes {
-			items = append(items, tui.Item{Recipe: recipe})
+			items = append(items, tui.Recipe{
+				Name:           recipe.Name,
+				Food:           recipe.Food,
+				FoodDuration:   recipe.FoodDuration,
+				Potion:         recipe.Potion,
+				Macro1:         recipe.Macro1,
+				Macro1Duration: recipe.Macro1Duration,
+				Macro2:         recipe.Macro2,
+				Macro2Duration: recipe.Macro2Duration,
+				Macro3:         recipe.Macro3,
+				Macro3Duration: recipe.Macro3Duration,
+			})
 		}
 
+		// Initialize Model
 		m := tui.Model{List: list.New(items, tui.NewItemDelegate(), 0, 0)}
 		m.List.Title = "XIVCrafter"
+		m.List.Styles.Title = m.List.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
+		m.List.SetShowHelp(false)
 
+		// Run UI
 		p := tea.NewProgram(m, tea.WithAltScreen())
-
 		if _, err := p.Run(); err != nil {
 			log.Fatalf("Error running program: %v", err)
 		}
+
+		// Return final crafting report
+		// TODO
 	},
 }
 

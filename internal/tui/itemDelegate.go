@@ -2,7 +2,6 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/lipgloss"
 )
 
 func NewItemDelegate() list.ItemDelegate {
@@ -10,9 +9,11 @@ func NewItemDelegate() list.ItemDelegate {
 	d := list.NewDefaultDelegate()
 
 	// Change colors
-	c := lipgloss.Color("#6f03fc")
-	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(c).BorderLeftForeground(c)
-	d.Styles.SelectedDesc = d.Styles.SelectedTitle.Copy() // reuse the title style here
+	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(Secondary).BorderLeftForeground(Secondary)
+	d.Styles.SelectedDesc = d.Styles.SelectedTitle.Copy()
+
+	d.Styles.NormalTitle = d.Styles.NormalTitle.Foreground(Tertiary).BorderLeftForeground(Tertiary)
+	d.Styles.NormalDesc = d.Styles.NormalTitle.Copy()
 
 	return d
 }
