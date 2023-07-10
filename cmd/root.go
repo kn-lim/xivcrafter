@@ -89,10 +89,10 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Initialize Model
-		m := tui.Model{List: list.New(items, tui.NewItemDelegate(), 0, 0)}
-		m.List.Title = "XIVCrafter"
-		m.List.Styles.Title = m.List.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
-		m.List.SetShowHelp(false)
+		m := tui.List{Recipes: list.New(items, tui.NewItemDelegate(), 0, 0)}
+		m.Recipes.Title = "XIVCrafter"
+		m.Recipes.Styles.Title = m.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
+		m.Recipes.SetShowHelp(false)
 
 		// Run UI
 		p := tea.NewProgram(m, tea.WithAltScreen())
