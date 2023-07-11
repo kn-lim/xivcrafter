@@ -13,14 +13,11 @@ const (
 	maxWidth = 80
 )
 
-var tester bool = false
-
 type tickMsg time.Time
 
 type Progress struct {
 	// Show crafting progress
 	progress progress.Model
-	percent  float64
 
 	// Helpers
 	msg string
@@ -31,8 +28,6 @@ func (m Progress) Init() tea.Cmd {
 }
 
 func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	m.msg = "updating"
-
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -57,12 +52,20 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tickMsg:
-		m.percent += 0.25
-		if m.percent > 1.0 {
-			m.percent = 1.0
+		if m.progress.Percent() == 1.0 {
 			return m, tea.Quit
 		}
-		return m, tickCmd()
+
+		// Note that you can also use progress.Model.SetPercent to set the
+		// percentage value explicitly, too.
+		cmd := m.progress.IncrPercent(0.10)
+		return m, tea.Batch(tickCmd(), cmd)
+
+	// FrameMsg is sent when the progress bar wants to animate itself
+	case progress.FrameMsg:
+		progressModel, cmd := m.progress.Update(msg)
+		m.progress = progressModel.(progress.Model)
+		return m, cmd
 
 	default:
 		return m, nil
@@ -72,13 +75,9 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Progress) View() string {
-	if !tester {
-		m.msg = "test"
-		tester = true
-	}
 	pad := strings.Repeat(" ", padding)
 	return "\n" +
-		pad + m.progress.ViewAs(m.percent) + "\n\n" + m.msg
+		pad + m.progress.View() + "\n\n"
 }
 
 func tickCmd() tea.Cmd {
