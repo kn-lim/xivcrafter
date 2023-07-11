@@ -27,8 +27,8 @@ func (m List) Init() tea.Cmd {
 
 	// Setup Progress model
 	progressModel := Progress{
-		progress: progress.New(),
-		percent:  1,
+		progress: progress.New(progress.WithGradient(string(Primary), string(Secondary))),
+		percent:  0,
 	}
 	models[CRAFTER] = progressModel
 

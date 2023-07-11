@@ -30,7 +30,7 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 
-		// Go back to recipes
+		// Go back to recipes model
 		case "esc", "b":
 			return models[RECIPES].Update(nil)
 
