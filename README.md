@@ -14,89 +14,40 @@ Tested on Windows and Keyboard only.
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
 - [robotgo](https://github.com/go-vgo/robotgo)
-- [progressbar](https://github.com/schollz/progressbar)
+- [gohook](https://github.com/robotn/gohook)
+- [bubbletea](https://github.com/charmbracelet/bubbletea)
+- [bubbles](https://github.com/charmbracelet/bubbles)
+- [lipgloss](https://github.com/charmbracelet/lipgloss)
 
 # Using the Tool
 
-**Download the Windows 64-bit binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.**
-
-## How to Build
-
-Make sure to follow the [robotgo installation instructions](https://github.com/go-vgo/robotgo#requirements) in order to build.
-
-Run:
-```yml
-GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build
-```
+Download the Windows binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.
 
 ## How to Run
 
-### Using Flags
-
 Run:
 ```yml
-.\xivcrafter start --[FLAGS]
+.\xivcrafter
 ```
 
-### Using a Config File
-
-1. Modify [config.yaml](https://github.com/kn-lim/xivcrafter/blob/main/config.yaml) to match your hotkeys and crafts.
-    - Default location XIVCrafter looks for the config file is `$HOME\.xivcrafter.yaml`.
-2. Run:
-```yml
-.\xivcrafter start -c \path\to\config.yaml
-
-# If config file is $HOME\.xivcrafter.yaml
-.\xivcrafter start
-```
-
-**NOTE**: Using flags will take precendence over the config file.
-
-## Available Commands
-
-```
-  config      Prints and validates XIVCrafter's configuration
-  help        Help about any command
-  start       Starts XIVCrafter
-```
+If `.xivcrafter.json` does not exist in your home directory, XIVCrafter will create it upon launch.
 
 ## Flags
 
+Only needed if you want different settings than `.xivcrafter.json`.
+
 ```
-      --amount int           amount to craft
       --cancel string        cancel hotkey
-  -c, --config string        config file (default is $HOME\.xivcrafter.yaml)
+  -c, --config string        config file (default is $HOME/.xivcrafter.json)
       --confirm string       confirm hotkey
-      --food string          food hotkey
-      --foodDuration int     food duration (minutes)
   -h, --help                 help for xivcrafter
-      --macro1 string        macro 1 hotkey
-      --macro1Duration int   macro 1 duration (seconds)
-      --macro2 string        macro 2 hotkey
-      --macro2Duration int   macro 2 duration (seconds)
-      --potion string        potion hotkey
-  -r, --random               use random delay
-      --startPause string    start/pause xivcrafter hotkey
+      --start-pause string   start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
-  -v, --verbose              verbose output
 ```
 
-### Example Command
+## Accepted Keys
 
-```
-.\xivcrafter.exe start -c config.yaml --amount=10 --food="f" --potion="" --macro2=""
-```
-
-The above command will:
-- Start XIVCrafter
-- Use `config.yaml` as its configuration file
-- Set the amount to craft to 10, rather than the value in the config file
-- Sets the food hotkey to "**f**", rather than the value in the config file
-- Sets the potion hotkey to "" (Empty string indicates no hotkey), rather than the value in the config file
-
-## Supported Keys
-
-https://github.com/kn-lim/xivcrafter/blob/main/pkg/crafter/README.md#accepted-keys
+https://github.com/vcaesar/keycode/blob/main/keycode.go
 
 ## Prepping the Game
 
@@ -105,35 +56,69 @@ In order for XIVCrafter to work properly:
 1. **Make sure you are not near anything that can be interacted with.**
     - This is important to make sure you don't accidentally target something else and thus being unable to craft.
 2. **Open the Crafting Log and select the item you want to craft with XIVCrafter.**
-    - To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.
+3. **To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.**
 
 Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
 
-## User Interface
+## Config
 
-The progress bar indicates the crafting progress. It looks like the following:
-```
-STATUS  CURR_% [======>                       ] (CURR_AMOUNT/MAX_AMOUNT) [TIME_ELAPSED:ESTIMATED_TIME]
-```
-- **STATUS**: Current status of XIVCrafter.
-  - **Crafting**: Currently crafting
-  - **Pausing**: Will pause as soon as the current craft is completed
-  - **Paused**: Currently paused and waiting to be started
-  - **Stopping**: Will stop as soon as the current craft is completed
-- **CURR_%**: Percentage of completion
-- **CURR_AMOUNT**: Current amount crafted
-- **MAX_AMOUNT**: Maximum amount to be crafted
-- **TIME_ELAPSED**: How much time elapsed while crafting
-- **ESTIMATED_TIME**: Estimate of how much time till completion
+Default Location: `$HOME/.xivcrafter.json`
 
-**NOTE**: Using verbose mode `-v` will hide the progress bar.
+Config File:
+
+```json
+{
+  "start_pause": "",
+  "stop": "",
+  "confirm": "",
+  "cancel": "",
+  "recipes": [
+    {
+      "name": "",
+      "food": "",
+      "food_duration": 30,
+      "potion": "",
+      "macro1": "",
+      "macro1_duration": 1,
+      "macro2": "",
+      "macro2_duration": 1,
+      "macro3": "",
+      "macro3_duration": 1
+    }
+  ]
+}
+```
+
+- `start_pause`: XIVCrafter hotkey to **start or pause the program**
+- `stop`: XIVCrafter hotkey to **stop the program**
+- `confirm`: FFXIV hotkey for the **confirm** action
+- `cancel`: FFXIV hotkey for the **cancel** action
+- `recipes`: JSON list of settings representing a crafting recipe in FFXIV
+  - `name`: Name of the crafting recipe
+  - `food`: FFXIV hotkey for the **food** item to use
+    - Leave as `""` if no food is needed
+  - `food_duration`: How long the food will last (minutes)
+    - Default: `30` minutes
+    - Should be either 30, 40 or 45 minutes depending on whether food buffs are used
+  - `potion`: FFXIV hotkey for the **potion** item to use
+    - Leave as `""` if no potion is needed
+    - The default length of the potion is `15` minutes
+  - `macro1`: FFXIV hotkey for the **first crafting macro**
+    - This field must have a value for the recipe to be valid
+  - `macro1_duration`: Duration the **first crafting macro** (seconds)
+  - `macro2`: FFXIV hotkey for the **second crafting macro**
+    - Leave as `""` if no second crafting macro is needed
+  - `macro2_duration`: Duration the **second crafting macro** (seconds)
+  - `macro3`: FFXIV hotkey for the **third crafting macro**
+    - Leave as `""` if no third crafting macro is needed
+  - `macro3_duration`: Duration the **third crafting macro** (seconds)
 
 # FAQ
 
 - **Does the game need to be in focus?**
   - Yes. Otherwise, whatever program is in focus will receive the inputs.
 - **Am I able to use the keyboard to type/move while the program is active?**
-  - No, since XIVCrafter tracks all key presses and may act accordingly to the flags provided.
+  - No, since XIVCrafter tracks all key presses and may act accordingly to the config provided.
 - **Am I able to use the mouse while the program is active?**
   - No, as it may cause XIVCrafter to malfunction and not start the craft properly.
 - **How do I get the macro duration?**

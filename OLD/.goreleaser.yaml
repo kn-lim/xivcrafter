@@ -6,13 +6,15 @@ builds:
   - env:
       - CGO_ENABLED=1
       - CC=x86_64-w64-mingw32-gcc
-    goos:
-      - windows
-    goarch:
-      - amd64
+      - CXX=x86_64-w64-mingw32-g++
+    goos: [windows]
+    goarch: [amd64]
 
 archives:
-  - format: zip
+  - format_overrides:
+      - goos: windows
+        format: zip
     files:
+      - config.yaml
       - README.md
       - LICENSE
