@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/progress"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kn-lim/xivcrafter/internal/tui"
 	"github.com/kn-lim/xivcrafter/internal/utils"
@@ -43,14 +45,6 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Unable to unmarshal recipes: %v", err)
 		}
 
-		// Create config
-		config := utils.NewConfig()
-		config.StartPause = startPause
-		config.Stop = stop
-		config.Confirm = confirm
-		config.Cancel = cancel
-		config.Recipes = recipes
-
 		// Validate Config
 		// TODO
 
@@ -73,7 +67,7 @@ var rootCmd = &cobra.Command{
 
 		// Setup Items for List
 		items := []list.Item{}
-		for _, recipe := range config.Recipes {
+		for _, recipe := range recipes {
 			items = append(items, tui.Recipe{
 				Name:           recipe.Name,
 				Food:           recipe.Food,
@@ -88,11 +82,27 @@ var rootCmd = &cobra.Command{
 			})
 		}
 
-		// Initialize Model
+		// Setup List model
 		m := tui.List{Recipes: list.New(items, tui.NewItemDelegate(), 0, 0)}
 		m.Recipes.Title = "XIVCrafter"
 		m.Recipes.Styles.Title = m.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
 		m.Recipes.SetShowHelp(false)
+
+		// Setup Input model
+		inputModel := tui.Input{Input: textinput.New()}
+		inputModel.Input.Focus()
+		tui.Models[tui.Amount] = inputModel
+
+		// Setup Progress model
+		progressModel := tui.Progress{
+			Progress:   progress.New(progress.WithGradient(string(tui.ProgressStart), string(tui.ProgressEnd))),
+			StartPause: startPause,
+			Stop:       stop,
+			Confirm:    confirm,
+			Cancel:     cancel,
+			Status:     tui.Paused,
+		}
+		tui.Models[tui.Crafter] = progressModel
 
 		// Run UI
 		p := tea.NewProgram(m, tea.WithAltScreen())

@@ -11,7 +11,7 @@ import (
 
 type Input struct {
 	// Get user input for the amount to craft
-	input  textinput.Model
+	Input  textinput.Model
 	amount int
 
 	// Helpers
@@ -32,14 +32,14 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Go back to recipes model
 		case "esc", "b":
-			return models[RECIPES].Update(nil)
+			return Models[Recipes].Update(nil)
 
 		case "enter":
 			// Check if the input model is focused
-			if m.input.Focused() {
+			if m.Input.Focused() {
 				// Check if user input is a valid integer
 				var err error
-				m.amount, err = strconv.Atoi(m.input.Value())
+				m.amount, err = strconv.Atoi(m.Input.Value())
 				if err != nil {
 					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Not a valid amount.")
 					return m, nil
@@ -53,22 +53,24 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// m.input.Blur()
 				m.msg = ""
-				models[AMOUNT] = m
-				return models[CRAFTER].Update(nil)
+				Models[Amount] = m
+				return Models[Crafter].Update(nil)
 			}
 		}
 	}
 
 	var cmd tea.Cmd
-	m.input, cmd = m.input.Update(msg)
+	m.Input, cmd = m.Input.Update(msg)
 	return m, cmd
 }
 
 func (m Input) View() string {
-	view := mainStyle.Render(fmt.Sprintf(
+	inputView := fmt.Sprintf(
 		"Enter the Amount to Craft:\n\n%s",
-		m.input.View(),
-	))
+		m.Input.View(),
+	)
 
-	return view + "\n" + lipgloss.NewStyle().PaddingLeft(3).Bold(true).Foreground(Quaternary).Render(m.msg) + "\n"
+	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(Quaternary).Render(m.msg)
+
+	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, inputView, msgView)) + "\n"
 }

@@ -2,8 +2,6 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/progress"
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -17,20 +15,6 @@ type List struct {
 }
 
 func (m List) Init() tea.Cmd {
-	// Setup Input model
-	inputModel := Input{
-		input:  textinput.New(),
-		amount: 1,
-	}
-	inputModel.input.Focus()
-	models[AMOUNT] = inputModel
-
-	// Setup Progress model
-	progressModel := Progress{
-		progress: progress.New(progress.WithGradient(string(Primary), string(Secondary))),
-	}
-	models[CRAFTER] = progressModel
-
 	return nil
 }
 
@@ -44,12 +28,12 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Select recipe to craft
 		case "enter":
-			models[RECIPES] = m
-			return models[AMOUNT].Update(nil)
+			Models[Recipes] = m
+			return Models[Amount].Update(nil)
 		}
 
 	case tea.WindowSizeMsg:
-		h, v := mainStyle.GetFrameSize()
+		h, v := listStyle.GetFrameSize()
 		m.Recipes.SetSize(msg.Width-h, msg.Height-v)
 		m.width = msg.Width
 	}
@@ -69,7 +53,7 @@ func (m List) View() string {
 	if item != nil {
 		selectedItem := item.(Recipe)
 		detailsView = lipgloss.NewStyle().Render(selectedItem.PrintRecipeDetails())
-		detailsView = mainStyle.Padding(0, 2).Render(detailsView)
+		detailsView = listStyle.Padding(0, 2).Render(detailsView)
 
 		detailsStyle = lipgloss.NewStyle().
 			Border(lipgloss.ThickBorder()).
@@ -79,7 +63,7 @@ func (m List) View() string {
 	}
 
 	// Apply mainStyle to recipeView and detailsView
-	recipeView = mainStyle.Render(recipeView)
+	recipeView = listStyle.Render(recipeView)
 
 	return lipgloss.JoinHorizontal(
 		lipgloss.Top,

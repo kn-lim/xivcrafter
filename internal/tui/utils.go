@@ -5,17 +5,17 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type status int
-
 const (
-	RECIPES status = iota
-	AMOUNT
-	CRAFTER
+	Recipes = iota
+	Amount
+	Crafter
 )
 
 var (
 	// Primary Style
-	mainStyle = lipgloss.NewStyle().Margin(1, 1)
+	titleView = lipgloss.NewStyle().MarginBottom(1).Padding(1, 3, 1).Bold(true).Background(Primary).Foreground(Tertiary).Render("XIVCrafter")
+	listStyle = lipgloss.NewStyle().Margin(1, 1)
+	mainStyle = lipgloss.NewStyle().Margin(1, 5)
 
 	// Colors
 	Primary    = lipgloss.Color("#364F6B")
@@ -24,5 +24,5 @@ var (
 	Quaternary = lipgloss.Color("#FC5185")
 
 	// Slice to manage models
-	models = []tea.Model{nil, nil, nil}
+	Models = []tea.Model{nil, nil, nil}
 )
