@@ -24,13 +24,14 @@ const (
 )
 
 var (
+	// Crafter Status Color Codes
 	status = []string{
 		lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render("Waiting"),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("10")).Render("Crafting"),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Pausing"),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Paused"),
 		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopping"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopping"),
+		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopped"),
 	}
 
 	// Progress Bar Colors
@@ -51,7 +52,8 @@ type Progress struct {
 	Cancel     string
 
 	// Helpers
-	Status int
+	Status        int
+	currentAmount int
 	// msg    string
 }
 
@@ -75,10 +77,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.Status = Crafting
 
-			if m.Progress.Percent() == 1.0 {
-				m.Progress.SetPercent(0)
-				time.Sleep(2 * time.Second)
-			}
+			m.currentAmount = 0
 
 			return m, tickCmd()
 		}
@@ -92,15 +91,16 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tickMsg:
 		if m.Progress.Percent() == 1.0 {
+			m.Status = Stopped
 			return m, nil
 		}
 
-		// Note that you can also use progress.Model.SetPercent to set the
-		// percentage value explicitly, too.
-		cmd := m.Progress.IncrPercent(0.20)
+		cmd := m.Progress.SetPercent(float64(m.currentAmount) / float64(Models[Amount].(Input).amount))
+
+		m.currentAmount++
+
 		return m, tea.Batch(tickCmd(), cmd)
 
-	// FrameMsg is sent when the progress bar wants to animate itself
 	case progress.FrameMsg:
 		progressModel, cmd := m.Progress.Update(msg)
 		m.Progress = progressModel.(progress.Model)

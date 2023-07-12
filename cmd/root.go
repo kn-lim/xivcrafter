@@ -100,7 +100,7 @@ var rootCmd = &cobra.Command{
 			Stop:       stop,
 			Confirm:    confirm,
 			Cancel:     cancel,
-			Status:     tui.Paused,
+			Status:     tui.Waiting,
 		}
 		tui.Models[tui.Crafter] = progressModel
 

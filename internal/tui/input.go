@@ -51,7 +51,6 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 
-				// m.input.Blur()
 				m.msg = ""
 				Models[Amount] = m
 				return Models[Crafter].Update(nil)
