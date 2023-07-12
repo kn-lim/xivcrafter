@@ -52,7 +52,7 @@ type Progress struct {
 
 	// Helpers
 	Status int
-	msg    string
+	// msg    string
 }
 
 func (m Progress) Init() tea.Cmd {
