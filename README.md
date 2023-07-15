@@ -93,25 +93,29 @@ Config File:
 - `stop`: XIVCrafter hotkey to **stop the program**
 - `confirm`: FFXIV hotkey for the **confirm** action
 - `cancel`: FFXIV hotkey for the **cancel** action
-- `recipes`: JSON list of settings representing a crafting recipe in FFXIV
+- `recipes`: JSON array of settings representing a crafting recipe in FFXIV
   - `name`: Name of the crafting recipe
-  - `food`: FFXIV hotkey for the **food** item to use
+  - `food`: _OPTIONAL_ FFXIV hotkey for the **food** item to use
     - Leave as `""` if no food is needed
   - `food_duration`: How long the food will last (minutes)
     - Default: `30` minutes
     - Should be either 30, 40 or 45 minutes depending on whether food buffs are used
-  - `potion`: FFXIV hotkey for the **potion** item to use
+  - `potion`: _OPTIONAL_ FFXIV hotkey for the **potion** item to use
     - Leave as `""` if no potion is needed
     - The default length of the potion is `15` minutes
   - `macro1`: FFXIV hotkey for the **first crafting macro**
     - This field must have a value for the recipe to be valid
   - `macro1_duration`: Duration the **first crafting macro** (seconds)
-  - `macro2`: FFXIV hotkey for the **second crafting macro**
+  - `macro2`: _OPTIONAL_ FFXIV hotkey for the **second crafting macro**
     - Leave as `""` if no second crafting macro is needed
   - `macro2_duration`: Duration the **second crafting macro** (seconds)
-  - `macro3`: FFXIV hotkey for the **third crafting macro**
+  - `macro3`: _OPTIONAL_ FFXIV hotkey for the **third crafting macro**
     - Leave as `""` if no third crafting macro is needed
   - `macro3_duration`: Duration the **third crafting macro** (seconds)
+
+### Notes
+
+- The `start_pause` and `stop` XIVCrafter hotkeys **must** be a different key than the FFXIV macros.
 
 # FAQ
 
@@ -162,6 +166,6 @@ Will this work with any craft?
 <summary>
 My craft didn't complete! What happened?
 </summary>
-<p>Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft manually in-game. Get back into the <a href="https://github.com/kn-lim/xivcrafter#prepping-the-game">initial starting state</a> and wait till XIVCrafter completes the "craft". Make sure to stop any existing crafting macro before XIVCrafter starts a new craft. It should continue without having to reapply food and potion buffs.</p>
+<p>Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft manually in-game. Get back into the <a href="#prepping-the-game">initial starting state</a> and wait till XIVCrafter completes the "craft". Make sure to stop any existing crafting macro before XIVCrafter starts a new craft. It should continue without having to reapply food and potion buffs.</p>
 <p>You may need to cancel the current active crafting macro in order to get back to the initial starting state. To do that, you will need to interrupt that macro. You can do that by having this as a macro: <code>/e end</code>. By activating that one line macro, it should interrupt any currently running crafting macro to allow you to get back into the initial starting state. </p>
 </details>
