@@ -148,7 +148,7 @@ How do I get the macro duration?
 <summary>
 Will this work with the latest patch?
 </summary>
-<p>Unless the [robotgo](https://github.com/go-vgo/robotgo) package stops working or FFXIV blocks virtual keyboard inputs, XIVCrafter should work on any patch.</p>
+<p>Unless the <a href="https://github.com/go-vgo/robotgo">robotgo</a> package stops working or FFXIV blocks virtual keyboard inputs, XIVCrafter should work on any patch.</p>
 </details>
 
 <details>
