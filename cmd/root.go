@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -86,16 +87,19 @@ var rootCmd = &cobra.Command{
 		m := tui.List{Recipes: list.New(items, tui.NewItemDelegate(), 0, 0)}
 		m.Recipes.Title = "XIVCrafter"
 		m.Recipes.Styles.Title = m.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
-		m.Recipes.SetShowHelp(false)
 
 		// Setup Input model
-		inputModel := tui.Input{Input: textinput.New()}
+		inputModel := tui.Input{
+			Input: textinput.New(),
+			Help:  help.New(),
+		}
 		inputModel.Input.Focus()
 		tui.Models[tui.Amount] = inputModel
 
 		// Setup Progress model
 		progressModel := tui.Progress{
 			Progress:   progress.New(progress.WithGradient(string(tui.ProgressStart), string(tui.ProgressEnd))),
+			Help:       help.New(),
 			StartPause: startPause,
 			Stop:       stop,
 			Confirm:    confirm,

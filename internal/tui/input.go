@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -13,6 +14,9 @@ type Input struct {
 	// Get user input for the amount to craft
 	Input  textinput.Model
 	amount int
+
+	// Help component
+	Help help.Model
 
 	// Helpers
 	msg string
@@ -68,8 +72,9 @@ func (m Input) View() string {
 		"Enter the Amount to Craft:\n\n%s",
 		m.Input.View(),
 	)
+	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(Quaternary).Render(m.msg) + "\n"
+	helpView := "\n\n" + m.Help.View(inputKeys)
+	mainView := lipgloss.JoinVertical(lipgloss.Left, inputView, msgView)
 
-	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(Quaternary).Render(m.msg)
-
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, inputView, msgView)) + "\n"
+	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Top, titleView, mainView, helpView)) + "\n"
 }

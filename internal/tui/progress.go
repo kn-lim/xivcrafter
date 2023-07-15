@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 const (
-	padding  = 2
-	maxWidth = 100
+	padding     = 2
+	maxWidth    = 100
+	statusWidth = 10
 )
 
 const (
@@ -44,6 +46,9 @@ type tickMsg time.Time
 type Progress struct {
 	// Show crafting progress
 	Progress progress.Model
+
+	// Help component
+	Help help.Model
 
 	// XIVCrafter Settings
 	StartPause string
@@ -118,9 +123,10 @@ func (m Progress) View() string {
 	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(m.StartPause), lipgloss.NewStyle().Bold(true).Render(m.Stop))
 	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
 	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Bold(true).Render("\nAmount to Craft"), Models[Amount].(Input).amount)
-	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(10).Render(status[m.Status]), m.Progress.View())
+	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(status[m.Status]), m.Progress.View())
+	helpView := "\n\n\n" + m.Help.View(progressKeys)
 
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, configView, amountView, "\n", progressView)) + "\n"
+	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, configView, amountView, "\n", progressView, helpView)) + "\n"
 }
 
 func tickCmd() tea.Cmd {
