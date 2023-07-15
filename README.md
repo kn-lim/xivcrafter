@@ -13,11 +13,11 @@ Tested on Windows and Keyboard only.
 
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
-- [robotgo](https://github.com/go-vgo/robotgo)
-- [gohook](https://github.com/robotn/gohook)
 - [bubbletea](https://github.com/charmbracelet/bubbletea)
 - [bubbles](https://github.com/charmbracelet/bubbles)
 - [lipgloss](https://github.com/charmbracelet/lipgloss)
+- [robotgo](https://github.com/go-vgo/robotgo)
+- [gohook](https://github.com/robotn/gohook)
 
 # Using the Tool
 
@@ -115,16 +115,53 @@ Config File:
 
 # FAQ
 
-- **Does the game need to be in focus?**
-  - Yes. Otherwise, whatever program is in focus will receive the inputs.
-- **Am I able to use the keyboard to type/move while the program is active?**
-  - No, since XIVCrafter tracks all key presses and may act accordingly to the config provided.
-- **Am I able to use the mouse while the program is active?**
-  - No, as it may cause XIVCrafter to malfunction and not start the craft properly.
-- **How do I get the macro duration?**
-  - Count all the seconds the macro steps delays for.
-  - General Rule: # of Lines * 3
-- **Will this work with any craft?**
-  - As long as you are able to start the craft, the program will work on any craft.
-- **My craft didn't complete! What happened?**
-  - Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft and wait till the program completes the "craft". Make sure to stop any existing crafting macro before the program starts a new craft. It should continue without having to reapply food and potion buffs.
+<details>
+<summary>
+Does the game need to be in focus?
+</summary>
+<p>Yes. Otherwise, whatever program is in focus will receive the inputs.</p>
+</details>
+
+<details>
+<summary>
+Am I able to use the keyboard to type/move while the program is active?
+</summary>
+<p>No, since XIVCrafter tracks all key presses and may act accordingly to the config provided.</p>
+</details>
+
+<details>
+<summary>
+Am I able to use the mouse while the program is active?
+</summary>
+<p>No, as it may cause XIVCrafter to malfunction and not start the craft properly.</p>
+</details>
+
+<details>
+<summary>
+How do I get the macro duration?
+</summary>
+<p>Count all the seconds the macro steps delays for.</p>
+<p>General Rule: # of Lines * 3</p>
+</details>
+
+<details>
+<summary>
+Will this work with the latest patch?
+</summary>
+<p>Unless the [robotgo](https://github.com/go-vgo/robotgo) package stops working or FFXIV blocks virtual keyboard inputs, XIVCrafter should work on any patch.</p>
+</details>
+
+<details>
+<summary>
+Will this work with any craft?
+</summary>
+<p>As long as you are able to start the craft, XIVCrafter will work on any craft.</p>
+</details>
+
+<details>
+<summary>
+My craft didn't complete! What happened?
+</summary>
+<p>Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft manually in-game. Get back into the <a href="https://github.com/kn-lim/xivcrafter#prepping-the-game">initial starting state</a> and wait till XIVCrafter completes the "craft". Make sure to stop any existing crafting macro before XIVCrafter starts a new craft. It should continue without having to reapply food and potion buffs.</p>
+<p>You may need to cancel the current active crafting macro in order to get back to the initial starting state. To do that, you will need to interrupt that macro. You can do that by having this as a macro: <code>/e end</code>. By activating that one line macro, it should interrupt any currently running crafting macro to allow you to get back into the initial starting state. </p>
+</details>
