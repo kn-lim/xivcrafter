@@ -10,6 +10,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type backFromProgress struct{}
+
 type Input struct {
 	// Get user input for the amount to craft
 	Input  textinput.Model
@@ -57,9 +59,11 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				m.msg = ""
 				Models[Amount] = m
-				return Models[Crafter].Update(nil)
+				return Models[Crafter].Update(initialize{})
 			}
 		}
+	case backFromProgress:
+		return m, nil
 	}
 
 	var cmd tea.Cmd

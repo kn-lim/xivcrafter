@@ -3,6 +3,14 @@ package crafter
 import "time"
 
 var (
-	KeyDelay   = 500 * time.Millisecond
-	CraftDelay = 3 * time.Second
+	// XIVCrafter delays
+	PauseDelay = 3 * time.Second
+
+	// FFXIV timings
+	PotionDuration = 15 * time.Minute
+
+	// Crafting delays
+	KeyDelay        = 500 * time.Millisecond
+	StartCraftDelay = 2 * time.Second
+	EndCraftDelay   = 3 * time.Second
 )

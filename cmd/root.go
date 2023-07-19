@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/kn-lim/xivcrafter/internal/crafter"
 	"github.com/kn-lim/xivcrafter/internal/tui"
 	"github.com/kn-lim/xivcrafter/internal/utils"
 	"github.com/spf13/cobra"
@@ -50,23 +51,10 @@ var rootCmd = &cobra.Command{
 		// TODO
 
 		// Setup Crafter
-		// TODO
+		crafter := crafter.NewCrafter(startPause, stop, confirm, cancel)
+		go crafter.Run()
 
-		// // Setup Start/Pause hotkey
-		// hook.Register(hook.KeyDown, []string{start_pause}, func(e hook.Event) {
-		// 	fmt.Println("Start/Pause")
-		// })
-
-		// // Setup Stop hotkey
-		// hook.Register(hook.KeyDown, []string{stop}, func(e hook.Event) {
-		// 	fmt.Println("Stop")
-		// 	hook.End()
-		// })
-
-		// s := hook.Start()
-		// <-hook.Process(s)
-
-		// Setup Items for List
+		// Setup Items for List model
 		items := []list.Item{}
 		for _, recipe := range recipes {
 			items = append(items, tui.Recipe{
@@ -98,6 +86,7 @@ var rootCmd = &cobra.Command{
 
 		// Setup Progress model
 		progressModel := tui.Progress{
+			Crafter:    crafter,
 			Progress:   progress.New(progress.WithGradient(string(tui.ProgressStart), string(tui.ProgressEnd))),
 			Help:       help.New(),
 			StartPause: startPause,

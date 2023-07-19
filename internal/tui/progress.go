@@ -8,6 +8,8 @@ import (
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kn-lim/xivcrafter/internal/crafter"
+	hook "github.com/robotn/gohook"
 )
 
 const (
@@ -43,22 +45,27 @@ var (
 
 type tickMsg time.Time
 
+// Tells progress to initialize the crafter
+type initialize struct{}
+
 type Progress struct {
 	// Show crafting progress
+	Crafter  *crafter.Crafter
 	Progress progress.Model
 
 	// Help component
 	Help help.Model
 
-	// XIVCrafter Settings
+	// XIVCrafter settings
 	StartPause string
 	Stop       string
-	Confirm    string
-	Cancel     string
+
+	// In-game hotkeys
+	Confirm string
+	Cancel  string
 
 	// Helpers
-	Status        int
-	currentAmount int
+	Status int
 	// msg    string
 }
 
@@ -76,15 +83,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Go back to amount input model
 		case "esc", "b":
-			return Models[Amount].Update(nil)
-
-		// Start progress bar
-		case "enter":
-			m.Status = Crafting
-
-			m.currentAmount = 0
-
-			return m, tickCmd()
+			return Models[Amount].Update(backFromProgress{})
 		}
 
 	case tea.WindowSizeMsg:
@@ -100,16 +99,20 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		cmd := m.Progress.SetPercent(float64(m.currentAmount) / float64(Models[Amount].(Input).amount))
+		cmd := m.Progress.SetPercent(float64(m.Crafter.CurrentAmount) / float64(Models[Amount].(Input).amount))
 
-		m.currentAmount++
-
-		return m, tea.Batch(tickCmd(), cmd)
+		return m, cmd
 
 	case progress.FrameMsg:
 		progressModel, cmd := m.Progress.Update(msg)
 		m.Progress = progressModel.(progress.Model)
 		return m, cmd
+
+	case initialize:
+		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Recipe)
+		m.Crafter.SetRecipe(Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
+
+		return m, tea.Batch(tickCmd(), m.startHooks())
 
 	default:
 		return m, nil
@@ -133,4 +136,34 @@ func tickCmd() tea.Cmd {
 	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
+}
+
+func (m Progress) startHooks() tea.Cmd {
+	return func() tea.Msg {
+		go func() {
+			hook.Register(hook.KeyDown, []string{m.StartPause}, func(e hook.Event) {
+				if m.Crafter.Paused {
+					m.Status = Crafting
+					m.Crafter.StartProgram()
+					m.Update(nil)
+				} else {
+					m.Status = Paused
+					m.Crafter.StopProgram()
+					m.Update(nil)
+				}
+			})
+
+			hook.Register(hook.KeyDown, []string{m.Stop}, func(e hook.Event) {
+				m.Status = Stopping
+				m.Crafter.ExitProgram()
+				m.Update(nil)
+				hook.End()
+			})
+
+			s := hook.Start()
+			<-hook.Process(s)
+		}()
+
+		return nil
+	}
 }
