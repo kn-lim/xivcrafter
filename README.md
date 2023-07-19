@@ -121,28 +121,28 @@ Config File:
 
 <details>
 <summary>
-Does the game need to be in focus?
+<b>Does the game need to be in focus?</b>
 </summary>
 <p>Yes. Otherwise, whatever program is in focus will receive the inputs.</p>
 </details>
 
 <details>
 <summary>
-Am I able to use the keyboard to type/move while the program is active?
+<b>Am I able to use the keyboard to type/move while the program is active?</b>
 </summary>
 <p>No, since XIVCrafter tracks all key presses and may act accordingly to the config provided.</p>
 </details>
 
 <details>
 <summary>
-Am I able to use the mouse while the program is active?
+<b>Am I able to use the mouse while the program is active?</b>
 </summary>
 <p>No, as it may cause XIVCrafter to malfunction and not start the craft properly.</p>
 </details>
 
 <details>
 <summary>
-How do I get the macro duration?
+<b>How do I get the macro duration?</b>
 </summary>
 <p>Count all the seconds the macro steps delays for.</p>
 <p>General Rule: # of Lines * 3</p>
@@ -150,21 +150,21 @@ How do I get the macro duration?
 
 <details>
 <summary>
-Will this work with the latest patch?
+<b>Will this work with the latest patch?</b>
 </summary>
 <p>Unless the <a href="https://github.com/go-vgo/robotgo">robotgo</a> package stops working or FFXIV blocks virtual keyboard inputs, XIVCrafter should work on any patch.</p>
 </details>
 
 <details>
 <summary>
-Will this work with any craft?
+<b>Will this work with any craft?</b>
 </summary>
 <p>As long as you are able to start the craft, XIVCrafter will work on any craft.</p>
 </details>
 
 <details>
 <summary>
-My craft didn't complete! What happened?
+<b>My craft didn't complete! What happened?</b>
 </summary>
 <p>Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft manually in-game. Get back into the <a href="#prepping-the-game">initial starting state</a> and wait till XIVCrafter completes the "craft". Make sure to stop any existing crafting macro before XIVCrafter starts a new craft. It should continue without having to reapply food and potion buffs.</p>
 <p>You may need to cancel the current active crafting macro in order to get back to the initial starting state. To do that, you will need to interrupt that macro. You can do that by having this as a macro: <code>/e end</code>. By activating that one line macro, it should interrupt any currently running crafting macro to allow you to get back into the initial starting state. </p>
