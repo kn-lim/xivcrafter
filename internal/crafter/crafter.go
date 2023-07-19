@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/spf13/cobra"
 )
 
 type Crafter struct {
@@ -129,20 +130,20 @@ func (c *Crafter) Run() {
 				}
 
 				// Activate macro 1
-				robotgo.KeyTap(c.macro1)
+				cobra.CheckErr(robotgo.KeyTap(c.macro1))
 				time.Sleep(KeyDelay)
 				time.Sleep(c.macro1Duration)
 
 				if c.macro2 != "" {
 					// Activate macro 2
-					robotgo.KeyTap(c.macro2)
+					cobra.CheckErr(robotgo.KeyTap(c.macro2))
 					time.Sleep(KeyDelay)
 					time.Sleep(c.macro2Duration)
 				}
 
 				if c.macro3 != "" {
 					// Activate macro 3
-					robotgo.KeyTap(c.macro3)
+					cobra.CheckErr(robotgo.KeyTap(c.macro3))
 					time.Sleep(KeyDelay)
 					time.Sleep(c.macro3Duration)
 				}
@@ -178,11 +179,11 @@ func (c *Crafter) ExitProgram() {
 
 // startCraft sets up the crafting action
 func (c *Crafter) startCraft() {
-	robotgo.KeyTap(c.confirm)
+	cobra.CheckErr(robotgo.KeyTap(c.confirm))
 	time.Sleep(KeyDelay)
-	robotgo.KeyTap(c.confirm)
+	cobra.CheckErr(robotgo.KeyTap(c.confirm))
 	time.Sleep(KeyDelay)
-	robotgo.KeyTap(c.confirm)
+	cobra.CheckErr(robotgo.KeyTap(c.confirm))
 	time.Sleep(KeyDelay)
 
 	time.Sleep(StartCraftDelay)
@@ -190,11 +191,11 @@ func (c *Crafter) startCraft() {
 
 // stopCraft closes the crafting action
 func (c *Crafter) stopCraft() {
-	robotgo.KeyTap(c.confirm)
+	cobra.CheckErr(robotgo.KeyTap(c.confirm))
 	time.Sleep(KeyDelay)
-	robotgo.KeyTap(c.cancel)
+	cobra.CheckErr(robotgo.KeyTap(c.cancel))
 	time.Sleep(KeyDelay)
-	robotgo.KeyTap(c.confirm)
+	cobra.CheckErr(robotgo.KeyTap(c.confirm))
 	time.Sleep(KeyDelay)
 
 	time.Sleep(EndCraftDelay)
@@ -216,7 +217,7 @@ func (c *Crafter) consumeFood() {
 	c.stopCraft()
 
 	c.foodStartTime = time.Now()
-	robotgo.KeyTap(c.food)
+	cobra.CheckErr(robotgo.KeyTap(c.food))
 	c.foodCount++
 
 	time.Sleep(EndCraftDelay)
@@ -240,7 +241,7 @@ func (c *Crafter) consumePotion() {
 	c.stopCraft()
 
 	c.potionStartTime = time.Now()
-	robotgo.KeyTap(c.potion)
+	cobra.CheckErr(robotgo.KeyTap(c.potion))
 	c.potionCount++
 
 	time.Sleep(EndCraftDelay)
