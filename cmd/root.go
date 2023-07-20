@@ -5,10 +5,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/kn-lim/xivcrafter/internal/crafter"
 	"github.com/kn-lim/xivcrafter/internal/tui"
 	"github.com/kn-lim/xivcrafter/internal/utils"
 	"github.com/spf13/cobra"
@@ -24,90 +26,94 @@ var rootCmd = &cobra.Command{
 	Long:  `Automatically activates multiple crafting macros while refreshing food and potion buffs.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// Debug mode
+		Debug, _ := cmd.PersistentFlags().GetBool("debug")
+		if Debug {
+			home, _ := os.UserHomeDir()
+			path := home + "/.xivcrafter-debug.log"
+			f, err := tea.LogToFile(path, "debug")
+			cobra.CheckErr(err)
+			defer f.Close()
+
+			utils.Logger = log.New(f, "", log.LstdFlags)
+		}
+
 		// Get Settings
 		startPause := viper.GetString("start_pause")
 		stop := viper.GetString("stop")
 		confirm := viper.GetString("confirm")
 		cancel := viper.GetString("cancel")
 
+		if utils.Logger != nil {
+			utils.Logger.Printf("StartPause: %s, Stop: %s, Confirm: %s, Cancel: %s\n", startPause, stop, confirm, cancel)
+		}
+
 		// Read the 'recipes' field from the config
 		recipesInterface := viper.Get("recipes")
 
 		// Marshal the interface into JSON bytes
 		recipesBytes, err := json.Marshal(recipesInterface)
-		if err != nil {
-			log.Fatalf("Unable to marshal recipes: %v", err)
-		}
+		cobra.CheckErr(err)
 
 		// Unmarshal the JSON bytes into a slice of Recipe structs
-		var recipes []tui.Recipe
-		if err := json.Unmarshal(recipesBytes, &recipes); err != nil {
-			log.Fatalf("Unable to unmarshal recipes: %v", err)
+		var recipes []utils.Recipe
+		cobra.CheckErr(json.Unmarshal(recipesBytes, &recipes))
+
+		if utils.Logger != nil {
+			utils.Logger.Printf("Number of Recipes: %v\n", len(recipes))
 		}
 
 		// Validate Config
 		// TODO
 
-		// Setup Crafter
-		// TODO
-
-		// // Setup Start/Pause hotkey
-		// hook.Register(hook.KeyDown, []string{start_pause}, func(e hook.Event) {
-		// 	fmt.Println("Start/Pause")
-		// })
-
-		// // Setup Stop hotkey
-		// hook.Register(hook.KeyDown, []string{stop}, func(e hook.Event) {
-		// 	fmt.Println("Stop")
-		// 	hook.End()
-		// })
-
-		// s := hook.Start()
-		// <-hook.Process(s)
-
-		// Setup Items for List
+		// Setup Items for List model
 		items := []list.Item{}
-		for _, recipe := range recipes {
-			items = append(items, tui.Recipe{
-				Name:           recipe.Name,
-				Food:           recipe.Food,
-				FoodDuration:   recipe.FoodDuration,
-				Potion:         recipe.Potion,
-				Macro1:         recipe.Macro1,
-				Macro1Duration: recipe.Macro1Duration,
-				Macro2:         recipe.Macro2,
-				Macro2Duration: recipe.Macro2Duration,
-				Macro3:         recipe.Macro3,
-				Macro3Duration: recipe.Macro3Duration,
-			})
+		if len(recipes) != 1 || recipes[0].Name != "" {
+			for _, recipe := range recipes {
+				items = append(items, tui.Item{
+					Name:           recipe.Name,
+					Food:           recipe.Food,
+					FoodDuration:   recipe.FoodDuration,
+					Potion:         recipe.Potion,
+					Macro1:         recipe.Macro1,
+					Macro1Duration: recipe.Macro1Duration,
+					Macro2:         recipe.Macro2,
+					Macro2Duration: recipe.Macro2Duration,
+					Macro3:         recipe.Macro3,
+					Macro3Duration: recipe.Macro3Duration,
+				})
+			}
 		}
 
 		// Setup List model
 		m := tui.List{Recipes: list.New(items, tui.NewItemDelegate(), 0, 0)}
 		m.Recipes.Title = "XIVCrafter"
 		m.Recipes.Styles.Title = m.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
-		m.Recipes.SetShowHelp(false)
 
 		// Setup Input model
-		inputModel := tui.Input{Input: textinput.New()}
+		inputModel := tui.Input{
+			Input: textinput.New(),
+			Help:  help.New(),
+		}
 		inputModel.Input.Focus()
 		tui.Models[tui.Amount] = inputModel
 
 		// Setup Progress model
 		progressModel := tui.Progress{
+			Crafter:    &crafter.Crafter{},
 			Progress:   progress.New(progress.WithGradient(string(tui.ProgressStart), string(tui.ProgressEnd))),
+			Help:       help.New(),
 			StartPause: startPause,
 			Stop:       stop,
 			Confirm:    confirm,
 			Cancel:     cancel,
-			Status:     tui.Waiting,
 		}
 		tui.Models[tui.Crafter] = progressModel
 
 		// Run UI
 		p := tea.NewProgram(m, tea.WithAltScreen())
 		if _, err := p.Run(); err != nil {
-			log.Fatalf("Error running program: %v", err)
+			cobra.CheckErr(err)
 		}
 
 		// Return final crafting report
@@ -128,6 +134,9 @@ func init() {
 
 	// Config
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.xivcrafter.json)")
+
+	// Debug
+	rootCmd.PersistentFlags().Bool("debug", false, "enable debugging (debug log location is $HOME/.xivcrafter-debug.log)")
 
 	// XIVCrafter Hotkeys
 	rootCmd.PersistentFlags().String("start-pause", "", "start/pause xivcrafter hotkey")
