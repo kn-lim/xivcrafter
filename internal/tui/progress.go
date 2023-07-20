@@ -18,26 +18,7 @@ const (
 	statusWidth = 10
 )
 
-const (
-	Waiting = iota
-	Crafting
-	Pausing
-	Paused
-	Stopping
-	Stopped
-)
-
 var (
-	// Crafter Status Color Codes
-	status = []string{
-		lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render("Waiting"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("10")).Render("Crafting"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Pausing"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Paused"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopping"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopped"),
-	}
-
 	// Progress Bar Colors
 	ProgressStart = lipgloss.Color("#1B6B93")
 	ProgressEnd   = lipgloss.Color("#A2FF86")
@@ -63,10 +44,6 @@ type Progress struct {
 	// In-game hotkeys
 	Confirm string
 	Cancel  string
-
-	// Helpers
-	Status int
-	// msg    string
 }
 
 func (m Progress) Init() tea.Cmd {
@@ -101,11 +78,15 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tickMsg:
 		if m.Progress.Percent() == 1.0 {
-			m.Status = Stopped
+			if utils.Logger != nil {
+				utils.Logger.Println("Setting Status to \"Finished\"")
+			}
+
+			m.Crafter.Status = utils.Finished
 			return m, nil
 		}
 
-		cmd := m.Progress.SetPercent(float64(m.Crafter.GetCurrentAmount()) / float64(Models[Amount].(Input).amount))
+		cmd := m.Progress.SetPercent(float64(m.Crafter.CurrentAmount) / float64(Models[Amount].(Input).amount))
 
 		return m, tea.Batch(tickCmd(), cmd)
 
@@ -138,7 +119,8 @@ func (m Progress) View() string {
 	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(m.StartPause), lipgloss.NewStyle().Bold(true).Render(m.Stop))
 	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
 	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Bold(true).Render("\nAmount to Craft"), Models[Amount].(Input).amount)
-	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(status[m.Status]), m.Progress.View())
+	craftingView := lipgloss.NewStyle().PaddingLeft(3).Render(fmt.Sprintf("(%v/%v)", m.Crafter.CurrentAmount, Models[Amount].(Input).amount))
+	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(utils.Status[m.Crafter.Status]), m.Progress.View(), craftingView)
 	helpView := "\n\n\n" + m.Help.View(progressKeys)
 
 	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, configView, amountView, "\n", progressView, helpView)) + "\n"

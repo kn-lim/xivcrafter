@@ -34,6 +34,7 @@ type Crafter struct {
 	macro3Duration time.Duration
 
 	// Information
+	Status          int
 	startTime       time.Time
 	CurrentAmount   int
 	FoodCount       int
@@ -42,18 +43,15 @@ type Crafter struct {
 	potionStartTime time.Time
 
 	// Helpers
-	running               bool
-	paused                bool
-	exitOnce              sync.Once
-	StopCrafterContext    context.Context
-	StopCrafterCancelFunc context.CancelFunc
-	StopHookContext       context.Context
-	StopHookCancelFunc    context.CancelFunc
+	running             bool
+	paused              bool
+	exitOnce            sync.Once
+	StopHooksContext    context.Context
+	StopHooksCancelFunc context.CancelFunc
 }
 
 // NewCrafter returns a pointer to a Crafter struct
 func NewCrafter(startPause string, stop string, confirm string, cancel string) *Crafter {
-	crafterCtx, crafterCancelFunc := context.WithCancel(context.Background())
 	hookCtx, hookCancelFunc := context.WithCancel(context.Background())
 
 	return &Crafter{
@@ -77,6 +75,7 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 		macro3Duration: 1 * time.Second,
 
 		// Information
+		Status:          utils.Waiting,
 		startTime:       time.Time{},
 		CurrentAmount:   0,
 		FoodCount:       0,
@@ -85,12 +84,10 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 		potionStartTime: time.Time{},
 
 		// Helpers
-		running:               true,
-		paused:                true,
-		StopCrafterContext:    crafterCtx,
-		StopCrafterCancelFunc: crafterCancelFunc,
-		StopHookContext:       hookCtx,
-		StopHookCancelFunc:    hookCancelFunc,
+		running:             true,
+		paused:              true,
+		StopHooksContext:    hookCtx,
+		StopHooksCancelFunc: hookCancelFunc,
 	}
 }
 
@@ -112,96 +109,88 @@ func (c *Crafter) SetRecipe(amount int, food string, foodDuration int, potion st
 	c.macro3Duration = time.Duration(macro3Duration) * time.Second
 }
 
-func (c *Crafter) ResetRecipe() {
-	// Consumables
-	c.food = ""
-	c.potion = ""
-
-	// In-game hotkeys
-	c.macro1 = ""
-	c.macro1Duration = 1
-	c.macro2 = ""
-	c.macro2Duration = 1
-	c.macro3 = ""
-	c.macro3Duration = 1
-
-	// Information
-	c.startTime = time.Time{}
-	c.CurrentAmount = 0
-	c.FoodCount = 0
-	c.foodStartTime = time.Time{}
-	c.PotionCount = 0
-	c.potionStartTime = time.Time{}
-}
-
+// Run provides the main logic to handle crafting
 func (c *Crafter) Run() tea.Cmd {
 	return func() tea.Msg {
 		go func() {
 			for c.running {
 				// Main crafting loop
 				for !c.paused {
-					select {
-					case <-c.StopCrafterContext.Done():
-						if utils.Logger != nil {
-							utils.Logger.Println("Stopping crafter context")
-						}
-
-						c.StopCrafterCancelFunc()
-						return
-					default:
-						if utils.Logger != nil {
-							utils.Logger.Printf("Starting craft %v / %v\n", c.CurrentAmount, c.amount)
-						}
-
-						// Get the start crafting time
-						if c.startTime.IsZero() {
-							c.startTime = time.Now()
-						}
-
-						c.startCraft()
-
-						if c.food != "" {
-							c.checkFood()
-						}
-
-						if c.potion != "" {
-							c.checkPotion()
-						}
-
-						// Activate macro 1
-						cobra.CheckErr(robotgo.KeyTap(c.macro1))
-						time.Sleep(KeyDelay)
-						time.Sleep(c.macro1Duration)
-
-						if c.macro2 != "" {
-							// Activate macro 2
-							cobra.CheckErr(robotgo.KeyTap(c.macro2))
-							time.Sleep(KeyDelay)
-							time.Sleep(c.macro2Duration)
-						}
-
-						if c.macro3 != "" {
-							// Activate macro 3
-							cobra.CheckErr(robotgo.KeyTap(c.macro3))
-							time.Sleep(KeyDelay)
-							time.Sleep(c.macro3Duration)
-						}
-
-						c.CurrentAmount++
-						if c.CurrentAmount >= c.amount {
-							c.ExitProgram()
-						}
-
-						if utils.Logger != nil {
-							utils.Logger.Printf("Finishing craft %v / %v\n", c.CurrentAmount, c.amount)
-						}
-
-						time.Sleep(EndCraftDelay)
+					if utils.Logger != nil {
+						utils.Logger.Printf("Starting craft %v / %v\n", c.CurrentAmount+1, c.amount)
 					}
+
+					c.Status = utils.Crafting
+
+					// Get the start crafting time
+					if c.startTime.IsZero() {
+						time.Sleep(StartCraftDelay)
+						c.startTime = time.Now()
+					}
+
+					c.startCraft()
+
+					if c.food != "" {
+						c.checkFood()
+					}
+
+					if c.potion != "" {
+						c.checkPotion()
+					}
+
+					// Activate macro 1
+					if utils.Logger != nil {
+						utils.Logger.Println("Activating macro 1")
+					}
+					cobra.CheckErr(robotgo.KeyTap(c.macro1))
+					time.Sleep(KeyDelay)
+					time.Sleep(c.macro1Duration)
+
+					if c.macro2 != "" {
+						// Activate macro 2
+						if utils.Logger != nil {
+							utils.Logger.Println("Activating macro 2")
+						}
+						cobra.CheckErr(robotgo.KeyTap(c.macro2))
+						time.Sleep(KeyDelay)
+						time.Sleep(c.macro2Duration)
+					}
+
+					if c.macro3 != "" {
+						// Activate macro 3
+						if utils.Logger != nil {
+							utils.Logger.Println("Activating macro 3")
+						}
+						cobra.CheckErr(robotgo.KeyTap(c.macro3))
+						time.Sleep(KeyDelay)
+						time.Sleep(c.macro3Duration)
+					}
+
+					c.CurrentAmount++
+
+					if utils.Logger != nil {
+						utils.Logger.Printf("Finishing craft %v / %v\n", c.CurrentAmount, c.amount)
+					}
+
+					if c.CurrentAmount >= c.amount {
+						c.ExitProgram()
+					}
+
+					time.Sleep(EndCraftDelay)
+				}
+
+				if c.paused && c.running {
+					c.Status = utils.Paused
 				}
 
 				time.Sleep(PauseDelay)
 			}
+
+			if utils.Logger != nil {
+				utils.Logger.Println("Setting Status to \"Stopped\"")
+			}
+
+			c.Status = utils.Stopped
 		}()
 
 		return nil
@@ -212,18 +201,22 @@ func (c *Crafter) Run() tea.Cmd {
 func (c *Crafter) StartProgram() {
 	if utils.Logger != nil {
 		utils.Logger.Println("Starting XIVCrafter")
+		utils.Logger.Println("Setting Status to \"Crafting\"")
 	}
 
 	c.paused = false
+	c.Status = utils.Crafting
 }
 
 // StopProgram sets the paused value to true
 func (c *Crafter) StopProgram() {
 	if utils.Logger != nil {
 		utils.Logger.Println("Pausing XIVCrafter")
+		utils.Logger.Println("Setting Status to \"Pausing\"")
 	}
 
 	c.paused = true
+	c.Status = utils.Pausing
 }
 
 // ExitProgram sets the running value to false and the paused value to true
@@ -231,13 +224,15 @@ func (c *Crafter) ExitProgram() {
 	c.exitOnce.Do(func() {
 		if utils.Logger != nil {
 			utils.Logger.Println("Exiting XIVCrafter")
+			utils.Logger.Println("Setting Status to \"Stopping\"")
+			utils.Logger.Println("Running the cancel functions for hooks")
 		}
-
-		c.StopCrafterCancelFunc()
-		c.StopHookCancelFunc()
 
 		c.running = false
 		c.paused = true
+		c.Status = utils.Stopping
+
+		c.StopHooksCancelFunc()
 	})
 }
 
@@ -321,6 +316,7 @@ func (c *Crafter) consumePotion() {
 	c.startCraft()
 }
 
+// RunHooks provides the main logic to handle keyboard hook events
 func (c *Crafter) RunHooks() tea.Cmd {
 	return func() tea.Msg {
 		go func() {
@@ -342,7 +338,6 @@ func (c *Crafter) RunHooks() tea.Cmd {
 				}
 
 				c.ExitProgram()
-				hook.End()
 			})
 
 			s := hook.Start()
@@ -353,18 +348,19 @@ func (c *Crafter) RunHooks() tea.Cmd {
 
 			for {
 				select {
-				case <-c.StopHookContext.Done():
+				case <-c.StopHooksContext.Done():
+					if utils.Logger != nil {
+						utils.Logger.Println("Hook context stopped")
+					}
+
+					hook.End()
 					return
-				default:
-					<-hook.Process(s)
+				case <-hook.Process(s):
+					// Do nothing
 				}
 			}
 		}()
 
 		return nil
 	}
-}
-
-func (c *Crafter) GetCurrentAmount() int {
-	return c.CurrentAmount
 }
