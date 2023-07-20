@@ -8,9 +8,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
-
-type backFromProgress struct{}
 
 type Input struct {
 	// Get user input for the amount to craft
@@ -57,13 +56,15 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 
+				if utils.Logger != nil {
+					utils.Logger.Printf("Amount: %v\n", m.amount)
+				}
+
 				m.msg = ""
 				Models[Amount] = m
 				return Models[Crafter].Update(initialize{})
 			}
 		}
-	case backFromProgress:
-		return m, nil
 	}
 
 	var cmd tea.Cmd

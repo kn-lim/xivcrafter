@@ -40,6 +40,7 @@ Only needed if you want different settings than `.xivcrafter.json`.
       --cancel string        cancel hotkey
   -c, --config string        config file (default is $HOME/.xivcrafter.json)
       --confirm string       confirm hotkey
+      --debug                enable debugging (debug log location is $HOME/.xivcrafter-debug.log)
   -h, --help                 help for xivcrafter
       --start-pause string   start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey

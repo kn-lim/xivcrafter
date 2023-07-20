@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 type List struct {
@@ -28,6 +29,10 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Select recipe to craft
 		case "enter":
+			if utils.Logger != nil {
+				utils.Logger.Printf("Selected Recipe Name: %s\n", m.Recipes.SelectedItem().(Item).Name)
+			}
+
 			Models[Recipes] = m
 			return Models[Amount].Update(nil)
 		}
@@ -51,8 +56,8 @@ func (m List) View() string {
 	var detailsView string
 	var detailsStyle string
 	if item != nil {
-		selectedItem := item.(Recipe)
-		detailsView = lipgloss.NewStyle().Render(selectedItem.PrintRecipeDetails())
+		selectedItem := item.(Item)
+		detailsView = lipgloss.NewStyle().Render(selectedItem.PrintItemDetails())
 		detailsView = listStyle.Padding(0, 2).Render(detailsView)
 
 		detailsStyle = lipgloss.NewStyle().

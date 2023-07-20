@@ -7,6 +7,8 @@ import (
 
 const (
 	Recipes = iota
+	Add
+	Edit
 	Amount
 	Crafter
 )
@@ -24,5 +26,5 @@ var (
 	Quaternary = lipgloss.Color("#FC5185")
 
 	// Slice to manage models
-	Models = []tea.Model{nil, nil, nil}
+	Models = []tea.Model{nil, nil, nil, nil, nil}
 )

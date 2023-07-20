@@ -9,7 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/crafter"
-	hook "github.com/robotn/gohook"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 const (
@@ -83,7 +83,13 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Go back to amount input model
 		case "esc", "b":
-			return Models[Amount].Update(backFromProgress{})
+			// Exits currently running crafter
+			m.Crafter.ExitProgram()
+
+			// Reset crafter pointer to zero-valued Crafter struct
+			m.Crafter = &crafter.Crafter{}
+
+			return Models[Amount].Update(nil)
 		}
 
 	case tea.WindowSizeMsg:
@@ -99,9 +105,9 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		cmd := m.Progress.SetPercent(float64(m.Crafter.CurrentAmount) / float64(Models[Amount].(Input).amount))
+		cmd := m.Progress.SetPercent(float64(m.Crafter.GetCurrentAmount()) / float64(Models[Amount].(Input).amount))
 
-		return m, cmd
+		return m, tea.Batch(tickCmd(), cmd)
 
 	case progress.FrameMsg:
 		progressModel, cmd := m.Progress.Update(msg)
@@ -109,10 +115,16 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case initialize:
-		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Recipe)
+		if utils.Logger != nil {
+			utils.Logger.Println("Initializing progress bar")
+		}
+
+		m.Crafter = crafter.NewCrafter(m.StartPause, m.Stop, m.Confirm, m.Cancel)
+
+		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Item)
 		m.Crafter.SetRecipe(Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
 
-		return m, tea.Batch(tickCmd(), m.startHooks())
+		return m, tea.Batch(tickCmd(), m.Crafter.RunHooks(), m.Crafter.Run())
 
 	default:
 		return m, nil
@@ -122,7 +134,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Progress) View() string {
-	recipeView := lipgloss.NewStyle().Width(30).Render(Models[Recipes].(List).Recipes.SelectedItem().(Recipe).PrintRecipeDetails())
+	recipeView := lipgloss.NewStyle().Width(30).Render(Models[Recipes].(List).Recipes.SelectedItem().(Item).PrintItemDetails())
 	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(m.StartPause), lipgloss.NewStyle().Bold(true).Render(m.Stop))
 	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
 	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Bold(true).Render("\nAmount to Craft"), Models[Amount].(Input).amount)
@@ -136,34 +148,4 @@ func tickCmd() tea.Cmd {
 	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
-}
-
-func (m Progress) startHooks() tea.Cmd {
-	return func() tea.Msg {
-		go func() {
-			hook.Register(hook.KeyDown, []string{m.StartPause}, func(e hook.Event) {
-				if m.Crafter.Paused {
-					m.Status = Crafting
-					m.Crafter.StartProgram()
-					m.Update(nil)
-				} else {
-					m.Status = Paused
-					m.Crafter.StopProgram()
-					m.Update(nil)
-				}
-			})
-
-			hook.Register(hook.KeyDown, []string{m.Stop}, func(e hook.Event) {
-				m.Status = Stopping
-				m.Crafter.ExitProgram()
-				m.Update(nil)
-				hook.End()
-			})
-
-			s := hook.Start()
-			<-hook.Process(s)
-		}()
-
-		return nil
-	}
 }
