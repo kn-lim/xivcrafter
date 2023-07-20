@@ -46,10 +46,6 @@ Only needed if you want different settings than `.xivcrafter.json`.
       --stop string          stop xivcrafter hotkey
 ```
 
-## Accepted Keys
-
-https://github.com/vcaesar/keycode/blob/main/keycode.go
-
 ## Prepping the Game
 
 In order for XIVCrafter to work properly:
@@ -59,7 +55,9 @@ In order for XIVCrafter to work properly:
 2. **Open the Crafting Log and select the item you want to craft with XIVCrafter.**
 3. **To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.**
 
-Once that is done, press the _Start/Pause XIVCrafter_ hotkey to start the tool.
+Once that is done, press the **Start/Pause XIVCrafter** hotkey to start XIVCrafter.
+
+For more information, go to the [Prepping FFXIV](https://github.com/kn-lim/xivcrafter/wiki/User-Guide#prepping-ffxiv) section of the Wiki.
 
 ## Config
 
@@ -118,6 +116,10 @@ Config File:
 
 - The `start_pause` and `stop` XIVCrafter hotkeys **must** be a different key than the FFXIV macros.
 
+## Accepted Keys
+
+https://github.com/kn-lim/xivcrafter/wiki/User-Guide#accepted-keys
+
 # FAQ
 
 <details>
@@ -170,3 +172,5 @@ Config File:
 <p>Usually, latency can prevent the keys from being inputted properly to the client. If this happens, cancel the craft manually in-game. Get back into the <a href="#prepping-the-game">initial starting state</a> and wait till XIVCrafter completes the "craft". Make sure to stop any existing crafting macro before XIVCrafter starts a new craft. It should continue without having to reapply food and potion buffs.</p>
 <p>You may need to cancel the current active crafting macro in order to get back to the initial starting state. To do that, you will need to interrupt that macro. You can do that by having this as a macro: <code>/e end</code>. By activating that one line macro, it should interrupt any currently running crafting macro to allow you to get back into the initial starting state. </p>
 </details>
+
+<br>For more information, go to the [Wiki](https://github.com/kn-lim/xivcrafter/wiki/).
