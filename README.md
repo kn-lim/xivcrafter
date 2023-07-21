@@ -23,6 +23,8 @@ Tested on Windows and Keyboard only.
 
 Download the Windows binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.
 
+For detailed information, go to the [Wiki](https://github.com/kn-lim/xivcrafter/wiki/).
+
 ## How to Run
 
 Run:
@@ -54,10 +56,9 @@ In order for XIVCrafter to work properly:
     - This is important to make sure you don't accidentally target something else and thus being unable to craft.
 2. **Open the Crafting Log and select the item you want to craft with XIVCrafter.**
 3. **To ensure your character is in the correct state, start and then cancel the craft without any additional inputs.**
+    - Press the **Synthesize** button in the Crafting Log window. When the Synthesize window appears, press the **Quit** button.
 
 Once that is done, press the **Start/Pause XIVCrafter** hotkey to start XIVCrafter.
-
-For more information, go to the [Prepping FFXIV](https://github.com/kn-lim/xivcrafter/wiki/User-Guide#prepping-ffxiv) section of the Wiki.
 
 ## Config
 
@@ -112,9 +113,7 @@ Config File:
     - Leave as `""` if no third crafting macro is needed
   - `macro3_duration`: Duration the **third crafting macro** (seconds)
 
-### Notes
-
-- The `start_pause` and `stop` XIVCrafter hotkeys **must** be a different key than the FFXIV macros.
+For more information on filling out the config file, go to the [Config](https://github.com/kn-lim/xivcrafter/wiki/User-Guide#config) section of the User Guide.
 
 ## Accepted Keys
 
