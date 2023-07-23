@@ -43,15 +43,18 @@ type Crafter struct {
 	potionStartTime time.Time
 
 	// Helpers
-	running             bool
-	paused              bool
-	exitOnce            sync.Once
-	StopHooksContext    context.Context
-	StopHooksCancelFunc context.CancelFunc
+	running               bool
+	paused                bool
+	exitOnce              sync.Once
+	StopCrafterContext    context.Context
+	StopCrafterCancelFunc context.CancelFunc
+	StopHooksContext      context.Context
+	StopHooksCancelFunc   context.CancelFunc
 }
 
 // NewCrafter returns a pointer to a Crafter struct
 func NewCrafter(startPause string, stop string, confirm string, cancel string) *Crafter {
+	crafterCtx, crafterCancelFunc := context.WithCancel(context.Background())
 	hookCtx, hookCancelFunc := context.WithCancel(context.Background())
 
 	return &Crafter{
@@ -84,10 +87,12 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 		potionStartTime: time.Time{},
 
 		// Helpers
-		running:             true,
-		paused:              true,
-		StopHooksContext:    hookCtx,
-		StopHooksCancelFunc: hookCancelFunc,
+		running:               true,
+		paused:                true,
+		StopCrafterContext:    crafterCtx,
+		StopCrafterCancelFunc: crafterCancelFunc,
+		StopHooksContext:      hookCtx,
+		StopHooksCancelFunc:   hookCancelFunc,
 	}
 }
 
@@ -114,79 +119,134 @@ func (c *Crafter) Run() tea.Cmd {
 	return func() tea.Msg {
 		go func() {
 			for c.running {
-				// Main crafting loop
-				for !c.paused {
+				select {
+				case <-c.StopCrafterContext.Done():
+					// Exit
 					if utils.Logger != nil {
-						utils.Logger.Printf("Starting craft %v / %v\n", c.CurrentAmount+1, c.amount)
+						utils.Logger.Println("Crafter context stopped")
+						utils.Logger.Println("Setting Status to \"Stopped\"")
 					}
-
-					c.Status = utils.Crafting
-
-					// Get the start crafting time
-					if c.startTime.IsZero() {
-						time.Sleep(StartCraftDelay)
-						c.startTime = time.Now()
-					}
-
-					c.startCraft()
-
-					if c.food != "" {
-						c.checkFood()
-					}
-
-					if c.potion != "" {
-						c.checkPotion()
-					}
-
-					// Activate macro 1
-					if utils.Logger != nil {
-						utils.Logger.Println("Activating macro 1")
-					}
-					cobra.CheckErr(robotgo.KeyTap(c.macro1))
-					time.Sleep(KeyDelay)
-					time.Sleep(c.macro1Duration)
-
-					if c.macro2 != "" {
-						// Activate macro 2
+					c.Status = utils.Stopped
+					return
+				default:
+					// Main crafting loop
+					for !c.paused {
 						if utils.Logger != nil {
-							utils.Logger.Println("Activating macro 2")
+							utils.Logger.Printf("Starting craft %v / %v\n", c.CurrentAmount+1, c.amount)
 						}
-						cobra.CheckErr(robotgo.KeyTap(c.macro2))
-						time.Sleep(KeyDelay)
-						time.Sleep(c.macro2Duration)
-					}
 
-					if c.macro3 != "" {
-						// Activate macro 3
+						c.Status = utils.Crafting
+
+						// Get the start crafting time
+						if c.startTime.IsZero() {
+							time.Sleep(PauseDelay)
+							c.startTime = time.Now()
+						}
+
+						c.startCraft()
+
+						select {
+						case <-c.StopCrafterContext.Done():
+							// Exit
+							if utils.Logger != nil {
+								utils.Logger.Println("Crafter context stopped")
+								utils.Logger.Println("Setting Status to \"Stopped\"")
+							}
+							c.Status = utils.Stopped
+							return
+						default:
+							if c.food != "" {
+								c.checkFood()
+							}
+
+							if c.potion != "" {
+								c.checkPotion()
+							}
+						}
+
+						select {
+						case <-c.StopCrafterContext.Done():
+							// Exit
+							if utils.Logger != nil {
+								utils.Logger.Println("Crafter context stopped")
+								utils.Logger.Println("Setting Status to \"Stopped\"")
+							}
+							c.Status = utils.Stopped
+							return
+						default:
+							// Activate macro 1
+							if utils.Logger != nil {
+								utils.Logger.Println("Activating macro 1")
+							}
+							cobra.CheckErr(robotgo.KeyTap(c.macro1))
+							time.Sleep(KeyDelay)
+							time.Sleep(c.macro1Duration)
+						}
+
+						if c.macro2 != "" {
+							select {
+							case <-c.StopCrafterContext.Done():
+								// Exit
+								if utils.Logger != nil {
+									utils.Logger.Println("Crafter context stopped")
+									utils.Logger.Println("Setting Status to \"Stopped\"")
+								}
+								c.Status = utils.Stopped
+								return
+							default:
+								// Activate macro 2
+								if utils.Logger != nil {
+									utils.Logger.Println("Activating macro 2")
+								}
+								cobra.CheckErr(robotgo.KeyTap(c.macro2))
+								time.Sleep(KeyDelay)
+								time.Sleep(c.macro2Duration)
+							}
+						}
+
+						if c.macro3 != "" {
+							select {
+							case <-c.StopCrafterContext.Done():
+								// Exit
+								if utils.Logger != nil {
+									utils.Logger.Println("Crafter context stopped")
+									utils.Logger.Println("Setting Status to \"Stopped\"")
+								}
+								c.Status = utils.Stopped
+								return
+							default:
+								// Activate macro 3
+								if utils.Logger != nil {
+									utils.Logger.Println("Activating macro 3")
+								}
+								cobra.CheckErr(robotgo.KeyTap(c.macro3))
+								time.Sleep(KeyDelay)
+								time.Sleep(c.macro3Duration)
+							}
+						}
+
+						c.CurrentAmount++
+
 						if utils.Logger != nil {
-							utils.Logger.Println("Activating macro 3")
+							utils.Logger.Printf("Finishing craft %v / %v\n", c.CurrentAmount, c.amount)
 						}
-						cobra.CheckErr(robotgo.KeyTap(c.macro3))
-						time.Sleep(KeyDelay)
-						time.Sleep(c.macro3Duration)
+
+						if c.CurrentAmount >= c.amount {
+							c.ExitProgram()
+						}
+
+						time.Sleep(EndCraftDelay)
 					}
-
-					c.CurrentAmount++
-
-					if utils.Logger != nil {
-						utils.Logger.Printf("Finishing craft %v / %v\n", c.CurrentAmount, c.amount)
-					}
-
-					if c.CurrentAmount >= c.amount {
-						c.ExitProgram()
-					}
-
-					time.Sleep(EndCraftDelay)
 				}
 
-				if c.paused && c.running {
+				if c.paused && c.running && !c.startTime.IsZero() {
 					c.Status = utils.Paused
 				}
 
 				time.Sleep(PauseDelay)
 			}
 
-			if utils.Logger != nil {
+			if utils.Logger != nil && c.CurrentAmount < c.amount {
 				utils.Logger.Println("Setting Status to \"Stopped\"")
 			}
 
@@ -225,13 +285,14 @@ func (c *Crafter) ExitProgram() {
 		if utils.Logger != nil {
 			utils.Logger.Println("Exiting XIVCrafter")
 			utils.Logger.Println("Setting Status to \"Stopping\"")
-			utils.Logger.Println("Running the cancel functions for hooks")
+			utils.Logger.Println("Running the cancel functions for crafter and hooks")
 		}
 
 		c.running = false
 		c.paused = true
 		c.Status = utils.Stopping
 
+		c.StopCrafterCancelFunc()
 		c.StopHooksCancelFunc()
 	})
 }
