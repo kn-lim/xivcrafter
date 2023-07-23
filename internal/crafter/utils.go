@@ -4,7 +4,7 @@ import "time"
 
 var (
 	// XIVCrafter delays
-	PauseDelay = 3 * time.Second
+	PauseDelay = 1 * time.Second
 
 	// FFXIV timings
 	PotionDuration = 15 * time.Minute
