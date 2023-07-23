@@ -117,7 +117,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Return final crafting report
-		// TODO
+		crafter.PrintResults()
 	},
 }
 

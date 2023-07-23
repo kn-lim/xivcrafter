@@ -103,7 +103,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Crafter = crafter.NewCrafter(m.StartPause, m.Stop, m.Confirm, m.Cancel)
 
 		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Item)
-		m.Crafter.SetRecipe(Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
+		m.Crafter.SetRecipe(recipe.Name, Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
 
 		return m, tea.Batch(tickCmd(), m.Crafter.RunHooks(), m.Crafter.Run())
 

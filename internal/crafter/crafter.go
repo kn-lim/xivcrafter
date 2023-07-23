@@ -14,6 +14,7 @@ import (
 
 type Crafter struct {
 	// XIVCrafter settings
+	name       string
 	amount     int
 	startPause string
 	stop       string
@@ -36,6 +37,7 @@ type Crafter struct {
 	// Information
 	Status          int
 	startTime       time.Time
+	endTime         time.Time
 	CurrentAmount   int
 	FoodCount       int
 	foodStartTime   time.Time
@@ -59,6 +61,7 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 
 	return &Crafter{
 		// XIVCrafter settings
+		name:       "",
 		amount:     1,
 		startPause: startPause,
 		stop:       stop,
@@ -80,6 +83,7 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 		// Information
 		Status:          utils.Waiting,
 		startTime:       time.Time{},
+		endTime:         time.Time{},
 		CurrentAmount:   0,
 		FoodCount:       0,
 		foodStartTime:   time.Time{},
@@ -96,8 +100,9 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 	}
 }
 
-func (c *Crafter) SetRecipe(amount int, food string, foodDuration int, potion string, macro1 string, macro1Duration int, macro2 string, macro2Duration int, macro3 string, macro3Duration int) {
+func (c *Crafter) SetRecipe(name string, amount int, food string, foodDuration int, potion string, macro1 string, macro1Duration int, macro2 string, macro2Duration int, macro3 string, macro3Duration int) {
 	// XIVCrafter settings
+	c.name = name
 	c.amount = amount
 
 	// Consumables
@@ -286,11 +291,14 @@ func (c *Crafter) ExitProgram() {
 			utils.Logger.Println("Exiting XIVCrafter")
 			utils.Logger.Println("Setting Status to \"Stopping\"")
 			utils.Logger.Println("Running the cancel functions for crafter and hooks")
+			utils.Logger.Printf("Adding crafting results of %s\n", c.name)
 		}
 
 		c.running = false
 		c.paused = true
 		c.Status = utils.Stopping
+
+		Results = append(Results, *NewResult(c.name, c.startTime, time.Now(), c.CurrentAmount, c.FoodCount, c.PotionCount))
 
 		c.StopCrafterCancelFunc()
 		c.StopHooksCancelFunc()
@@ -335,7 +343,7 @@ func (c *Crafter) checkFood() {
 // consumeFood renews the food buff
 func (c *Crafter) consumeFood() {
 	if utils.Logger != nil {
-		utils.Logger.Println("Consuming food")
+		utils.Logger.Printf("Consuming food %v\n", c.FoodCount+1)
 	}
 
 	c.stopCraft()
@@ -363,7 +371,7 @@ func (c *Crafter) checkPotion() {
 // consumePotion renews the potion buff
 func (c *Crafter) consumePotion() {
 	if utils.Logger != nil {
-		utils.Logger.Println("Consuming potion")
+		utils.Logger.Printf("Consuming potion %v\n", c.PotionCount+1)
 	}
 
 	c.stopCraft()
