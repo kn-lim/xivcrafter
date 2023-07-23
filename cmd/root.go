@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
@@ -72,14 +73,14 @@ var rootCmd = &cobra.Command{
 			for _, recipe := range recipes {
 				items = append(items, tui.Item{
 					Name:           recipe.Name,
-					Food:           recipe.Food,
+					Food:           strings.ToLower(recipe.Food),
 					FoodDuration:   recipe.FoodDuration,
-					Potion:         recipe.Potion,
-					Macro1:         recipe.Macro1,
+					Potion:         strings.ToLower(recipe.Potion),
+					Macro1:         strings.ToLower(recipe.Macro1),
 					Macro1Duration: recipe.Macro1Duration,
-					Macro2:         recipe.Macro2,
+					Macro2:         strings.ToLower(recipe.Macro2),
 					Macro2Duration: recipe.Macro2Duration,
-					Macro3:         recipe.Macro3,
+					Macro3:         strings.ToLower(recipe.Macro3),
 					Macro3Duration: recipe.Macro3Duration,
 				})
 			}
