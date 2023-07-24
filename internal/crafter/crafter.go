@@ -245,6 +245,10 @@ func (c *Crafter) Run() tea.Cmd {
 				}
 
 				if c.paused && c.running && !c.startTime.IsZero() {
+					if utils.Logger != nil && c.CurrentAmount < c.amount {
+						utils.Logger.Println("Setting Status to \"Paused\"")
+					}
+
 					c.Status = utils.Paused
 				}
 

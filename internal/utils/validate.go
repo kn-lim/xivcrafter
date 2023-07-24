@@ -21,7 +21,7 @@ func Validate(startPause string, stop string, confirm string, cancel string, rec
 	}
 
 	// Check if all hotkeys are unique
-	if !checkUniqueKeys(startPause, stop, confirm, cancel, recipe.Food, recipe.Potion, recipe.Macro1, recipe.Macro2, recipe.Macro3) {
+	if !CheckUniqueKeys(startPause, stop, confirm, cancel, recipe.Food, recipe.Potion, recipe.Macro1, recipe.Macro2, recipe.Macro3) {
 		return errors.New("hotkeys are not unique")
 	}
 
@@ -35,7 +35,7 @@ func Validate(startPause string, stop string, confirm string, cancel string, rec
 
 	// Check if each hotkey is a valid key
 	for name, key := range keys {
-		if !checkValidKey(key) {
+		if !CheckValidKey(key) {
 			return fmt.Errorf("%s is not a valid key", name)
 		}
 	}
@@ -43,8 +43,8 @@ func Validate(startPause string, stop string, confirm string, cancel string, rec
 	return nil
 }
 
-// checkUniqueKeys checks to see if all hotkeys are unique
-func checkUniqueKeys(keys ...string) bool {
+// CheckUniqueKeys checks to see if all hotkeys are unique
+func CheckUniqueKeys(keys ...string) bool {
 	keyMap := make(map[string]bool)
 
 	for _, key := range keys {
@@ -64,8 +64,8 @@ func checkUniqueKeys(keys ...string) bool {
 	return true
 }
 
-// checkValidKey checks to see if the given string is a valid hotkey for XIVCrafter
-func checkValidKey(key string) bool {
+// CheckValidKey checks to see if the given string is a valid hotkey for XIVCrafter
+func CheckValidKey(key string) bool {
 	alphaNumericKeys := []string{
 		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",

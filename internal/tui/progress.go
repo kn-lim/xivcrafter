@@ -131,3 +131,17 @@ func tickCmd() tea.Cmd {
 		return tickMsg(t)
 	})
 }
+
+func NewProgress(startPause string, stop string, confirm string, cancel string) *Progress {
+	model := &Progress{
+		Crafter:    &crafter.Crafter{},
+		Progress:   progress.New(progress.WithGradient(string(ProgressStart), string(ProgressEnd))),
+		Help:       help.New(),
+		StartPause: startPause,
+		Stop:       stop,
+		Confirm:    confirm,
+		Cancel:     cancel,
+	}
+
+	return model
+}

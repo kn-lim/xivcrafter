@@ -7,10 +7,14 @@ import (
 
 const (
 	Recipes = iota
-	Add
-	Edit
+	NewRecipe
+	EditRecipe
 	Amount
 	Crafter
+)
+
+const (
+	MaxNameLength = 25
 )
 
 var (

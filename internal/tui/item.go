@@ -4,27 +4,26 @@ import (
 	"strconv"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 type Item struct {
 	// XIVCrafter Settings
-	Name string `json:"name"`
+	Name string
 
 	// Consumables
-	Food         string `json:"food"`
-	FoodDuration int    `json:"food_duration"`
-	Potion       string `json:"potion"`
+	Food         string
+	FoodDuration int
+	Potion       string
 
-	// In-Game Hotkeys
-	Macro1         string `json:"macro1"`
-	Macro1Duration int    `json:"macro1_duration"`
-	Macro2         string `json:"macro2"`
-	Macro2Duration int    `json:"macro2_duration"`
-	Macro3         string `json:"macro3"`
-	Macro3Duration int    `json:"macro3_duration"`
+	// In-game hotkeys
+	Macro1         string
+	Macro1Duration int
+	Macro2         string
+	Macro2Duration int
+	Macro3         string
+	Macro3Duration int
 }
-
-// Implement Item interface
 
 func (i Item) FilterValue() string { return i.Name }
 func (i Item) Title() string       { return i.Name }
@@ -96,4 +95,25 @@ func (i Item) PrintItemDetails() string {
 	}
 
 	return details
+}
+
+func convertItemsToRecipes(items []Item) []utils.Recipe {
+	recipes := make([]utils.Recipe, len(items))
+
+	for i, item := range items {
+		recipes[i] = utils.Recipe{
+			Name:           item.Name,
+			Food:           item.Food,
+			FoodDuration:   item.FoodDuration,
+			Potion:         item.Potion,
+			Macro1:         item.Macro1,
+			Macro1Duration: item.Macro1Duration,
+			Macro2:         item.Macro2,
+			Macro2Duration: item.Macro2Duration,
+			Macro3:         item.Macro3,
+			Macro3Duration: item.Macro3Duration,
+		}
+	}
+
+	return recipes
 }

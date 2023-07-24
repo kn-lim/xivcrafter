@@ -6,10 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/progress"
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kn-lim/xivcrafter/internal/crafter"
 	"github.com/kn-lim/xivcrafter/internal/tui"
@@ -39,7 +36,10 @@ var rootCmd = &cobra.Command{
 			utils.Logger = log.New(f, "", log.LstdFlags)
 		}
 
-		// Get Settings
+		// Get config path
+		utils.ConfigPath = viper.ConfigFileUsed()
+
+		// Get settings
 		startPause := viper.GetString("start_pause")
 		stop := viper.GetString("stop")
 		confirm := viper.GetString("confirm")
@@ -84,35 +84,25 @@ var rootCmd = &cobra.Command{
 					Macro3Duration: recipe.Macro3Duration,
 				})
 			}
-		}
+		} // else will return no items, as this will indicate a new config
 
 		// Setup List model
-		m := tui.List{Recipes: list.New(items, tui.NewItemDelegate(), 0, 0)}
-		m.Recipes.Title = "XIVCrafter"
-		m.Recipes.Styles.Title = m.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(tui.Primary).Foreground(tui.Tertiary)
+		tui.Models[tui.Recipes] = tui.NewList(startPause, stop, confirm, cancel, items)
+
+		// Setup Add model
+		tui.Models[tui.NewRecipe] = tui.NewAdd()
+
+		// Setup Edit model
+		// tui.Models[tui.EditRecipe] = tui.NewEdit()
 
 		// Setup Input model
-		inputModel := tui.Input{
-			Input: textinput.New(),
-			Help:  help.New(),
-		}
-		inputModel.Input.Focus()
-		tui.Models[tui.Amount] = inputModel
+		tui.Models[tui.Amount] = tui.NewInput()
 
 		// Setup Progress model
-		progressModel := tui.Progress{
-			Crafter:    &crafter.Crafter{},
-			Progress:   progress.New(progress.WithGradient(string(tui.ProgressStart), string(tui.ProgressEnd))),
-			Help:       help.New(),
-			StartPause: startPause,
-			Stop:       stop,
-			Confirm:    confirm,
-			Cancel:     cancel,
-		}
-		tui.Models[tui.Crafter] = progressModel
+		tui.Models[tui.Crafter] = tui.NewProgress(startPause, stop, confirm, cancel)
 
 		// Run UI
-		p := tea.NewProgram(m, tea.WithAltScreen())
+		p := tea.NewProgram(tui.Models[tui.Recipes], tea.WithAltScreen())
 		if _, err := p.Run(); err != nil {
 			cobra.CheckErr(err)
 		}

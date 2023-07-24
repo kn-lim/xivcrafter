@@ -11,8 +11,17 @@ type List struct {
 	// List to show recipes
 	Recipes list.Model
 
+	// XIVCrafter settings
+	StartPause string
+	Stop       string
+
+	// In-game hotkeys
+	Confirm string
+	Cancel  string
+
 	// Helpers
 	width int
+	msg   string
 }
 
 func (m List) Init() tea.Cmd {
@@ -35,12 +44,40 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			Models[Recipes] = m
 			return Models[Amount].Update(nil)
+
+		// Add new recipe
+		case "n":
+			Models[Recipes] = m
+			return Models[NewRecipe].Update(nil)
+
+		// Edit recipe
+		case "e":
+			return m, nil
+			// 	Models[Recipes] = m
+			// 	return Models[EditRecipe].Update(nil)
 		}
 
 	case tea.WindowSizeMsg:
 		h, v := listStyle.GetFrameSize()
 		m.Recipes.SetSize(msg.Width-h, msg.Height-v)
 		m.width = msg.Width
+
+	case Item:
+		if utils.Logger != nil {
+			utils.Logger.Println("Updating list of recipes")
+		}
+
+		m.Recipes.SetItems(append(m.Recipes.Items(), msg))
+
+		// Save to config
+		itemsList := m.Recipes.Items()
+		items := make([]Item, len(itemsList))
+		for i, listItem := range itemsList {
+			if item, ok := listItem.(Item); ok {
+				items[i] = item
+			}
+		}
+		utils.WriteToConfig(m.StartPause, m.Stop, m.Confirm, m.Cancel, convertItemsToRecipes(items))
 	}
 
 	var cmd tea.Cmd
@@ -75,4 +112,19 @@ func (m List) View() string {
 		lipgloss.NewStyle().Width(m.width/2).Render(recipeView),
 		detailsStyle,
 	)
+}
+
+func NewList(startPause string, stop string, confirm string, cancel string, items []list.Item) *List {
+	model := &List{
+		StartPause: startPause,
+		Stop:       stop,
+		Confirm:    confirm,
+		Cancel:     cancel,
+		Recipes:    list.New(items, NewItemDelegate(), 0, 0),
+	}
+
+	model.Recipes.Title = "XIVCrafter"
+	model.Recipes.Styles.Title = model.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(Primary).Foreground(Tertiary)
+
+	return model
 }

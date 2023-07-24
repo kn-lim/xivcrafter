@@ -83,3 +83,14 @@ func (m Input) View() string {
 
 	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Top, titleView, mainView, helpView)) + "\n"
 }
+
+func NewInput() *Input {
+	model := &Input{
+		Input: textinput.New(),
+		Help:  help.New(),
+	}
+
+	model.Input.Focus()
+
+	return model
+}

@@ -1,5 +1,14 @@
 package utils
 
+import (
+	"encoding/json"
+	"os"
+)
+
+var (
+	ConfigPath string
+)
+
 type Config struct {
 	// XIVCrafter Hotkeys
 	StartPause string `json:"start_pause"`
@@ -59,4 +68,40 @@ func NewRecipe() *Recipe {
 		Macro3:         "",
 		Macro3Duration: 1,
 	}
+}
+
+func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string, Recipes []Recipe) error {
+	config := Config{
+		StartPause,
+		Stop,
+		Confirm,
+		Cancel,
+		Recipes,
+	}
+
+	// Marshal recipe into JSON
+	data, err := json.MarshalIndent(config, "", "    ")
+	if err != nil {
+		if Logger != nil {
+			Logger.Println("Error parsing data to JSON")
+		}
+
+		return err
+	}
+
+	// Write JSON data to the file
+	err = os.WriteFile(ConfigPath, data, os.ModePerm)
+	if err != nil {
+		if Logger != nil {
+			Logger.Printf("Error writing JSON data to config %s", ConfigPath)
+		}
+
+		return err
+	}
+
+	if Logger != nil {
+		Logger.Printf("Done writing JSON data to config %s", ConfigPath)
+	}
+
+	return nil
 }

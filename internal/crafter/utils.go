@@ -11,6 +11,6 @@ var (
 
 	// Crafting delays
 	KeyDelay        = 500 * time.Millisecond
-	StartCraftDelay = 2 * time.Second
-	EndCraftDelay   = 3 * time.Second
+	StartCraftDelay = 1500 * time.Millisecond
+	EndCraftDelay   = 2500 * time.Millisecond
 )
