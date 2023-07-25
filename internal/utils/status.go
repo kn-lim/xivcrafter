@@ -15,12 +15,12 @@ const (
 var (
 	// Crafter Status Color Codes
 	Status = []string{
-		lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render("Waiting"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("10")).Render("Crafting"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Pausing"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("11")).Render("Paused"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopping"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Render("Stopped"),
-		lipgloss.NewStyle().Foreground(lipgloss.Color("10")).Render("Finished"),
+		lipgloss.NewStyle().Foreground(Gray).Render("Waiting"),
+		lipgloss.NewStyle().Foreground(Green).Render("Crafting"),
+		lipgloss.NewStyle().Foreground(Yellow).Render("Pausing"),
+		lipgloss.NewStyle().Foreground(Yellow).Render("Paused"),
+		lipgloss.NewStyle().Foreground(Red).Render("Stopping"),
+		lipgloss.NewStyle().Foreground(Red).Render("Stopped"),
+		lipgloss.NewStyle().Foreground(Green).Render("Finished"),
 	}
 )

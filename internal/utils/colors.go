@@ -9,7 +9,7 @@ var (
 
 	// Text Colors
 	Default = lipgloss.Color("#F5F5F5")
-	Grey    = lipgloss.Color("8")
+	Gray    = lipgloss.Color("8")
 	Red     = lipgloss.Color("9")
 	Green   = lipgloss.Color("10")
 	Yellow  = lipgloss.Color("11")
