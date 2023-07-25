@@ -89,11 +89,8 @@ var rootCmd = &cobra.Command{
 		// Setup List model
 		tui.Models[tui.Recipes] = tui.NewList(startPause, stop, confirm, cancel, items)
 
-		// Setup Add model
-		tui.Models[tui.NewRecipe] = tui.NewAdd()
-
-		// Setup Edit model
-		// tui.Models[tui.EditRecipe] = tui.NewEdit()
+		// Setup Update model
+		tui.Models[tui.UpdateRecipe] = tui.NewUpdate()
 
 		// Setup Input model
 		tui.Models[tui.Amount] = tui.NewInput()

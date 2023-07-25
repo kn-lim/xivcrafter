@@ -46,13 +46,13 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				var err error
 				m.amount, err = strconv.Atoi(m.Input.Value())
 				if err != nil {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Not a valid amount.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Not a valid amount.")
 					return m, nil
 				}
 
 				// Check if user input is greater than 1
 				if m.amount < 1 {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Requires an integer greater than 1.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Requires an integer greater than 1.")
 					return m, nil
 				}
 
@@ -77,11 +77,11 @@ func (m Input) View() string {
 		"Enter the Amount to Craft:\n\n%s",
 		m.Input.View(),
 	)
-	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(Quaternary).Render(m.msg) + "\n"
+	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(utils.Red).Render(m.msg) + "\n"
 	helpView := "\n\n" + m.Help.View(inputKeys)
 	mainView := lipgloss.JoinVertical(lipgloss.Left, inputView, msgView)
 
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Top, titleView, mainView, helpView)) + "\n"
+	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Top, titleView, "", mainView, helpView)) + "\n"
 }
 
 func NewInput() *Input {

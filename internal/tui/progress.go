@@ -123,7 +123,7 @@ func (m Progress) View() string {
 	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(utils.Status[m.Crafter.Status]), m.Progress.View(), craftingView)
 	helpView := "\n\n\n" + m.Help.View(progressKeys)
 
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, configView, amountView, "\n", progressView, helpView)) + "\n"
+	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, "", configView, amountView, "\n", progressView, helpView)) + "\n"
 }
 
 func tickCmd() tea.Cmd {

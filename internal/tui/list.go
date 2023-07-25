@@ -1,6 +1,9 @@
 package tui
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -48,13 +51,12 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Add new recipe
 		case "n":
 			Models[Recipes] = m
-			return Models[NewRecipe].Update(nil)
+			return Models[UpdateRecipe].Update(nil)
 
 		// Edit recipe
 		case "e":
-			return m, nil
-			// 	Models[Recipes] = m
-			// 	return Models[EditRecipe].Update(nil)
+			Models[Recipes] = m
+			return Models[UpdateRecipe].Update(m.Recipes.SelectedItem().(Item))
 		}
 
 	case tea.WindowSizeMsg:
@@ -67,7 +69,7 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			utils.Logger.Println("Updating list of recipes")
 		}
 
-		m.Recipes.SetItems(append(m.Recipes.Items(), msg))
+		m.Recipes.SetItems(updateItems(m.Recipes.Items(), msg))
 
 		// Save to config
 		itemsList := m.Recipes.Items()
@@ -78,6 +80,9 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		utils.WriteToConfig(m.StartPause, m.Stop, m.Confirm, m.Cancel, convertItemsToRecipes(items))
+
+		m.msg = lipgloss.NewStyle().Padding(0, 0, 0, 4).Bold(true).Foreground(utils.Green).Render(fmt.Sprintf("Saved %s recipe", msg.Name))
+		return m, m.Recipes.NewStatusMessage(m.msg)
 	}
 
 	var cmd tea.Cmd
@@ -99,7 +104,7 @@ func (m List) View() string {
 
 		detailsStyle = lipgloss.NewStyle().
 			Border(lipgloss.ThickBorder()).
-			BorderForeground(Secondary).
+			BorderForeground(utils.Secondary).
 			MarginTop(6).
 			Render(detailsView)
 	}
@@ -124,7 +129,8 @@ func NewList(startPause string, stop string, confirm string, cancel string, item
 	}
 
 	model.Recipes.Title = "XIVCrafter"
-	model.Recipes.Styles.Title = model.Recipes.Styles.Title.Padding(1, 3, 1).Bold(true).Background(Primary).Foreground(Tertiary)
+	model.Recipes.Styles.Title = titleStyle
+	model.Recipes.StatusMessageLifetime = 5 * time.Second
 
 	return model
 }

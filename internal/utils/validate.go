@@ -7,40 +7,66 @@ import (
 )
 
 // Validate checks and validates the config file for XIVCrafter
-func Validate(startPause string, stop string, confirm string, cancel string, recipe Recipe) error {
-	keys := map[string]string{
-		"start_pause": startPause,
-		"stop":        stop,
-		"confirm":     confirm,
-		"cancel":      cancel,
-		"food":        recipe.Food,
-		"potion":      recipe.Potion,
-		"macro1":      recipe.Macro1,
-		"macro2":      recipe.Macro2,
-		"macro3":      recipe.Macro3,
+func Validate(startPause string, stop string, confirm string, cancel string, recipes []Recipe) error {
+	// Get all keys
+	keys := []string{startPause, stop, confirm, cancel}
+	for _, recipe := range recipes {
+		keys = append(keys, recipe.Food, recipe.Potion, recipe.Macro1)
+
+		if recipe.Macro2 != "" {
+			keys = append(keys, recipe.Macro2)
+		}
+
+		if recipe.Macro3 != "" {
+			keys = append(keys, recipe.Macro3)
+		}
 	}
 
-	// Check if all hotkeys are unique
-	if !CheckUniqueKeys(startPause, stop, confirm, cancel, recipe.Food, recipe.Potion, recipe.Macro1, recipe.Macro2, recipe.Macro3) {
-		return errors.New("hotkeys are not unique")
+	// Check if all recipe names are unique
+	if !CheckUniqueNames(recipes) {
+		return errors.New("recipe names are not unique")
 	}
 
-	// Check if the food duration is valid
-	switch recipe.FoodDuration {
-	case 30, 40, 45:
-		// Do nothing
-	default:
-		return fmt.Errorf("%v is not valid. must be either 30, 40 or 45", recipe.FoodDuration)
+	for _, recipe := range recipes {
+		// Check if all hotkeys are unique per recipe
+		if !CheckUniqueKeys(startPause, stop, confirm, cancel, recipe.Food, recipe.Potion, recipe.Macro1, recipe.Macro2, recipe.Macro3) {
+			return errors.New("hotkeys are not unique")
+		}
+
+		// Check if the recipe food duration is valid
+		switch recipe.FoodDuration {
+		case 30, 40, 45:
+			// Do nothing
+		default:
+			return fmt.Errorf("%v is not valid. must be either 30, 40 or 45", recipe.FoodDuration)
+		}
 	}
 
 	// Check if each hotkey is a valid key
-	for name, key := range keys {
+	for _, key := range keys {
 		if !CheckValidKey(key) {
-			return fmt.Errorf("%s is not a valid key", name)
+			return fmt.Errorf("%s is not a valid key", key)
 		}
 	}
 
 	return nil
+}
+
+// CheckUniqueNames checks to see if the Name field are unique per Recipe
+func CheckUniqueNames(recipes []Recipe) bool {
+	names := make(map[string]bool)
+
+	for _, recipe := range recipes {
+		if _, exists := names[recipe.Name]; exists {
+			// Name is not unique
+			return false
+		}
+
+		names[recipe.Name] = true
+	}
+
+	// All recipe names are unique
+	return true
 }
 
 // CheckUniqueKeys checks to see if all hotkeys are unique
@@ -66,7 +92,7 @@ func CheckUniqueKeys(keys ...string) bool {
 
 // CheckValidKey checks to see if the given string is a valid hotkey for XIVCrafter
 func CheckValidKey(key string) bool {
-	alphaNumericKeys := []string{
+	alphanumericalKeys := []string{
 		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 	}
@@ -85,7 +111,7 @@ func CheckValidKey(key string) bool {
 	}
 	noKey := ""
 
-	allKeys := append(alphaNumericKeys, functionKeys...)
+	allKeys := append(alphanumericalKeys, functionKeys...)
 	allKeys = append(allKeys, specialKeys...)
 	allKeys = append(allKeys, modifierKeys...)
 	allKeys = append(allKeys, numberPadKeys...)

@@ -2,6 +2,7 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 func NewItemDelegate() list.ItemDelegate {
@@ -9,10 +10,10 @@ func NewItemDelegate() list.ItemDelegate {
 	d := list.NewDefaultDelegate()
 
 	// Change colors
-	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(Secondary).BorderLeftForeground(Secondary)
+	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(utils.Secondary).BorderLeftForeground(utils.Secondary)
 	d.Styles.SelectedDesc = d.Styles.SelectedTitle.Copy()
 
-	d.Styles.NormalTitle = d.Styles.NormalTitle.Foreground(Tertiary).BorderLeftForeground(Tertiary)
+	d.Styles.NormalTitle = d.Styles.NormalTitle.Foreground(utils.Default).BorderLeftForeground(utils.Default)
 	d.Styles.NormalDesc = d.Styles.NormalTitle.Copy()
 
 	return d

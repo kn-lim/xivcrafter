@@ -10,7 +10,7 @@ import (
 	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
-type Add struct {
+type Update struct {
 	// XIVCrafter Settings
 	NameModel textinput.Model
 	name      string
@@ -41,11 +41,11 @@ type Add struct {
 	msg string
 }
 
-func (m Add) Init() tea.Cmd {
+func (m Update) Init() tea.Cmd {
 	return nil
 }
 
-func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -54,7 +54,50 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		// Go back to recipes model
-		case "esc", "b":
+		case "esc":
+			return Models[Recipes].Update(nil)
+
+		// Go back to previous textinput model or back to list model
+		case "b":
+			if m.FoodModel.Focused() {
+				m.FoodModel.Blur()
+				m.NameModel.Focus()
+				return m, textinput.Blink
+			} else if m.FoodDurationModel.Focused() {
+				m.FoodDurationModel.Blur()
+				m.FoodModel.Focus()
+				return m, textinput.Blink
+			} else if m.PotionModel.Focused() {
+				m.PotionModel.Blur()
+				m.FoodDurationModel.Focus()
+				return m, textinput.Blink
+			} else if m.Macro1Model.Focused() {
+				m.Macro1Model.Blur()
+				m.PotionModel.Focus()
+				return m, textinput.Blink
+			} else if m.Macro1DurationModel.Focused() {
+				m.Macro1DurationModel.Blur()
+				m.Macro1Model.Focus()
+				return m, textinput.Blink
+			} else if m.Macro2Model.Focused() {
+				m.Macro2Model.Blur()
+				m.Macro1DurationModel.Focus()
+				return m, textinput.Blink
+			} else if m.Macro2DurationModel.Focused() {
+				m.Macro2DurationModel.Blur()
+				m.Macro2Model.Focus()
+				return m, textinput.Blink
+			} else if m.Macro3Model.Focused() {
+				m.Macro3Model.Blur()
+				m.Macro2DurationModel.Focus()
+				return m, textinput.Blink
+			} else if m.Macro3DurationModel.Focused() {
+				m.Macro3DurationModel.Blur()
+				m.Macro3Model.Focus()
+				return m, textinput.Blink
+			}
+
+			// At Name textinput model, therefore, go back to List model
 			return Models[Recipes].Update(nil)
 
 		case "enter":
@@ -67,7 +110,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given name is valid
 				if value == "" {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Name must not be blank.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Name must not be blank.")
 					return m, nil
 				}
 
@@ -86,7 +129,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given food key is valid
 				if !utils.CheckValidKey(value) {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Food is not a valid key.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Food is not a valid key.")
 					return m, nil
 				}
 
@@ -113,7 +156,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.PotionModel.Focus()
 					return m, textinput.Blink
 				default:
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Food Duration must be either 30, 40 or 45")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Food Duration must be either 30, 40 or 45")
 					return m, nil
 				}
 			} else if m.PotionModel.Focused() {
@@ -125,7 +168,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given food key is valid
 				if !utils.CheckValidKey(value) {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Potion is not a valid key.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Potion is not a valid key.")
 					return m, nil
 				}
 
@@ -144,11 +187,11 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given macro 1 key is valid
 				if value == "" {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 1 must not be blank.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 1 must not be blank.")
 					return m, nil
 				}
 				if !utils.CheckValidKey(value) {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 1 is not a valid key.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 1 is not a valid key.")
 					return m, nil
 				}
 
@@ -168,7 +211,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Check if given macro 1 duration is valid
 				macro1Duration, err := strconv.Atoi(value)
 				if err != nil || macro1Duration < 1 {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 1 Duration is not a valid duration.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 1 Duration is not a valid duration.")
 					return m, nil
 				}
 
@@ -187,7 +230,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given macro 2 key is valid
 				if !utils.CheckValidKey(value) {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 2 is not a valid key.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 2 is not a valid key.")
 					return m, nil
 				}
 
@@ -207,7 +250,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Check if given macro 2 duration is valid
 				macro2Duration, err := strconv.Atoi(value)
 				if err != nil || macro2Duration < 1 {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 2 Duration is not a valid duration.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 2 Duration is not a valid duration.")
 					return m, nil
 				}
 
@@ -226,7 +269,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Check if given macro 3 key is valid
 				if !utils.CheckValidKey(value) {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 3 is not a valid key.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 3 is not a valid key.")
 					return m, nil
 				}
 
@@ -246,7 +289,7 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// Check if given macro 3 duration is valid
 				macro3Duration, err := strconv.Atoi(value)
 				if err != nil || macro3Duration < 1 {
-					m.msg = lipgloss.NewStyle().Foreground(Quaternary).Render("Macro 3 Duration is not a valid duration.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Macro 3 Duration is not a valid duration.")
 					return m, nil
 				}
 
@@ -276,6 +319,16 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return Models[Recipes].Update(recipe)
 			}
 		}
+
+	// Edit recipe
+	case Item:
+		if utils.Logger != nil {
+			utils.Logger.Printf("Editing recipe %s\n", msg.Name)
+		}
+
+		m.AddPlaceholders(msg)
+
+		return m, nil
 	}
 
 	var cmd tea.Cmd
@@ -303,10 +356,11 @@ func (m Add) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Add) View() string {
+func (m Update) View() string {
 	return mainStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Top,
-		lipgloss.JoinHorizontal(lipgloss.Left, titleView, lipgloss.NewStyle().Padding(1, 3).Bold(true).Render(m.msg)),
+		lipgloss.JoinHorizontal(lipgloss.Left, titleView, lipgloss.NewStyle().Padding(1, 0, 0, 4).Bold(true).Render(m.msg)),
+		"",
 		lipgloss.NewStyle().Bold(true).Render("Enter Recipe Settings:\n"),
 		m.NameModel.View(),
 		m.FoodModel.View(),
@@ -321,8 +375,8 @@ func (m Add) View() string {
 	))
 }
 
-func NewAdd() *Add {
-	model := &Add{
+func NewUpdate() *Update {
+	model := &Update{
 		NameModel:           textinput.New(),
 		FoodModel:           textinput.New(),
 		FoodDurationModel:   textinput.New(),
@@ -354,4 +408,17 @@ func NewAdd() *Add {
 
 	model.NameModel.Focus()
 	return model
+}
+
+func (m *Update) AddPlaceholders(item Item) {
+	m.NameModel.Placeholder = item.Name
+	m.FoodModel.Placeholder = item.Food
+	m.FoodDurationModel.Placeholder = strconv.Itoa(item.FoodDuration)
+	m.PotionModel.Placeholder = item.Potion
+	m.Macro1Model.Placeholder = item.Macro1
+	m.Macro1DurationModel.Placeholder = strconv.Itoa(item.Macro1Duration)
+	m.Macro2Model.Placeholder = item.Macro2
+	m.Macro2DurationModel.Placeholder = strconv.Itoa(item.Macro2Duration)
+	m.Macro3Model.Placeholder = item.Macro3
+	m.Macro3DurationModel.Placeholder = strconv.Itoa(item.Macro3Duration)
 }

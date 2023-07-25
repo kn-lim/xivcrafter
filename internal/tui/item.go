@@ -3,6 +3,7 @@ package tui
 import (
 	"strconv"
 
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/utils"
 )
@@ -97,6 +98,7 @@ func (i Item) PrintItemDetails() string {
 	return details
 }
 
+// convertItemsToRecipes takes a slice of Item structs and returns a slice of utils.Recipe structs
 func convertItemsToRecipes(items []Item) []utils.Recipe {
 	recipes := make([]utils.Recipe, len(items))
 
@@ -116,4 +118,31 @@ func convertItemsToRecipes(items []Item) []utils.Recipe {
 	}
 
 	return recipes
+}
+
+func updateItems(items []list.Item, newItem Item) []list.Item {
+	found := false
+	for i, item := range items {
+		if item.(Item).Name == newItem.Name {
+			if utils.Logger != nil {
+				utils.Logger.Printf("Updating settings of recipe %s\n", newItem.Name)
+			}
+
+			// If the item exists, copy the settings of newItem into the existing item.
+			items[i] = newItem
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		if utils.Logger != nil {
+			utils.Logger.Printf("Adding new recipe %s\n", newItem.Name)
+		}
+
+		// If the item doesn't exist, append newItem to the slice.
+		items = append(items, newItem)
+	}
+
+	return items
 }

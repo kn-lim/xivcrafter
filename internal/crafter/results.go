@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 var (
@@ -45,7 +46,7 @@ func PrintResults() {
 		totalPotionCount += result.PotionCount
 	}
 
-	output := fmt.Sprintf("\n%s\nTotal Crafting Time: %s\nTotal Amount Crafted: %v\n", lipgloss.NewStyle().MarginBottom(1).Padding(1, 3, 1).Bold(true).Background(lipgloss.Color("#364F6B")).Foreground(lipgloss.Color("#F5F5F5")).Render("XIVCrafter Results"), totalCraftTime.Truncate(time.Second).String(), totalCraftCount)
+	output := fmt.Sprintf("\n%s\nTotal Crafting Time: %s\nTotal Amount Crafted: %v\n", lipgloss.NewStyle().MarginBottom(1).Padding(1, 3, 1).Bold(true).Background(utils.Primary).Foreground(utils.Default).Render("XIVCrafter Results"), totalCraftTime.Truncate(time.Second).String(), totalCraftCount)
 	if totalFoodCount > 0 {
 		output += fmt.Sprintf("Total Amount of Food Consumed: %v\n", totalFoodCount)
 	}
