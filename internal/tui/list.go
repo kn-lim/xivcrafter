@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/utils"
+	"github.com/spf13/cobra"
 )
 
 type List struct {
@@ -79,7 +80,9 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				items[i] = item
 			}
 		}
-		utils.WriteToConfig(m.StartPause, m.Stop, m.Confirm, m.Cancel, convertItemsToRecipes(items))
+		if err := utils.WriteToConfig(m.StartPause, m.Stop, m.Confirm, m.Cancel, convertItemsToRecipes(items)); err != nil {
+			cobra.CheckErr(err)
+		}
 
 		m.msg = lipgloss.NewStyle().Padding(0, 0, 0, 4).Bold(true).Foreground(utils.Green).Render(fmt.Sprintf("Saved %s recipe", msg.Name))
 		return m, m.Recipes.NewStatusMessage(m.msg)
