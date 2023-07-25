@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"time"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/utils"
@@ -8,7 +10,8 @@ import (
 
 const (
 	Recipes = iota
-	UpdateRecipe
+	ChangeSettings
+	ChangeRecipe
 	Amount
 	Crafter
 )
@@ -26,4 +29,16 @@ var (
 
 	// Slice to manage models
 	Models = []tea.Model{nil, nil, nil, nil, nil}
+
+	// Hotkeys
+	StartPause string
+	Stop       string
+	Confirm    string
+	Cancel     string
 )
+
+func tickCmd() tea.Cmd {
+	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
+		return tickMsg(t)
+	})
+}

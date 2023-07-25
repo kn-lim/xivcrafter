@@ -6,10 +6,22 @@ import (
 	"strings"
 )
 
-// Validate checks and validates the config file for XIVCrafter
+// Validate checks and validates the entire config for XIVCrafter
 func Validate(startPause string, stop string, confirm string, cancel string, recipes []Recipe) error {
-	// Get all keys
 	keys := []string{startPause, stop, confirm, cancel}
+
+	// Check if all XIVCrafter setting hotkeys are not empty strings
+	invalidKeys := []string{}
+	for _, key := range keys {
+		if key == "" {
+			invalidKeys = append(invalidKeys, key)
+		}
+	}
+	if len(invalidKeys) > 0 {
+		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
+	}
+
+	// Get all keys from recipes
 	for _, recipe := range recipes {
 		keys = append(keys, recipe.Food, recipe.Potion, recipe.Macro1)
 
@@ -43,10 +55,41 @@ func Validate(startPause string, stop string, confirm string, cancel string, rec
 	}
 
 	// Check if each hotkey is a valid key
+	invalidKeys = []string{}
 	for _, key := range keys {
 		if !CheckValidKey(key) {
-			return fmt.Errorf("%s is not a valid key", key)
+			invalidKeys = append(invalidKeys, key)
 		}
+	}
+	if len(invalidKeys) > 0 {
+		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
+	}
+
+	return nil
+}
+
+func ValidateSettings(startPause string, stop string, confirm string, cancel string) error {
+	keys := map[string]string{
+		"StartPause": startPause,
+		"Stop":       stop,
+		"Confirm":    confirm,
+		"Cancel":     cancel,
+	}
+
+	// Check if all hotkeys are unique per recipe
+	if !CheckUniqueKeys(keys["StartPause"], keys["Stop"], keys["Confirm"], keys["Cancel"]) {
+		return errors.New("hotkeys are not unique")
+	}
+
+	// Check if each hotkey is a valid key
+	invalidKeys := []string{}
+	for key, hotkey := range keys {
+		if hotkey == "" || !CheckValidKey(hotkey) {
+			invalidKeys = append(invalidKeys, key)
+		}
+	}
+	if len(invalidKeys) > 0 {
+		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
 	}
 
 	return nil

@@ -36,14 +36,6 @@ type Progress struct {
 
 	// Help component
 	Help help.Model
-
-	// XIVCrafter settings
-	StartPause string
-	Stop       string
-
-	// In-game hotkeys
-	Confirm string
-	Cancel  string
 }
 
 func (m Progress) Init() tea.Cmd {
@@ -100,7 +92,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			utils.Logger.Println("Initializing progress bar")
 		}
 
-		m.Crafter = crafter.NewCrafter(m.StartPause, m.Stop, m.Confirm, m.Cancel)
+		m.Crafter = crafter.NewCrafter(StartPause, Stop, Confirm, Cancel)
 
 		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Item)
 		m.Crafter.SetRecipe(recipe.Name, Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
@@ -116,7 +108,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Progress) View() string {
 	recipeView := lipgloss.NewStyle().Width(30).Render(Models[Recipes].(List).Recipes.SelectedItem().(Item).PrintItemDetails())
-	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(m.StartPause), lipgloss.NewStyle().Bold(true).Render(m.Stop))
+	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(StartPause), lipgloss.NewStyle().Bold(true).Render(Stop))
 	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
 	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Bold(true).Render("\nAmount to Craft"), Models[Amount].(Input).amount)
 	craftingView := lipgloss.NewStyle().PaddingLeft(3).Render(fmt.Sprintf("(%v/%v)", m.Crafter.CurrentAmount, Models[Amount].(Input).amount))
@@ -126,21 +118,11 @@ func (m Progress) View() string {
 	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, "", configView, amountView, "\n", progressView, helpView)) + "\n"
 }
 
-func tickCmd() tea.Cmd {
-	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
-		return tickMsg(t)
-	})
-}
-
-func NewProgress(startPause string, stop string, confirm string, cancel string) *Progress {
+func NewProgress() *Progress {
 	model := &Progress{
-		Crafter:    &crafter.Crafter{},
-		Progress:   progress.New(progress.WithGradient(string(ProgressStart), string(ProgressEnd))),
-		Help:       help.New(),
-		StartPause: startPause,
-		Stop:       stop,
-		Confirm:    confirm,
-		Cancel:     cancel,
+		Crafter:  &crafter.Crafter{},
+		Progress: progress.New(progress.WithGradient(string(ProgressStart), string(ProgressEnd))),
+		Help:     help.New(),
 	}
 
 	return model

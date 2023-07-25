@@ -2,6 +2,20 @@ package tui
 
 import "github.com/charmbracelet/bubbles/key"
 
+type listKeyMap struct {
+	enter          key.Binding
+	changeSettings key.Binding
+	newRecipe      key.Binding
+	editRecipe     key.Binding
+}
+
+var listKeys = listKeyMap{
+	enter:          key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "submit")),
+	changeSettings: key.NewBinding(key.WithKeys("s"), key.WithHelp("s", "change settings")),
+	newRecipe:      key.NewBinding(key.WithKeys("n"), key.WithHelp("n", "new recipe")),
+	editRecipe:     key.NewBinding(key.WithKeys("e"), key.WithHelp("e", "edit recipe")),
+}
+
 type inputKeyMap struct {
 	// Key binding to submit the user input
 	enter key.Binding

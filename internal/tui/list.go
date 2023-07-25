@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -15,21 +16,13 @@ type List struct {
 	// List to show recipes
 	Recipes list.Model
 
-	// XIVCrafter settings
-	StartPause string
-	Stop       string
-
-	// In-game hotkeys
-	Confirm string
-	Cancel  string
-
 	// Helpers
 	width int
 	msg   string
 }
 
 func (m List) Init() tea.Cmd {
-	return nil
+	return tickCmd()
 }
 
 func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -49,21 +42,58 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			Models[Recipes] = m
 			return Models[Amount].Update(nil)
 
+		// Change XIVCrafter settings
+		case "s":
+			Models[Recipes] = m
+			return Models[ChangeSettings].Update(nil)
+
 		// Add new recipe
 		case "n":
 			Models[Recipes] = m
-			return Models[UpdateRecipe].Update(nil)
+			return Models[ChangeRecipe].Update(nil)
 
 		// Edit recipe
 		case "e":
 			Models[Recipes] = m
-			return Models[UpdateRecipe].Update(m.Recipes.SelectedItem().(Item))
+			return Models[ChangeRecipe].Update(m.Recipes.SelectedItem().(Item))
 		}
 
 	case tea.WindowSizeMsg:
 		h, v := listStyle.GetFrameSize()
 		m.Recipes.SetSize(msg.Width-h, msg.Height-v)
 		m.width = msg.Width
+
+	case Settings:
+		if utils.Logger != nil {
+			utils.Logger.Println("Updating XIVCrafter settings")
+		}
+
+		// Update hotkeys
+		StartPause = msg.startPause
+		Stop = msg.stop
+		Confirm = msg.confirm
+		Cancel = msg.cancel
+
+		// Save to config
+		itemsList := m.Recipes.Items()
+		var items []Item
+		if len(itemsList) == 0 {
+			// Create new recipe
+			return Models[ChangeRecipe].Update(nil)
+		} else {
+			items = make([]Item, len(itemsList))
+			for i, listItem := range itemsList {
+				if item, ok := listItem.(Item); ok {
+					items[i] = item
+				}
+			}
+		}
+		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, convertItemsToRecipes(items)); err != nil {
+			cobra.CheckErr(err)
+		}
+
+		m.msg = lipgloss.NewStyle().Padding(0, 0, 0, 4).Bold(true).Foreground(utils.Green).Render("Saved XIVCrafter settings")
+		return m, m.Recipes.NewStatusMessage(m.msg)
 
 	case Item:
 		if utils.Logger != nil {
@@ -80,7 +110,7 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				items[i] = item
 			}
 		}
-		if err := utils.WriteToConfig(m.StartPause, m.Stop, m.Confirm, m.Cancel, convertItemsToRecipes(items)); err != nil {
+		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, convertItemsToRecipes(items)); err != nil {
 			cobra.CheckErr(err)
 		}
 
@@ -112,7 +142,7 @@ func (m List) View() string {
 			Render(detailsView)
 	}
 
-	// Apply mainStyle to recipeView and detailsView
+	// Apply listStyle to recipeView
 	recipeView = listStyle.Render(recipeView)
 
 	return lipgloss.JoinHorizontal(
@@ -122,18 +152,32 @@ func (m List) View() string {
 	)
 }
 
-func NewList(startPause string, stop string, confirm string, cancel string, items []list.Item) *List {
+func NewList(items []list.Item) *List {
 	model := &List{
-		StartPause: startPause,
-		Stop:       stop,
-		Confirm:    confirm,
-		Cancel:     cancel,
-		Recipes:    list.New(items, NewItemDelegate(), 0, 0),
+		Recipes: list.New(items, NewItemDelegate(), 0, 0),
 	}
 
+	// Defaults
 	model.Recipes.Title = "XIVCrafter"
 	model.Recipes.Styles.Title = titleStyle
 	model.Recipes.StatusMessageLifetime = 5 * time.Second
+
+	// Additional help keys
+	model.Recipes.AdditionalShortHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.enter,
+			listKeys.newRecipe,
+			listKeys.editRecipe,
+		}
+	}
+	model.Recipes.AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.enter,
+			listKeys.changeSettings,
+			listKeys.newRecipe,
+			listKeys.editRecipe,
+		}
+	}
 
 	return model
 }

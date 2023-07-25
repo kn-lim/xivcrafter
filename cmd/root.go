@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/crafter"
 	"github.com/kn-lim/xivcrafter/internal/tui"
 	"github.com/kn-lim/xivcrafter/internal/utils"
@@ -67,6 +68,12 @@ var rootCmd = &cobra.Command{
 		// Validate Config
 		// TODO
 
+		// Setup UI
+		tui.StartPause = startPause
+		tui.Stop = stop
+		tui.Confirm = confirm
+		tui.Cancel = cancel
+
 		// Setup Items for List model
 		items := []list.Item{}
 		if len(recipes) != 1 || recipes[0].Name != "" {
@@ -86,20 +93,36 @@ var rootCmd = &cobra.Command{
 			}
 		} // else will return no items, as this will indicate a new config
 
-		// Setup List model
-		tui.Models[tui.Recipes] = tui.NewList(startPause, stop, confirm, cancel, items)
+		// Setup UpdateSettings model
+		tui.Models[tui.ChangeSettings] = tui.NewUpdateSettings()
 
-		// Setup Update model
-		tui.Models[tui.UpdateRecipe] = tui.NewUpdate()
+		// Setup List model
+		tui.Models[tui.Recipes] = tui.NewList(items)
+
+		// Setup UpdateRecipe model
+		tui.Models[tui.ChangeRecipe] = tui.NewUpdateRecipe()
 
 		// Setup Input model
 		tui.Models[tui.Amount] = tui.NewInput()
 
 		// Setup Progress model
-		tui.Models[tui.Crafter] = tui.NewProgress(startPause, stop, confirm, cancel)
+		tui.Models[tui.Crafter] = tui.NewProgress()
 
 		// Run UI
-		p := tea.NewProgram(tui.Models[tui.Recipes], tea.WithAltScreen())
+		var p *tea.Program
+
+		// Check if XIVCrafter settings are valid
+		if err := utils.ValidateSettings(startPause, stop, confirm, cancel); err != nil {
+			// Show error message
+			model := tui.Models[tui.ChangeSettings].(*tui.UpdateSettings)
+			model.Msg = lipgloss.NewStyle().Foreground(utils.Red).Render(err.Error())
+			tui.Models[tui.ChangeSettings] = model
+
+			p = tea.NewProgram(tui.Models[tui.ChangeSettings], tea.WithAltScreen())
+		} else {
+			p = tea.NewProgram(tui.Models[tui.Recipes], tea.WithAltScreen())
+		}
+
 		if _, err := p.Run(); err != nil {
 			cobra.CheckErr(err)
 		}

@@ -10,8 +10,8 @@ import (
 	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
-type Update struct {
-	// XIVCrafter Settings
+type UpdateRecipe struct {
+	// Recipe settings
 	NameModel textinput.Model
 	name      string
 
@@ -41,11 +41,11 @@ type Update struct {
 	msg string
 }
 
-func (m Update) Init() tea.Cmd {
+func (m UpdateRecipe) Init() tea.Cmd {
 	return nil
 }
 
-func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -58,7 +58,7 @@ func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return Models[Recipes].Update(nil)
 
 		// Go back to previous textinput model or back to list model
-		case "b":
+		case "shift+tab", "ctrl+b":
 			if m.FoodModel.Focused() {
 				m.FoodModel.Blur()
 				m.NameModel.Focus()
@@ -100,7 +100,7 @@ func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// At Name textinput model, therefore, go back to List model
 			return Models[Recipes].Update(nil)
 
-		case "enter":
+		case "tab", "enter":
 			if m.NameModel.Focused() {
 				// Use placeholder if blank
 				value := m.NameModel.Value()
@@ -329,6 +329,10 @@ func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.AddPlaceholders(msg)
 
 		return m, nil
+
+	// From UpdateSettings model
+	case Settings:
+		//
 	}
 
 	var cmd tea.Cmd
@@ -356,7 +360,7 @@ func (m Update) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Update) View() string {
+func (m UpdateRecipe) View() string {
 	return mainStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Top,
 		lipgloss.JoinHorizontal(lipgloss.Left, titleView, lipgloss.NewStyle().Padding(1, 0, 0, 4).Bold(true).Render(m.msg)),
@@ -375,8 +379,8 @@ func (m Update) View() string {
 	))
 }
 
-func NewUpdate() *Update {
-	model := &Update{
+func NewUpdateRecipe() *UpdateRecipe {
+	model := &UpdateRecipe{
 		NameModel:           textinput.New(),
 		FoodModel:           textinput.New(),
 		FoodDurationModel:   textinput.New(),
@@ -410,7 +414,7 @@ func NewUpdate() *Update {
 	return model
 }
 
-func (m *Update) AddPlaceholders(item Item) {
+func (m *UpdateRecipe) AddPlaceholders(item Item) {
 	m.NameModel.Placeholder = item.Name
 	m.FoodModel.Placeholder = item.Food
 	m.FoodDurationModel.Placeholder = strconv.Itoa(item.FoodDuration)

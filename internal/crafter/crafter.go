@@ -244,8 +244,8 @@ func (c *Crafter) Run() tea.Cmd {
 					}
 				}
 
-				if c.paused && c.running && !c.startTime.IsZero() {
-					if utils.Logger != nil && c.CurrentAmount < c.amount {
+				if c.paused && c.running && !c.startTime.IsZero() && c.CurrentAmount < c.amount && c.Status != utils.Paused {
+					if utils.Logger != nil {
 						utils.Logger.Println("Setting Status to \"Paused\"")
 					}
 
@@ -293,14 +293,20 @@ func (c *Crafter) ExitProgram() {
 	c.exitOnce.Do(func() {
 		if utils.Logger != nil {
 			utils.Logger.Println("Exiting XIVCrafter")
-			utils.Logger.Println("Setting Status to \"Stopping\"")
 			utils.Logger.Println("Running the cancel functions for crafter and hooks")
 			utils.Logger.Printf("Adding crafting results of %s\n", c.name)
 		}
 
 		c.running = false
 		c.paused = true
-		c.Status = utils.Stopping
+
+		if c.CurrentAmount < c.amount {
+			if utils.Logger != nil {
+				utils.Logger.Println("Setting Status to \"Stopping\"")
+			}
+
+			c.Status = utils.Stopping
+		}
 
 		Results = append(Results, *NewResult(c.name, c.startTime, time.Now(), c.CurrentAmount, c.FoodCount, c.PotionCount))
 
