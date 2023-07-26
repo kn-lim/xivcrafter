@@ -322,13 +322,20 @@ func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				if utils.Logger != nil {
-					utils.Logger.Printf("Creating recipe: %s\n", recipe.Name)
+					utils.Logger.Printf("Creating recipe: { name: %s, food: %s, food_duration: %v, potion: %s, macro1: %s, macro1_duration: %v, macro2: %s, macro2_duration: %v, macro3: %s, macro3_duration: %v }\n", m.name, m.food, m.foodDuration, m.potion, m.macro1, m.macro1Duration, m.macro2, m.macro2Duration, m.macro3, m.macro3Duration)
 				}
 
 				// Go back to list with new recipe
 				return Models[Recipes].Update(recipe)
 			}
 		}
+
+	// Set List window size
+	case tea.WindowSizeMsg:
+		h, v := utils.ListStyle.GetFrameSize()
+		model := Models[Recipes].(*List)
+		model.Recipes.SetSize(msg.Width-h, msg.Height-v)
+		Models[Recipes] = model
 
 	// Edit recipe
 	case Item:

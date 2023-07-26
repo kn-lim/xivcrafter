@@ -138,10 +138,15 @@ var rootCmd = &cobra.Command{
 				}
 
 				// Show error message
-				model := tui.Models[tui.ChangeRecipe].(*tui.UpdateRecipe)
-				model.Msg = lipgloss.NewStyle().Foreground(utils.Red).Render(err.Error())
-				model.AddPlaceholders(errorItem)
-				tui.Models[tui.ChangeRecipe] = model
+				updateRecipeModel := tui.Models[tui.ChangeRecipe].(*tui.UpdateRecipe)
+				updateRecipeModel.Msg = lipgloss.NewStyle().Foreground(utils.Red).Render(err.Error())
+				updateRecipeModel.AddPlaceholders(errorItem)
+				tui.Models[tui.ChangeRecipe] = updateRecipeModel
+
+				// Tell List model to replace recipe
+				listModel := tui.Models[tui.Recipes].(*tui.List)
+				listModel.Edit = true
+				tui.Models[tui.Recipes] = listModel
 
 				p = tea.NewProgram(tui.Models[tui.ChangeRecipe], tea.WithAltScreen())
 			} else {

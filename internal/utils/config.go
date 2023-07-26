@@ -84,7 +84,7 @@ func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string
 	}
 
 	// Marshal recipe into JSON
-	data, err := json.MarshalIndent(config, "", "    ")
+	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		if Logger != nil {
 			Logger.Println("Error parsing data to JSON")
@@ -97,14 +97,14 @@ func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string
 	err = os.WriteFile(ConfigPath, data, os.ModePerm)
 	if err != nil {
 		if Logger != nil {
-			Logger.Printf("Error writing JSON data to config %s", ConfigPath)
+			Logger.Printf("Error writing JSON data to config: %s", ConfigPath)
 		}
 
 		return err
 	}
 
 	if Logger != nil {
-		Logger.Printf("Done writing JSON data to config %s", ConfigPath)
+		Logger.Printf("Done writing JSON data to config: %s", ConfigPath)
 	}
 
 	return nil

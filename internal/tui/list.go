@@ -19,6 +19,9 @@ type List struct {
 
 	// Status message
 	msg string
+
+	// Flag to edit item
+	Edit bool
 }
 
 func (m List) Init() tea.Cmd {
@@ -79,6 +82,7 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Edit recipe
 		case "e":
+			m.Edit = true
 			Models[Recipes] = m
 			return Models[ChangeRecipe].Update(m.Recipes.SelectedItem().(Item))
 		}
@@ -121,7 +125,25 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			utils.Logger.Println("Updating list of recipes")
 		}
 
-		m.Recipes.SetItems(updateItems(m.Recipes.Items(), msg))
+		// Slice of cmds for bubbletea to output
+		var cmds []tea.Cmd
+
+		if m.Edit {
+			if utils.Logger != nil {
+				utils.Logger.Printf("Editing recipe: %s", msg.Name)
+			}
+
+			// Replace item
+			cmds = append(cmds, m.Recipes.SetItem(m.Recipes.Index(), msg))
+			m.Edit = false
+		} else {
+			if utils.Logger != nil {
+				utils.Logger.Printf("Inserting recipe: %s", msg.Name)
+			}
+
+			// Insert item at end
+			cmds = append(cmds, m.Recipes.InsertItem(len(m.Recipes.Items()), msg))
+		}
 
 		// Save to config
 		items := ConvertListItemToItem(m.Recipes.Items())
@@ -130,7 +152,8 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		m.msg = utils.ListStatusStyle.Foreground(utils.Green).Render(fmt.Sprintf("Saved recipe: %s", msg.Name))
-		return m, m.Recipes.NewStatusMessage(m.msg)
+		cmds = append(cmds, m.Recipes.NewStatusMessage(m.msg))
+		return m, tea.Batch(cmds...)
 	}
 
 	var cmd tea.Cmd

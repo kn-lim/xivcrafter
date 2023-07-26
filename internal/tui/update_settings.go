@@ -161,6 +161,13 @@ func (m UpdateSettings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
+	// Set List window size
+	case tea.WindowSizeMsg:
+		h, v := utils.ListStyle.GetFrameSize()
+		model := Models[Recipes].(*List)
+		model.Recipes.SetSize(msg.Width-h, msg.Height-v)
+		Models[Recipes] = model
+
 	// Edit recipe
 	case Settings:
 		if utils.Logger != nil {
