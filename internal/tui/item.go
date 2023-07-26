@@ -133,34 +133,6 @@ func ConvertItemsToRecipes(items []Item) []utils.Recipe {
 	return recipes
 }
 
-// updateItems takes in a list.Item slice and an Item struct to either update or append that Item into the list.Item slice
-func updateItems(items []list.Item, newItem Item) []list.Item {
-	found := false
-	for i, item := range items {
-		if item.(Item).Name == newItem.Name {
-			if utils.Logger != nil {
-				utils.Logger.Printf("Updating settings of recipe: %s\n", newItem.Name)
-			}
-
-			// If the item exists, copy the settings of newItem into the existing item.
-			items[i] = newItem
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		if utils.Logger != nil {
-			utils.Logger.Printf("Adding new recipe: %s\n", newItem.Name)
-		}
-
-		// If the item doesn't exist, append newItem to the slice.
-		items = append(items, newItem)
-	}
-
-	return items
-}
-
 // ConvertListItemToItem takes in a list.Item slice and converts it into an Item slice
 func ConvertListItemToItem(listItems []list.Item) []Item {
 	items := make([]Item, len(listItems))
