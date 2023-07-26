@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/progress"
@@ -13,29 +12,28 @@ import (
 )
 
 const (
+	// Progress bar visual settings
+
 	padding     = 2
 	maxWidth    = 100
 	statusWidth = 10
-)
 
-var (
-	// Progress Bar Colors
+	// Starting color of the progress bar
 	ProgressStart = lipgloss.Color("#1B6B93")
-	ProgressEnd   = lipgloss.Color("#A2FF86")
+	// Ending color of the progress bar
+	ProgressEnd = lipgloss.Color("#A2FF86")
 )
-
-type tickMsg time.Time
-
-// Tells progress to initialize the crafter
-type initialize struct{}
 
 type Progress struct {
 	// Show crafting progress
 	Crafter  *crafter.Crafter
 	Progress progress.Model
 
-	// Help component
+	// Help model
 	Help help.Model
+
+	// Helpers
+	amount int
 }
 
 func (m Progress) Init() tea.Cmd {
@@ -68,35 +66,37 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, nil
 
+	// From tickCmd
 	case tickMsg:
 		if m.Progress.Percent() == 1.0 {
-			if utils.Logger != nil {
-				utils.Logger.Println("Setting Status to \"Finished\"")
-			}
-
-			m.Crafter.Status = utils.Finished
 			return m, nil
 		}
 
-		cmd := m.Progress.SetPercent(float64(m.Crafter.CurrentAmount) / float64(Models[Amount].(Input).amount))
+		cmd := m.Progress.SetPercent(float64(m.Crafter.CurrentAmount) / float64(m.amount))
 
 		return m, tea.Batch(tickCmd(), cmd)
 
+	// Progress bar animation
 	case progress.FrameMsg:
 		progressModel, cmd := m.Progress.Update(msg)
 		m.Progress = progressModel.(progress.Model)
 		return m, cmd
 
-	case initialize:
+	// From Input model
+	case int:
+		// Save to Progress model
+		m.amount = msg
+
 		if utils.Logger != nil {
 			utils.Logger.Println("Initializing progress bar")
 		}
 
+		// Start crafter
 		m.Crafter = crafter.NewCrafter(StartPause, Stop, Confirm, Cancel)
-
 		recipe := Models[Recipes].(List).Recipes.SelectedItem().(Item)
-		m.Crafter.SetRecipe(recipe.Name, Models[Amount].(Input).amount, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
+		m.Crafter.SetRecipe(recipe.Name, msg, recipe.Food, recipe.FoodDuration, recipe.Potion, recipe.Macro1, recipe.Macro1Duration, recipe.Macro2, recipe.Macro2Duration, recipe.Macro3, recipe.Macro3Duration)
 
+		// Start goroutines
 		return m, tea.Batch(tickCmd(), m.Crafter.RunHooks(), m.Crafter.Run())
 
 	default:
@@ -108,16 +108,17 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Progress) View() string {
 	recipeView := lipgloss.NewStyle().Width(30).Render(Models[Recipes].(List).Recipes.SelectedItem().(Item).PrintItemDetails())
-	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Bold(true).Render(StartPause), lipgloss.NewStyle().Bold(true).Render(Stop))
+	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Foreground(utils.Tertiary).Render(StartPause), lipgloss.NewStyle().Foreground(utils.Tertiary).Render(Stop))
 	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
-	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Bold(true).Render("\nAmount to Craft"), Models[Amount].(Input).amount)
-	craftingView := lipgloss.NewStyle().PaddingLeft(3).Render(fmt.Sprintf("(%v/%v)", m.Crafter.CurrentAmount, Models[Amount].(Input).amount))
+	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Foreground(utils.Secondary).Render("\nAmount to Craft"), m.amount)
+	craftingView := lipgloss.NewStyle().PaddingLeft(3).Render(fmt.Sprintf("(%v/%v)", m.Crafter.CurrentAmount, m.amount))
 	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(utils.Status[m.Crafter.Status]), m.Progress.View(), craftingView)
 	helpView := "\n\n\n" + m.Help.View(progressKeys)
 
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, titleView, "", configView, amountView, "\n", progressView, helpView)) + "\n"
+	return utils.MainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, utils.TitleView, "", configView, amountView, "\n", progressView, helpView)) + "\n"
 }
 
+// NewProgress returns a pointer to a Progress struct
 func NewProgress() *Progress {
 	model := &Progress{
 		Crafter:  &crafter.Crafter{},

@@ -2,6 +2,7 @@ package utils
 
 import "github.com/charmbracelet/lipgloss"
 
+// Indices for status color codes
 const (
 	Waiting = iota
 	Crafting
@@ -13,7 +14,7 @@ const (
 )
 
 var (
-	// Crafter Status Color Codes
+	// Status color codes
 	Status = []string{
 		lipgloss.NewStyle().Foreground(Gray).Render("Waiting"),
 		lipgloss.NewStyle().Foreground(Green).Render("Crafting"),

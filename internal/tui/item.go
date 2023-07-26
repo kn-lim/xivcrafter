@@ -10,19 +10,32 @@ import (
 
 type Item struct {
 	// XIVCrafter Settings
+
+	// Name of recipe
 	Name string
 
 	// Consumables
-	Food         string
+
+	// Food hotkey
+	Food string
+	// Duration of food
 	FoodDuration int
-	Potion       string
+	// Potion hotkey
+	Potion string
 
 	// In-game hotkeys
-	Macro1         string
+
+	// Macro 1 hotkey
+	Macro1 string
+	// Duration of macro 1
 	Macro1Duration int
-	Macro2         string
+	// Macro 2 hotkey
+	Macro2 string
+	// Duration of macro 2
 	Macro2Duration int
-	Macro3         string
+	// Macro 3 hotkey
+	Macro3 string
+	// Duration of macro 3
 	Macro3Duration int
 }
 
@@ -67,39 +80,39 @@ func (i Item) Description() string {
 	return strconv.Itoa(macroCount) + " " + macroStr + ", " + strconv.Itoa(recipeDuration) + " " + secondsStr
 }
 
-// Helper function to print item details
+// PrintItemDetails returns a stylized string with details of the Item struct
 func (i Item) PrintItemDetails() string {
 	var details string
-	boldStyle := lipgloss.NewStyle().Bold(true)
+	style := lipgloss.NewStyle().Foreground(utils.Secondary)
 
-	details += boldStyle.Render("Name") + ": " + i.Name + "\n"
+	details += style.Render("Name") + ": " + i.Name + "\n"
 
 	if i.Food != "" {
-		details += boldStyle.Render("Food") + ": " + i.Food + "\n"
+		details += style.Render("Food") + ": " + i.Food + "\n"
 	}
 
 	if i.Potion != "" {
-		details += boldStyle.Render("Potion") + ": " + i.Potion + "\n"
+		details += style.Render("Potion") + ": " + i.Potion + "\n"
 	}
 
-	details += boldStyle.Render("Macro 1") + ": " + i.Macro1 + "\n"
-	details += boldStyle.Render("Macro 1 Duration") + ": " + strconv.Itoa(i.Macro1Duration)
+	details += style.Render("Macro 1") + ": " + i.Macro1 + "\n"
+	details += style.Render("Macro 1 Duration") + ": " + strconv.Itoa(i.Macro1Duration)
 
 	if i.Macro2 != "" {
-		details += "\n" + boldStyle.Render("Macro 2") + ": " + i.Macro2 + "\n"
-		details += boldStyle.Render("Macro 2 Duration") + ": " + strconv.Itoa(i.Macro2Duration)
+		details += "\n" + style.Render("Macro 2") + ": " + i.Macro2 + "\n"
+		details += style.Render("Macro 2 Duration") + ": " + strconv.Itoa(i.Macro2Duration)
 	}
 
 	if i.Macro3 != "" {
-		details += "\n" + boldStyle.Render("Macro 3") + ": " + i.Macro3 + "\n"
-		details += boldStyle.Render("Macro 3 Duration") + ": " + strconv.Itoa(i.Macro3Duration)
+		details += "\n" + style.Render("Macro 3") + ": " + i.Macro3 + "\n"
+		details += style.Render("Macro 3 Duration") + ": " + strconv.Itoa(i.Macro3Duration)
 	}
 
 	return details
 }
 
-// convertItemsToRecipes takes a slice of Item structs and returns a slice of utils.Recipe structs
-func convertItemsToRecipes(items []Item) []utils.Recipe {
+// ConvertItemsToRecipes takes a slice of Item structs and returns a slice of utils.Recipe structs
+func ConvertItemsToRecipes(items []Item) []utils.Recipe {
 	recipes := make([]utils.Recipe, len(items))
 
 	for i, item := range items {
@@ -120,12 +133,13 @@ func convertItemsToRecipes(items []Item) []utils.Recipe {
 	return recipes
 }
 
+// updateItems takes in a list.Item slice and an Item struct to either update or append that Item into the list.Item slice
 func updateItems(items []list.Item, newItem Item) []list.Item {
 	found := false
 	for i, item := range items {
 		if item.(Item).Name == newItem.Name {
 			if utils.Logger != nil {
-				utils.Logger.Printf("Updating settings of recipe %s\n", newItem.Name)
+				utils.Logger.Printf("Updating settings of recipe: %s\n", newItem.Name)
 			}
 
 			// If the item exists, copy the settings of newItem into the existing item.
@@ -137,12 +151,23 @@ func updateItems(items []list.Item, newItem Item) []list.Item {
 
 	if !found {
 		if utils.Logger != nil {
-			utils.Logger.Printf("Adding new recipe %s\n", newItem.Name)
+			utils.Logger.Printf("Adding new recipe: %s\n", newItem.Name)
 		}
 
 		// If the item doesn't exist, append newItem to the slice.
 		items = append(items, newItem)
 	}
 
+	return items
+}
+
+// ConvertListItemToItem takes in a list.Item slice and converts it into an Item slice
+func ConvertListItemToItem(listItems []list.Item) []Item {
+	items := make([]Item, len(listItems))
+	for i, listItem := range listItems {
+		if item, ok := listItem.(Item); ok {
+			items[i] = item
+		}
+	}
 	return items
 }

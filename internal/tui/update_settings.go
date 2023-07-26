@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -11,6 +12,7 @@ import (
 
 type UpdateSettings struct {
 	// XIVCrafter settings
+
 	StartPauseModel textinput.Model
 	startPause      string
 	StopModel       textinput.Model
@@ -20,7 +22,10 @@ type UpdateSettings struct {
 	CancelModel     textinput.Model
 	cancel          string
 
-	// Helpers
+	// Help model
+	Help help.Model
+
+	// Status message
 	Msg string
 }
 
@@ -148,7 +153,7 @@ func (m UpdateSettings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.CancelModel.Blur()
 
 				if utils.Logger != nil {
-					utils.Logger.Printf("Updating XIVCrafter settings: StartPause: %s, Stop: %s, Confirm: %s, Cancel: %s\n", m.startPause, m.stop, m.confirm, m.cancel)
+					utils.Logger.Printf("Updating XIVCrafter settings to: { start_pause: %s, stop: %s, confirm: %s, cancel: %s }\n", m.startPause, m.stop, m.confirm, m.cancel)
 				}
 
 				// Go back to list with new XIVCrafter settings
@@ -181,36 +186,41 @@ func (m UpdateSettings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m UpdateSettings) View() string {
-	return mainStyle.Render(lipgloss.JoinVertical(
+	return utils.MainStyle.Render(lipgloss.JoinVertical(
 		lipgloss.Top,
-		lipgloss.JoinHorizontal(lipgloss.Left, titleView, lipgloss.NewStyle().Padding(1, 0, 0, 4).Bold(true).Render(m.Msg)),
+		lipgloss.JoinHorizontal(lipgloss.Left, utils.TitleView, utils.StatusStyle.Render(m.Msg)),
 		"",
-		lipgloss.NewStyle().Bold(true).Render("Enter XIVCrafter Settings:\n"),
+		lipgloss.NewStyle().Render("Enter XIVCrafter Settings:\n"),
 		m.StartPauseModel.View(),
 		m.StopModel.View(),
 		m.ConfirmModel.View(),
 		m.CancelModel.View(),
+		"\n\n\n\n",
+		m.Help.View(updateKeys),
 	))
 }
 
+// NewUpdateSettings returns a pointer to an UpdateSettings struct
 func NewUpdateSettings() *UpdateSettings {
 	model := &UpdateSettings{
 		StartPauseModel: textinput.New(),
 		StopModel:       textinput.New(),
 		ConfirmModel:    textinput.New(),
 		CancelModel:     textinput.New(),
+		Help:            help.New(),
 	}
 
 	// Defaults
-	model.StartPauseModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Bold(true).Render("Start/Pause"))
-	model.StopModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Bold(true).Render("Stop"))
-	model.ConfirmModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Bold(true).Render("Confirm"))
-	model.CancelModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Bold(true).Render("Cancel"))
+	model.StartPauseModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Start/Pause"))
+	model.StopModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Stop"))
+	model.ConfirmModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Confirm"))
+	model.CancelModel.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Cancel"))
 
 	model.StartPauseModel.Focus()
 	return model
 }
 
+// AddPlaceholders updates the textinput.Model Placeholder fields to show the value from Item
 func (m *UpdateSettings) AddPlaceholders(settings Settings) {
 	m.StartPauseModel.Placeholder = settings.startPause
 	m.StopModel.Placeholder = settings.stop
@@ -225,6 +235,7 @@ type Settings struct {
 	cancel     string
 }
 
+// NewSettings returns a pointer to a NewSettings struct
 func NewSettings(startPause string, stop string, confirm string, cancel string) *Settings {
 	return &Settings{
 		startPause,

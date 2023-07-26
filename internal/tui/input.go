@@ -13,10 +13,9 @@ import (
 
 type Input struct {
 	// Get user input for the amount to craft
-	Input  textinput.Model
-	amount int
+	Input textinput.Model
 
-	// Help component
+	// Help model
 	Help help.Model
 
 	// Helpers
@@ -42,27 +41,32 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			// Check if the input model is focused
 			if m.Input.Focused() {
+				// Use placeholder if blank
+				value := m.Input.Value()
+				if value == "" {
+					value = m.Input.Placeholder
+				}
+
 				// Check if user input is a valid integer
-				var err error
-				m.amount, err = strconv.Atoi(m.Input.Value())
+				amount, err := strconv.Atoi(value)
 				if err != nil {
-					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Not a valid amount.")
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Not a valid amount")
 					return m, nil
 				}
 
 				// Check if user input is greater than 1
-				if m.amount < 1 {
-					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Requires an integer greater than 1.")
+				if amount < 1 {
+					m.msg = lipgloss.NewStyle().Foreground(utils.Red).Render("Requires an integer greater than 1")
 					return m, nil
 				}
 
 				if utils.Logger != nil {
-					utils.Logger.Printf("Amount: %v\n", m.amount)
+					utils.Logger.Printf("Amount to craft: %v\n", amount)
 				}
 
+				// Go to Progress model
 				m.msg = ""
-				Models[Amount] = m
-				return Models[Crafter].Update(initialize{})
+				return Models[Crafter].Update(amount)
 			}
 		}
 	}
@@ -73,24 +77,27 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Input) View() string {
-	inputView := fmt.Sprintf(
-		"Enter the Amount to Craft:\n\n%s",
+	return utils.MainStyle.Render(lipgloss.JoinVertical(
+		lipgloss.Top,
+		lipgloss.JoinHorizontal(lipgloss.Left, utils.TitleView, utils.StatusStyle.Render(m.msg)),
+		"",
 		m.Input.View(),
-	)
-	msgView := "\n" + lipgloss.NewStyle().Bold(true).Foreground(utils.Red).Render(m.msg) + "\n"
-	helpView := "\n\n" + m.Help.View(inputKeys)
-	mainView := lipgloss.JoinVertical(lipgloss.Left, inputView, msgView)
-
-	return mainStyle.Render(lipgloss.JoinVertical(lipgloss.Top, titleView, "", mainView, helpView)) + "\n"
+		"\n\n\n\n",
+		m.Help.View(inputKeys),
+	))
 }
 
+// NewInput returns a pointer to an Input struct
 func NewInput() *Input {
 	model := &Input{
 		Input: textinput.New(),
 		Help:  help.New(),
 	}
 
-	model.Input.Focus()
+	// Defaults
+	model.Input.Prompt = fmt.Sprintf("%s: ", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Enter the Amount to Craft"))
+	model.Input.Placeholder = "1"
 
+	model.Input.Focus()
 	return model
 }

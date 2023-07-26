@@ -6,15 +6,18 @@ import (
 )
 
 var (
+	// XIVCrafter config file path
 	ConfigPath string
 )
 
 type Config struct {
 	// XIVCrafter Hotkeys
+
 	StartPause string `json:"start_pause"`
 	Stop       string `json:"stop"`
 
 	// In-Game Hotkeys
+
 	Confirm string `json:"confirm"`
 	Cancel  string `json:"cancel"`
 
@@ -70,6 +73,7 @@ func NewRecipe() *Recipe {
 	}
 }
 
+// WriteToConfig attempts to save the hotkeys and recipes into the config file
 func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string, Recipes []Recipe) error {
 	config := Config{
 		StartPause,

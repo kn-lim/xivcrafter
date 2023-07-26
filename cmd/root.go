@@ -47,7 +47,7 @@ var rootCmd = &cobra.Command{
 		cancel := viper.GetString("cancel")
 
 		if utils.Logger != nil {
-			utils.Logger.Printf("StartPause: %s, Stop: %s, Confirm: %s, Cancel: %s\n", startPause, stop, confirm, cancel)
+			utils.Logger.Printf("Using: { start_pause: %s, stop: %s, confirm: %s, cancel: %s }\n", startPause, stop, confirm, cancel)
 		}
 
 		// Read the 'recipes' field from the config
@@ -62,11 +62,8 @@ var rootCmd = &cobra.Command{
 		cobra.CheckErr(json.Unmarshal(recipesBytes, &recipes))
 
 		if utils.Logger != nil {
-			utils.Logger.Printf("Number of Recipes: %v\n", len(recipes))
+			utils.Logger.Printf("Number of recipes: %v\n", len(recipes))
 		}
-
-		// Validate Config
-		// TODO
 
 		// Setup UI
 		tui.StartPause = startPause
@@ -76,7 +73,7 @@ var rootCmd = &cobra.Command{
 
 		// Setup Items for List model
 		items := []list.Item{}
-		if len(recipes) != 1 || recipes[0].Name != "" {
+		if len(recipes) != 1 || recipes[0].Name != "" { // check for new config
 			for _, recipe := range recipes {
 				items = append(items, tui.Item{
 					Name:           recipe.Name,
@@ -108,21 +105,51 @@ var rootCmd = &cobra.Command{
 		// Setup Progress model
 		tui.Models[tui.Crafter] = tui.NewProgress()
 
-		// Run UI
 		var p *tea.Program
 
 		// Check if XIVCrafter settings are valid
 		if err := utils.ValidateSettings(startPause, stop, confirm, cancel); err != nil {
+			if utils.Logger != nil {
+				utils.Logger.Println("XIVCrafter settings invalid")
+			}
+
 			// Show error message
 			model := tui.Models[tui.ChangeSettings].(*tui.UpdateSettings)
 			model.Msg = lipgloss.NewStyle().Foreground(utils.Red).Render(err.Error())
+			model.AddPlaceholders(*tui.NewSettings(startPause, stop, confirm, cancel))
 			tui.Models[tui.ChangeSettings] = model
 
 			p = tea.NewProgram(tui.Models[tui.ChangeSettings], tea.WithAltScreen())
 		} else {
-			p = tea.NewProgram(tui.Models[tui.Recipes], tea.WithAltScreen())
+			// Check if the entire config is valid
+			errResult, err := utils.Validate(startPause, stop, confirm, cancel, tui.ConvertItemsToRecipes(tui.ConvertListItemToItem(items)))
+			if err != nil {
+				if utils.Logger != nil {
+					utils.Logger.Printf("invalid recipe: %s\n", errResult)
+				}
+
+				// Get recipe with error
+				var errorItem tui.Item
+				for _, item := range items {
+					if errResult == item.(tui.Item).Name {
+						errorItem = item.(tui.Item)
+						break
+					}
+				}
+
+				// Show error message
+				model := tui.Models[tui.ChangeRecipe].(*tui.UpdateRecipe)
+				model.Msg = lipgloss.NewStyle().Foreground(utils.Red).Render(err.Error())
+				model.AddPlaceholders(errorItem)
+				tui.Models[tui.ChangeRecipe] = model
+
+				p = tea.NewProgram(tui.Models[tui.ChangeRecipe], tea.WithAltScreen())
+			} else {
+				p = tea.NewProgram(tui.Models[tui.Recipes], tea.WithAltScreen())
+			}
 		}
 
+		// Run UI
 		if _, err := p.Run(); err != nil {
 			cobra.CheckErr(err)
 		}

@@ -7,67 +7,18 @@ import (
 )
 
 // Validate checks and validates the entire config for XIVCrafter
-func Validate(startPause string, stop string, confirm string, cancel string, recipes []Recipe) error {
-	keys := []string{startPause, stop, confirm, cancel}
-
-	// Check if all XIVCrafter setting hotkeys are not empty strings
-	invalidKeys := []string{}
-	for _, key := range keys {
-		if key == "" {
-			invalidKeys = append(invalidKeys, key)
-		}
-	}
-	if len(invalidKeys) > 0 {
-		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
-	}
-
-	// Get all keys from recipes
+func Validate(startPause string, stop string, confirm string, cancel string, recipes []Recipe) (string, error) {
+	// Validate all recipes
 	for _, recipe := range recipes {
-		keys = append(keys, recipe.Food, recipe.Potion, recipe.Macro1)
-
-		if recipe.Macro2 != "" {
-			keys = append(keys, recipe.Macro2)
-		}
-
-		if recipe.Macro3 != "" {
-			keys = append(keys, recipe.Macro3)
+		if err := ValidateRecipe(startPause, stop, confirm, cancel, recipe); err != nil {
+			return recipe.Name, err
 		}
 	}
 
-	// Check if all recipe names are unique
-	if !CheckUniqueNames(recipes) {
-		return errors.New("recipe names are not unique")
-	}
-
-	for _, recipe := range recipes {
-		// Check if all hotkeys are unique per recipe
-		if !CheckUniqueKeys(startPause, stop, confirm, cancel, recipe.Food, recipe.Potion, recipe.Macro1, recipe.Macro2, recipe.Macro3) {
-			return errors.New("hotkeys are not unique")
-		}
-
-		// Check if the recipe food duration is valid
-		switch recipe.FoodDuration {
-		case 30, 40, 45:
-			// Do nothing
-		default:
-			return fmt.Errorf("%v is not valid. must be either 30, 40 or 45", recipe.FoodDuration)
-		}
-	}
-
-	// Check if each hotkey is a valid key
-	invalidKeys = []string{}
-	for _, key := range keys {
-		if !CheckValidKey(key) {
-			invalidKeys = append(invalidKeys, key)
-		}
-	}
-	if len(invalidKeys) > 0 {
-		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
-	}
-
-	return nil
+	return "", nil
 }
 
+// ValidateSettings checks and validates just the XIVCrafter settings
 func ValidateSettings(startPause string, stop string, confirm string, cancel string) error {
 	keys := map[string]string{
 		"StartPause": startPause,
@@ -90,6 +41,73 @@ func ValidateSettings(startPause string, stop string, confirm string, cancel str
 	}
 	if len(invalidKeys) > 0 {
 		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
+	}
+
+	return nil
+}
+
+// ValidateSettings checks and validates the XIVCrafter settings and a recipe
+func ValidateRecipe(startPause string, stop string, confirm string, cancel string, recipe Recipe) error {
+	keys := map[string]string{
+		"StartPause": startPause,
+		"Stop":       stop,
+		"Confirm":    confirm,
+		"Cancel":     cancel,
+		"Food":       recipe.Food,
+		"Potion":     recipe.Potion,
+		"Macro1":     recipe.Macro1,
+		"Macro2":     recipe.Macro2,
+		"Macro3":     recipe.Macro3,
+	}
+
+	// Slice of keys that must not be an empty string
+	requiredKeys := []string{"StartPause", "Stop", "Confirm", "Cancel", "Macro1"}
+
+	// Check if all hotkeys are unique per recipe
+	if !CheckUniqueKeys(keys["StartPause"], keys["Stop"], keys["Confirm"], keys["Cancel"], keys["Food"], keys["Potion"], keys["Macro1"], keys["Macro2"], keys["Macro3"]) {
+		return errors.New("hotkeys are not unique")
+	}
+
+	// Check if each hotkey is a valid key
+	invalidKeys := []string{}
+	for key, hotkey := range keys {
+		if !CheckValidKey(hotkey) {
+			invalidKeys = append(invalidKeys, key)
+		} else {
+			// Check if the hotkey is a required key and if it is an empty string
+			for _, req := range requiredKeys {
+				if hotkey == "" && key == req {
+					invalidKeys = append(invalidKeys, key)
+				}
+			}
+		}
+	}
+	if len(invalidKeys) > 0 {
+		return fmt.Errorf("these are not valid keys: %v", invalidKeys)
+	}
+
+	// Check if the food duration is valid
+	switch recipe.FoodDuration {
+	case 30, 40, 45:
+		// Do nothing
+	default:
+		return errors.New("food duration is invalid, must be 30, 40, or 45")
+	}
+
+	// Check if the macro durations are valid
+	macroDurations := map[string]int{
+		"Macro1Duration": recipe.Macro1Duration,
+		"Macro2Duration": recipe.Macro2Duration,
+		"Macro3Duration": recipe.Macro3Duration,
+	}
+	invalidDurations := []string{}
+	for name, duration := range macroDurations {
+		if duration < 1 {
+			invalidDurations = append(invalidDurations, name)
+		}
+	}
+	if len(invalidKeys) > 0 {
+		return fmt.Errorf("these have invalid durations: %v", invalidDurations)
 	}
 
 	return nil

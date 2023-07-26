@@ -7,18 +7,18 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/utils"
 	"github.com/spf13/cobra"
 )
 
+const StatusMsgLifetime = 10 * time.Second
+
 type List struct {
-	// List to show recipes
+	// List model
 	Recipes list.Model
 
-	// Helpers
-	width int
-	msg   string
+	// Status message
+	msg string
 }
 
 func (m List) Init() tea.Cmd {
@@ -33,10 +33,35 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 
+		// Select recipe to delete
+		case "x":
+			recipeName := m.Recipes.SelectedItem().(Item).Name
+			if utils.Logger != nil {
+				utils.Logger.Printf("Deleting recipe: %s\n", recipeName)
+			}
+
+			// Delete item from List model
+			index := m.Recipes.Index()
+			m.Recipes.RemoveItem(index)
+			if index >= len(m.Recipes.Items()) {
+				m.Recipes.Select(len(m.Recipes.Items()) - 1)
+			} else {
+				m.Recipes.Select(index)
+			}
+
+			// Save to config
+			items := ConvertListItemToItem(m.Recipes.Items())
+			if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, ConvertItemsToRecipes(items)); err != nil {
+				cobra.CheckErr(err)
+			}
+
+			m.msg = utils.ListStatusStyle.Foreground(utils.Green).Render(fmt.Sprintf("Deleted recipe: %s", recipeName))
+			return m, m.Recipes.NewStatusMessage(m.msg)
+
 		// Select recipe to craft
 		case "enter":
 			if utils.Logger != nil {
-				utils.Logger.Printf("Selected Recipe Name: %s\n", m.Recipes.SelectedItem().(Item).Name)
+				utils.Logger.Printf("Selected recipe: %s\n", m.Recipes.SelectedItem().(Item).Name)
 			}
 
 			Models[Recipes] = m
@@ -59,10 +84,10 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
-		h, v := listStyle.GetFrameSize()
+		h, v := utils.ListStyle.GetFrameSize()
 		m.Recipes.SetSize(msg.Width-h, msg.Height-v)
-		m.width = msg.Width
 
+	// From UpdateSettings model
 	case Settings:
 		if utils.Logger != nil {
 			utils.Logger.Println("Updating XIVCrafter settings")
@@ -75,26 +100,22 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		Cancel = msg.cancel
 
 		// Save to config
-		itemsList := m.Recipes.Items()
+		listItems := m.Recipes.Items()
 		var items []Item
-		if len(itemsList) == 0 {
+		if len(listItems) == 0 {
 			// Create new recipe
 			return Models[ChangeRecipe].Update(nil)
 		} else {
-			items = make([]Item, len(itemsList))
-			for i, listItem := range itemsList {
-				if item, ok := listItem.(Item); ok {
-					items[i] = item
-				}
-			}
+			items = ConvertListItemToItem(listItems)
 		}
-		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, convertItemsToRecipes(items)); err != nil {
+		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, ConvertItemsToRecipes(items)); err != nil {
 			cobra.CheckErr(err)
 		}
 
-		m.msg = lipgloss.NewStyle().Padding(0, 0, 0, 4).Bold(true).Foreground(utils.Green).Render("Saved XIVCrafter settings")
+		m.msg = utils.ListStatusStyle.Foreground(utils.Green).Render("Saved XIVCrafter settings")
 		return m, m.Recipes.NewStatusMessage(m.msg)
 
+	// From UpdateRecipe model
 	case Item:
 		if utils.Logger != nil {
 			utils.Logger.Println("Updating list of recipes")
@@ -103,18 +124,12 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Recipes.SetItems(updateItems(m.Recipes.Items(), msg))
 
 		// Save to config
-		itemsList := m.Recipes.Items()
-		items := make([]Item, len(itemsList))
-		for i, listItem := range itemsList {
-			if item, ok := listItem.(Item); ok {
-				items[i] = item
-			}
-		}
-		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, convertItemsToRecipes(items)); err != nil {
+		items := ConvertListItemToItem(m.Recipes.Items())
+		if err := utils.WriteToConfig(StartPause, Stop, Confirm, Cancel, ConvertItemsToRecipes(items)); err != nil {
 			cobra.CheckErr(err)
 		}
 
-		m.msg = lipgloss.NewStyle().Padding(0, 0, 0, 4).Bold(true).Foreground(utils.Green).Render(fmt.Sprintf("Saved %s recipe", msg.Name))
+		m.msg = utils.ListStatusStyle.Foreground(utils.Green).Render(fmt.Sprintf("Saved recipe: %s", msg.Name))
 		return m, m.Recipes.NewStatusMessage(m.msg)
 	}
 
@@ -124,34 +139,10 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m List) View() string {
-	recipeView := m.Recipes.View()
-
-	// Check if selectedItem is not nil before type assertion
-	item := m.Recipes.SelectedItem()
-	var detailsView string
-	var detailsStyle string
-	if item != nil {
-		selectedItem := item.(Item)
-		detailsView = lipgloss.NewStyle().Render(selectedItem.PrintItemDetails())
-		detailsView = listStyle.Padding(0, 2).Render(detailsView)
-
-		detailsStyle = lipgloss.NewStyle().
-			Border(lipgloss.ThickBorder()).
-			BorderForeground(utils.Secondary).
-			MarginTop(6).
-			Render(detailsView)
-	}
-
-	// Apply listStyle to recipeView
-	recipeView = listStyle.Render(recipeView)
-
-	return lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		lipgloss.NewStyle().Width(m.width/2).Render(recipeView),
-		detailsStyle,
-	)
+	return utils.ListStyle.Render(m.Recipes.View())
 }
 
+// NewList returns a pointer to a List struct
 func NewList(items []list.Item) *List {
 	model := &List{
 		Recipes: list.New(items, NewItemDelegate(), 0, 0),
@@ -159,23 +150,26 @@ func NewList(items []list.Item) *List {
 
 	// Defaults
 	model.Recipes.Title = "XIVCrafter"
-	model.Recipes.Styles.Title = titleStyle
-	model.Recipes.StatusMessageLifetime = 5 * time.Second
+	model.Recipes.Styles.Title = utils.TitleStyle
+	model.Recipes.StatusMessageLifetime = StatusMsgLifetime
+	model.Recipes.SetFilteringEnabled(false) // disabled for now
 
 	// Additional help keys
 	model.Recipes.AdditionalShortHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			listKeys.enter,
-			listKeys.newRecipe,
-			listKeys.editRecipe,
+			listKeys.new,
+			listKeys.edit,
+			listKeys.delete,
 		}
 	}
 	model.Recipes.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			listKeys.enter,
-			listKeys.changeSettings,
-			listKeys.newRecipe,
-			listKeys.editRecipe,
+			listKeys.change,
+			listKeys.new,
+			listKeys.edit,
+			listKeys.delete,
 		}
 	}
 

@@ -4,19 +4,28 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
 var (
+	// Holds results to print out at exit
 	Results = []Result{}
 )
 
 type Result struct {
-	Name        string
-	CraftTime   time.Duration
-	CraftCount  int
-	FoodCount   int
+	// Name of recipe
+	Name string
+
+	// Total amount spent crafting the recipe
+	CraftTime time.Duration
+
+	// Total amount crafted
+	CraftCount int
+
+	// Total amount of food used
+	FoodCount int
+
+	// Total amount of potions used
 	PotionCount int
 }
 
@@ -46,12 +55,12 @@ func PrintResults() {
 		totalPotionCount += result.PotionCount
 	}
 
-	output := fmt.Sprintf("\n%s\nTotal Crafting Time: %s\nTotal Amount Crafted: %v\n", lipgloss.NewStyle().MarginBottom(1).Padding(1, 3, 1).Bold(true).Background(utils.Primary).Foreground(utils.Default).Render("XIVCrafter Results"), totalCraftTime.Truncate(time.Second).String(), totalCraftCount)
+	output := fmt.Sprintf("\n%s\nTotal Crafting Time: %s\nTotal Amount Crafted: %v\n", utils.TitleStyle.MarginBottom(1).Render("XIVCrafter Results"), totalCraftTime.Truncate(time.Second).String(), totalCraftCount)
 	if totalFoodCount > 0 {
 		output += fmt.Sprintf("Total Amount of Food Consumed: %v\n", totalFoodCount)
 	}
 	if totalPotionCount > 0 {
 		output += fmt.Sprintf("Total Amount of Potions Consumed: %v\n", totalPotionCount)
 	}
-	fmt.Print(output + "\n")
+	fmt.Println(output)
 }

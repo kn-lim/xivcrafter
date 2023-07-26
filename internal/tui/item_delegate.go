@@ -13,8 +13,5 @@ func NewItemDelegate() list.ItemDelegate {
 	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(utils.Secondary).BorderLeftForeground(utils.Secondary)
 	d.Styles.SelectedDesc = d.Styles.SelectedTitle.Copy()
 
-	d.Styles.NormalTitle = d.Styles.NormalTitle.Foreground(utils.Default).BorderLeftForeground(utils.Default)
-	d.Styles.NormalDesc = d.Styles.NormalTitle.Copy()
-
 	return d
 }
