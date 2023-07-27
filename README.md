@@ -5,11 +5,11 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kn-lim/xivcrafter)](https://goreportcard.com/report/github.com/kn-lim/xivcrafter)
 ![License](https://img.shields.io/github/license/kn-lim/xivcrafter)
 
-Automatically activates multiple crafting macros while refreshing food and potion buffs.
+A FFXIV CLI app that activates multiple crafting macros while refreshing food and potion buffs.
 
 Tested on Windows and Keyboard only.
 
-## Packages
+## Packages Used
 
 - [cobra](https://github.com/spf13/cobra)
 - [viper](https://github.com/spf13/viper)
@@ -23,7 +23,7 @@ Tested on Windows and Keyboard only.
 
 Download the Windows binary in the [Releases](https://github.com/kn-lim/xivcrafter/releases) page.
 
-For detailed information, go to the [Wiki](https://github.com/kn-lim/xivcrafter/wiki/).
+**Need help? Check out the [Wiki](https://github.com/kn-lim/xivcrafter/wiki/).**
 
 ## How to Run
 
@@ -32,7 +32,7 @@ Run:
 .\xivcrafter
 ```
 
-If `.xivcrafter.json` does not exist in your home directory, XIVCrafter will create it upon launch.
+If `.xivcrafter.json` does not exist in your home directory, XIVCrafter will create it upon launch. It will then prompt you to fill out the XIVCrafter settings and one recipe.
 
 ## Flags
 
