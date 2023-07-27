@@ -330,8 +330,9 @@ func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-	// Set List window size
 	case tea.WindowSizeMsg:
+		WindowWidth = msg.Width
+		WindowHeight = msg.Height
 		h, v := utils.ListStyle.GetFrameSize()
 		model := Models[Recipes].(*List)
 		model.Recipes.SetSize(msg.Width-h, msg.Height-v)
@@ -378,7 +379,9 @@ func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m UpdateRecipe) View() string {
-	return utils.MainStyle.Render(lipgloss.JoinVertical(
+	_, v := utils.MainStyle.GetFrameSize()
+
+	mainView := lipgloss.JoinVertical(
 		lipgloss.Top,
 		lipgloss.JoinHorizontal(lipgloss.Left, utils.TitleView, utils.StatusStyle.Render(m.Msg)),
 		"",
@@ -393,7 +396,12 @@ func (m UpdateRecipe) View() string {
 		m.Macro2DurationModel.View(),
 		m.Macro3Model.View(),
 		m.Macro3DurationModel.View(),
-		"\n\n\n\n",
+	)
+	mainView = lipgloss.NewStyle().Height(WindowHeight - v - 1).Render(mainView)
+
+	return utils.MainStyle.Render(lipgloss.JoinVertical(
+		lipgloss.Top,
+		mainView,
 		m.Help.View(updateKeys),
 	))
 }

@@ -69,6 +69,10 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return Models[Crafter].Update(amount)
 			}
 		}
+
+	case tea.WindowSizeMsg:
+		WindowWidth = msg.Width
+		WindowHeight = msg.Height
 	}
 
 	var cmd tea.Cmd
@@ -77,12 +81,19 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Input) View() string {
-	return utils.MainStyle.Render(lipgloss.JoinVertical(
+	_, v := utils.MainStyle.GetFrameSize()
+
+	mainView := lipgloss.JoinVertical(
 		lipgloss.Top,
 		lipgloss.JoinHorizontal(lipgloss.Left, utils.TitleView, utils.StatusStyle.Render(m.msg)),
 		"",
 		m.Input.View(),
-		"\n\n\n\n",
+	)
+	mainView = lipgloss.NewStyle().Height(WindowHeight - v - 1).Render(mainView)
+
+	return utils.MainStyle.Render(lipgloss.JoinVertical(
+		lipgloss.Top,
+		mainView,
 		m.Help.View(inputKeys),
 	))
 }

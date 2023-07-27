@@ -88,6 +88,8 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
+		WindowWidth = msg.Width
+		WindowHeight = msg.Height
 		h, v := utils.ListStyle.GetFrameSize()
 		m.Recipes.SetSize(msg.Width-h, msg.Height-v)
 

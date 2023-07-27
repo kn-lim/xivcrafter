@@ -60,6 +60,9 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
+		WindowWidth = msg.Width
+		WindowHeight = msg.Height
+
 		m.Progress.Width = msg.Width - padding*2 - 4
 		if m.Progress.Width > maxWidth {
 			m.Progress.Width = maxWidth
@@ -107,15 +110,30 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Progress) View() string {
+	_, v := utils.MainStyle.GetFrameSize()
+
 	recipeView := lipgloss.NewStyle().Width(30).Render(Models[Recipes].(List).Recipes.SelectedItem().(Item).PrintItemDetails())
 	hotkeyView := fmt.Sprintf("Press \"%s\" to Start/Pause\nPress \"%s\" to Stop", lipgloss.NewStyle().Foreground(utils.Tertiary).Render(StartPause), lipgloss.NewStyle().Foreground(utils.Tertiary).Render(Stop))
-	configView := lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView)
-	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Foreground(utils.Secondary).Render("\nAmount to Craft"), m.amount)
+	amountView := fmt.Sprintf("%s: %v", lipgloss.NewStyle().Foreground(utils.Secondary).Render("Amount to Craft"), m.amount)
 	craftingView := lipgloss.NewStyle().PaddingLeft(3).Render(fmt.Sprintf("(%v/%v)", m.Crafter.CurrentAmount, m.amount))
-	progressView := lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(utils.Status[m.Crafter.Status]), m.Progress.View(), craftingView)
-	helpView := "\n\n\n" + m.Help.View(progressKeys)
 
-	return utils.MainStyle.Render(lipgloss.JoinVertical(lipgloss.Left, utils.TitleView, "", configView, amountView, "\n", progressView, helpView)) + "\n"
+	mainView := lipgloss.JoinVertical(
+		lipgloss.Top,
+		utils.TitleView,
+		"",
+		lipgloss.JoinHorizontal(lipgloss.Left, recipeView, hotkeyView),
+		"",
+		amountView,
+		"",
+		lipgloss.JoinHorizontal(lipgloss.Left, lipgloss.NewStyle().Width(statusWidth).Render(utils.Status[m.Crafter.Status]), m.Progress.View(), craftingView),
+	)
+	mainView = lipgloss.NewStyle().Height(WindowHeight - v - 1).Render(mainView)
+
+	return utils.MainStyle.Render(lipgloss.JoinVertical(
+		lipgloss.Top,
+		mainView,
+		m.Help.View(progressKeys),
+	))
 }
 
 // NewProgress returns a pointer to a Progress struct

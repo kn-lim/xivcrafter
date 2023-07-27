@@ -51,7 +51,7 @@ type Crafter struct {
 	// Helpers
 
 	running               bool
-	paused                bool
+	Paused                bool
 	exitOnce              sync.Once
 	StopCrafterContext    context.Context
 	StopCrafterCancelFunc context.CancelFunc
@@ -98,7 +98,7 @@ func NewCrafter(startPause string, stop string, confirm string, cancel string) *
 
 		// Helpers
 		running:               true,
-		paused:                true,
+		Paused:                true,
 		StopCrafterContext:    crafterCtx,
 		StopCrafterCancelFunc: crafterCancelFunc,
 		StopHooksContext:      hookCtx,
@@ -151,7 +151,7 @@ func (c *Crafter) Run() tea.Cmd {
 					return
 				default:
 					// Loop if XIVCrafter is crafting
-					for !c.paused {
+					for !c.Paused {
 						if utils.Logger != nil {
 							utils.Logger.Printf("Starting craft: %v / %v\n", c.CurrentAmount+1, c.amount)
 						}
@@ -291,7 +291,7 @@ func (c *Crafter) Run() tea.Cmd {
 				}
 
 				// Check to see if XIVCrafter is paused
-				if c.paused && c.running && !c.startTime.IsZero() && c.CurrentAmount < c.amount && c.Status != utils.Paused {
+				if c.Paused && c.running && !c.startTime.IsZero() && c.CurrentAmount < c.amount && c.Status != utils.Paused {
 					if utils.Logger != nil {
 						utils.Logger.Println("Setting status to \"Paused\"")
 					}
@@ -323,7 +323,7 @@ func (c *Crafter) StartProgram() {
 		utils.Logger.Println("Setting status to \"Crafting\"")
 	}
 
-	c.paused = false
+	c.Paused = false
 	c.Status = utils.Crafting
 }
 
@@ -334,7 +334,7 @@ func (c *Crafter) StopProgram() {
 		utils.Logger.Println("Setting status to \"Pausing\"")
 	}
 
-	c.paused = true
+	c.Paused = true
 	c.Status = utils.Pausing
 }
 
@@ -346,7 +346,7 @@ func (c *Crafter) ExitProgram() {
 		}
 
 		c.running = false
-		c.paused = true
+		c.Paused = true
 
 		if c.CurrentAmount < c.amount {
 			if utils.Logger != nil {
@@ -476,7 +476,7 @@ func (c *Crafter) RunHooks() tea.Cmd {
 					utils.Logger.Printf("Start/Pause key \"%s\" pressed\n", c.startPause)
 				}
 
-				if c.paused {
+				if c.Paused {
 					c.StartProgram()
 				} else {
 					c.StopProgram()
