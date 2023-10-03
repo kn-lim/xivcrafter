@@ -9,6 +9,10 @@ A FFXIV CLI app that activates multiple crafting macros while refreshing food an
 
 Tested on Windows and Keyboard only.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/kn-lim/kn-lim/main/xivcrafter/xivcrafter_ui.gif"></img>
+</p>
+
 ## Packages Used
 
 - [cobra](https://github.com/spf13/cobra)
