@@ -11,6 +11,8 @@ var ConfigPath string
 type Config struct {
 	// XIVCrafter Hotkeys
 
+	Delay      int    `json:"delay"`     // TODO
+	KeyDelay   int    `json:"key_delay"` // TODO
 	StartPause string `json:"start_pause"`
 	Stop       string `json:"stop"`
 
@@ -29,6 +31,8 @@ func NewConfig() *Config {
 	recipes = append(recipes, *NewRecipe())
 
 	return &Config{
+		Delay:      1000,
+		KeyDelay:   500,
 		StartPause: "",
 		Stop:       "",
 		Confirm:    "",
@@ -74,6 +78,8 @@ func NewRecipe() *Recipe {
 // WriteToConfig attempts to save the hotkeys and recipes into the config file
 func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string, Recipes []Recipe) error {
 	config := Config{
+		1000, // TODO
+		500,  // TODO
 		StartPause,
 		Stop,
 		Confirm,
@@ -102,7 +108,7 @@ func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string
 		return err
 	}
 
-	Log("Info", "done writing json data to config",
+	Log("Infow", "done writing json data to config",
 		"config", ConfigPath,
 	)
 
