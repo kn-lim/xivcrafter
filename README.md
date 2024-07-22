@@ -1,7 +1,8 @@
 # XIVCrafter
 ![Go](https://img.shields.io/github/go-mod/go-version/kn-lim/xivcrafter)
 [![Release](https://img.shields.io/github/v/release/kn-lim/xivcrafter)](https://github.com/kn-lim/xivcrafter/releases)
-![Build](https://github.com/kn-lim/xivcrafter/actions/workflows/release.yaml/badge.svg)
+[![build](https://github.com/kn-lim/xivcrafter/actions/workflows/build.yaml/badge.svg)](https://github.com/kn-lim/xivcrafter/actions/workflows/build.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/kn-lim/xivcrafter/badge.svg?branch=update-versions)](https://coveralls.io/github/kn-lim/xivcrafter?branch=update-versions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kn-lim/xivcrafter)](https://goreportcard.com/report/github.com/kn-lim/xivcrafter)
 ![License](https://img.shields.io/github/license/kn-lim/xivcrafter)
 

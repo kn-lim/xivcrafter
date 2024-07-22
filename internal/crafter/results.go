@@ -7,10 +7,8 @@ import (
 	"github.com/kn-lim/xivcrafter/internal/utils"
 )
 
-var (
-	// Holds results to print out at exit
-	Results = []Result{}
-)
+// Holds results to print out at exit
+var Results = []Result{}
 
 type Result struct {
 	// Name of recipe

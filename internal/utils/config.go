@@ -5,10 +5,8 @@ import (
 	"os"
 )
 
-var (
-	// XIVCrafter config file path
-	ConfigPath string
-)
+// XIVCrafter config file path
+var ConfigPath string
 
 type Config struct {
 	// XIVCrafter Hotkeys
