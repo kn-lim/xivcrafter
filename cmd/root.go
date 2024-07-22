@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"strings"
 
@@ -63,7 +62,7 @@ var rootCmd = &cobra.Command{
 		confirm := viper.GetString("confirm")
 		cancel := viper.GetString("cancel")
 
-		utils.Log("Infow", "Using XIVCrafter settings",
+		utils.Log("Infow", "using xivcrafter settings",
 			"delay", delay,
 			"key_delay", keyDelay,
 			"start_pause", startPause,
@@ -83,7 +82,7 @@ var rootCmd = &cobra.Command{
 		var recipes []utils.Recipe
 		cobra.CheckErr(json.Unmarshal(recipesBytes, &recipes))
 
-		utils.Log("Infow", "Loaded recipes",
+		utils.Log("Infow", "loaded recipes",
 			"count", len(recipes),
 		)
 
@@ -131,7 +130,7 @@ var rootCmd = &cobra.Command{
 
 		// Check if XIVCrafter settings are valid
 		if err := utils.ValidateSettings(startPause, stop, confirm, cancel); err != nil {
-			utils.Log("Errorw", "XIVCrafter settings invalid",
+			utils.Log("Errorw", "xivcrafter settings invalid",
 				"error", err,
 			)
 
@@ -146,7 +145,7 @@ var rootCmd = &cobra.Command{
 			// Check if the entire config is valid
 			errResult, err := utils.Validate(startPause, stop, confirm, cancel, tui.ConvertItemsToRecipes(tui.ConvertListItemToItem(items)))
 			if err != nil {
-				utils.Log("Errorw", "Invalid recipe",
+				utils.Log("Errorw", "invalid recipe",
 					"recipe", errResult,
 				)
 
@@ -201,7 +200,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/.xivcrafter.json)")
 
 	// Debug
-	rootCmd.PersistentFlags().Bool("debug", false, "enable debugging (debug log location is $HOME/.xivcrafter-debug.log)")
+	rootCmd.PersistentFlags().Bool("debug", false, "enable debugging (debug log location is $HOME/.xivcrafter-log.jsonl)")
+
+	// XIVCrafter Settings
+	rootCmd.PersistentFlags().Int("delay", 0, "crafting delay in milliseconds")
+	rootCmd.PersistentFlags().Int("key-delay", 0, "keyboard input delay in milliseconds")
 
 	// XIVCrafter Hotkeys
 	rootCmd.PersistentFlags().String("start-pause", "", "start/pause xivcrafter hotkey")
@@ -212,18 +215,21 @@ func init() {
 	rootCmd.PersistentFlags().String("cancel", "", "cancel hotkey")
 
 	// Viper Binds
+	if err := viper.BindPFlag("delay", rootCmd.PersistentFlags().Lookup("delay")); err != nil {
+		cobra.CheckErr(err)
+	}
+	if err := viper.BindPFlag("key_delay", rootCmd.PersistentFlags().Lookup("key-delay")); err != nil {
+		cobra.CheckErr(err)
+	}
 	if err := viper.BindPFlag("start_pause", rootCmd.PersistentFlags().Lookup("start-pause")); err != nil {
 		cobra.CheckErr(err)
 	}
-
 	if err := viper.BindPFlag("stop", rootCmd.PersistentFlags().Lookup("stop")); err != nil {
 		cobra.CheckErr(err)
 	}
-
 	if err := viper.BindPFlag("confirm", rootCmd.PersistentFlags().Lookup("confirm")); err != nil {
 		cobra.CheckErr(err)
 	}
-
 	if err := viper.BindPFlag("cancel", rootCmd.PersistentFlags().Lookup("cancel")); err != nil {
 		cobra.CheckErr(err)
 	}
@@ -267,7 +273,7 @@ func initConfig() {
 		// Set new config file
 		viper.SetConfigFile(file)
 		if err := viper.ReadInConfig(); err != nil {
-			log.Fatalf("Error creating file: %s", file)
+			cobra.CheckErr(err)
 		}
 	}
 }
