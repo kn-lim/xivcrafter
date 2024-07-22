@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc libc6-dev libx11-dev xorg-dev libxtst-dev xcb libxcb-xkb-dev x11-xkb-utils libx11-xcb-dev libxkbcommon-x11-dev libxkbcommon-dev
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: test
+        run: |
+          go test -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=profile.cov ./...
+
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: profile.cov
