@@ -13,12 +13,10 @@ import (
 type UpdateSettings struct {
 	// XIVCrafter settings
 
-	// TODO
-	DelayModel    textinput.Model
-	delay         int
-	KeyDelayModel textinput.Model
-	keyDelay      int
-
+	DelayModel      textinput.Model // TODO
+	delay           int             // TODO
+	KeyDelayModel   textinput.Model // TODO
+	keyDelay        int             // TODO
 	StartPauseModel textinput.Model
 	startPause      string
 	StopModel       textinput.Model
