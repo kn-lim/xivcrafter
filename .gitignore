@@ -16,3 +16,6 @@
 
 # Go workspace file
 go.work
+
+# Go test file
+profile.cov
