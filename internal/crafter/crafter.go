@@ -153,7 +153,7 @@ func (c *Crafter) Run() tea.Cmd {
 				case <-c.StopCrafterContext.Done():
 					// Exit
 					utils.Log("Infow", "crafter context stopped")
-					utils.Log("Infow", "setting status to \"Stopped\"")
+					utils.Log("Infow", "setting status to stopped")
 
 					c.Status = utils.Stopped
 					return
@@ -179,7 +179,7 @@ func (c *Crafter) Run() tea.Cmd {
 						case <-c.StopCrafterContext.Done():
 							// Exit
 							utils.Log("Infow", "crafter context stopped")
-							utils.Log("Infow", "setting status to \"Stopped\"")
+							utils.Log("Infow", "setting status to stopped")
 
 							c.Status = utils.Stopped
 							return
@@ -194,7 +194,7 @@ func (c *Crafter) Run() tea.Cmd {
 						case <-c.StopCrafterContext.Done():
 							// Exit
 							utils.Log("Infow", "crafter context stopped")
-							utils.Log("Infow", "setting status to \"Stopped\"")
+							utils.Log("Infow", "setting status to stopped")
 
 							c.Status = utils.Stopped
 							return
@@ -209,7 +209,7 @@ func (c *Crafter) Run() tea.Cmd {
 						case <-c.StopCrafterContext.Done():
 							// Exit
 							utils.Log("Infow", "crafter context stopped")
-							utils.Log("Infow", "setting status to \"Stopped\"")
+							utils.Log("Infow", "setting status to stopped")
 
 							c.Status = utils.Stopped
 							return
@@ -228,7 +228,7 @@ func (c *Crafter) Run() tea.Cmd {
 							case <-c.StopCrafterContext.Done():
 								// Exit
 								utils.Log("Infow", "crafter context stopped")
-								utils.Log("Infow", "setting status to \"Stopped\"")
+								utils.Log("Infow", "setting status to stopped")
 
 								c.Status = utils.Stopped
 								return
@@ -248,7 +248,7 @@ func (c *Crafter) Run() tea.Cmd {
 							case <-c.StopCrafterContext.Done():
 								// Exit
 								utils.Log("Infow", "crafter context stopped")
-								utils.Log("Infow", "setting status to \"Stopped\"")
+								utils.Log("Infow", "setting status to stopped")
 
 								c.Status = utils.Stopped
 								return
@@ -270,7 +270,7 @@ func (c *Crafter) Run() tea.Cmd {
 
 						// Exit if finished crafting
 						if c.CurrentAmount >= c.amount {
-							utils.Log("Infow", "setting status to \"Finished\"")
+							utils.Log("Infow", "setting status to finished")
 
 							c.Status = utils.Finished
 							c.ExitProgram()
@@ -282,7 +282,7 @@ func (c *Crafter) Run() tea.Cmd {
 
 				// Check to see if XIVCrafter is paused
 				if c.Paused && c.running && !c.startTime.IsZero() && c.CurrentAmount < c.amount && c.Status != utils.Paused {
-					utils.Log("Infow", "setting status to \"Paused\"")
+					utils.Log("Infow", "setting status to paused")
 
 					c.Status = utils.Paused
 				}
@@ -292,7 +292,7 @@ func (c *Crafter) Run() tea.Cmd {
 
 			// Exit XIVCrafter before finish
 			if c.CurrentAmount < c.amount {
-				utils.Log("Infow", "setting status to \"Stopped\"")
+				utils.Log("Infow", "setting status to stopped")
 
 				c.Status = utils.Stopped
 			}
@@ -305,7 +305,7 @@ func (c *Crafter) Run() tea.Cmd {
 // StartProgram sets the paused value to false
 func (c *Crafter) StartProgram() {
 	utils.Log("Infow", "starting xivcrafter")
-	utils.Log("Infow", "setting status to \"Crafting\"")
+	utils.Log("Infow", "setting status to crafting")
 
 	c.Paused = false
 	c.Status = utils.Crafting
@@ -314,7 +314,7 @@ func (c *Crafter) StartProgram() {
 // StopProgram sets the paused value to true
 func (c *Crafter) StopProgram() {
 	utils.Log("Infow", "pausing xivcrafter")
-	utils.Log("Infow", "setting status to \"Pausing\"")
+	utils.Log("Infow", "setting status to pausing")
 
 	c.Paused = true
 	c.Status = utils.Pausing
@@ -329,7 +329,7 @@ func (c *Crafter) ExitProgram() {
 		c.Paused = true
 
 		if c.CurrentAmount < c.amount {
-			utils.Log("Infow", "setting status to \"Stopping\"")
+			utils.Log("Infow", "setting status to stopping")
 
 			c.Status = utils.Stopping
 		}
