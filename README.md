@@ -23,6 +23,7 @@ Tested on Windows and Keyboard only.
 - [lipgloss](https://github.com/charmbracelet/lipgloss)
 - [robotgo](https://github.com/go-vgo/robotgo)
 - [gohook](https://github.com/robotn/gohook)
+- [zap](https://github.com/uber-go/zap)
 
 # Using the Tool
 
