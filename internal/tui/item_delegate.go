@@ -11,7 +11,7 @@ func NewItemDelegate() list.ItemDelegate {
 
 	// Change colors
 	d.Styles.SelectedTitle = d.Styles.SelectedTitle.Foreground(utils.Secondary).BorderLeftForeground(utils.Secondary)
-	d.Styles.SelectedDesc = d.Styles.SelectedTitle.Copy()
+	d.Styles.SelectedDesc = d.Styles.SelectedTitle
 
 	return d
 }
