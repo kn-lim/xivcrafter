@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
         with:
           go-version: stable
 
-      - name: test
+      - name: Run tests
         run: |
           go test -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=profile.cov ./...
 
