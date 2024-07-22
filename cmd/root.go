@@ -239,7 +239,7 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 		file := home + "/.xivcrafter.json"
-		err = os.WriteFile(file, data, 0644)
+		err = os.WriteFile(file, data, 0o644)
 		cobra.CheckErr(err)
 
 		// Set new config file
