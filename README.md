@@ -48,7 +48,9 @@ Only needed if you want different settings than `.xivcrafter.json`.
   -c, --config string        config file (default is $HOME/.xivcrafter.json)
       --confirm string       confirm hotkey
       --debug                enable debugging (debug log location is $HOME/.xivcrafter-log.jsonl)
+      --delay int            crafting delay in milliseconds
   -h, --help                 help for xivcrafter
+      --key-delay int        keyboard input delay in milliseconds
       --start-pause string   start/pause xivcrafter hotkey
       --stop string          stop xivcrafter hotkey
 ```
@@ -73,6 +75,8 @@ Config File:
 
 ```json
 {
+  "delay": 1000,
+  "key_delay": 500,
   "start_pause": "",
   "stop": "",
   "confirm": "",
@@ -94,6 +98,10 @@ Config File:
 }
 ```
 
+- `delay`: XIVCrafter setting to set the crafting delay (milliseconds)
+  - Default: `1000` milliseconds
+- `key_delay`: XIVCrafter setting to set the keyboard input delay (milliseconds)
+  - Default: `500` milliseconds
 - `start_pause`: XIVCrafter hotkey to **start or pause the program**
 - `stop`: XIVCrafter hotkey to **stop the program**
 - `confirm`: FFXIV hotkey for the **confirm** action
