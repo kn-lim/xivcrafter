@@ -90,9 +90,7 @@ func (m Progress) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Save to Progress model
 		m.amount = msg
 
-		if utils.Logger != nil {
-			utils.Logger.Println("Initializing progress bar")
-		}
+		utils.Log("Infow", "initializing progress bar")
 
 		// Start crafter
 		m.Crafter = crafter.NewCrafter(StartPause, Stop, Confirm, Cancel)

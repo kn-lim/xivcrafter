@@ -39,9 +39,10 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Select recipe to delete
 		case "x":
 			recipeName := m.Recipes.SelectedItem().(Item).Name
-			if utils.Logger != nil {
-				utils.Logger.Printf("Deleting recipe: %s\n", recipeName)
-			}
+
+			utils.Log("Infow", "deleting recipe",
+				"recipe", recipeName,
+			)
 
 			// Delete item from List model
 			index := m.Recipes.Index()
@@ -63,9 +64,9 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Select recipe to craft
 		case "enter":
-			if utils.Logger != nil {
-				utils.Logger.Printf("Selected recipe: %s\n", m.Recipes.SelectedItem().(Item).Name)
-			}
+			utils.Log("Infow", "selected recipe",
+				"recipe", m.Recipes.SelectedItem().(Item).Name,
+			)
 
 			Models[Recipes] = m
 			return Models[Amount].Update(nil)
@@ -95,9 +96,7 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// From UpdateSettings model
 	case Settings:
-		if utils.Logger != nil {
-			utils.Logger.Println("Updating XIVCrafter settings")
-		}
+		utils.Log("Infow", "updating xivcrafter settings")
 
 		// Update hotkeys
 		StartPause = msg.startPause
@@ -123,25 +122,23 @@ func (m List) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// From UpdateRecipe model
 	case Item:
-		if utils.Logger != nil {
-			utils.Logger.Println("Updating list of recipes")
-		}
+		utils.Log("Infow", "updating list of recipes")
 
 		// Slice of cmds for bubbletea to output
 		var cmds []tea.Cmd
 
 		if m.Edit {
-			if utils.Logger != nil {
-				utils.Logger.Printf("Editing recipe: %s", msg.Name)
-			}
+			utils.Log("Infow", "editing recipe",
+				"recipe", msg.Name,
+			)
 
 			// Replace item
 			cmds = append(cmds, m.Recipes.SetItem(m.Recipes.Index(), msg))
 			m.Edit = false
 		} else {
-			if utils.Logger != nil {
-				utils.Logger.Printf("Inserting recipe: %s", msg.Name)
-			}
+			utils.Log("Infow", "inserting recipe",
+				"recipe", msg.Name,
+			)
 
 			// Insert item at end
 			cmds = append(cmds, m.Recipes.InsertItem(len(m.Recipes.Items()), msg))

@@ -13,6 +13,12 @@ import (
 type UpdateSettings struct {
 	// XIVCrafter settings
 
+	// TODO
+	DelayModel    textinput.Model
+	delay         int
+	KeyDelayModel textinput.Model
+	keyDelay      int
+
 	StartPauseModel textinput.Model
 	startPause      string
 	StopModel       textinput.Model
@@ -152,9 +158,14 @@ func (m UpdateSettings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cancel = value
 				m.CancelModel.Blur()
 
-				if utils.Logger != nil {
-					utils.Logger.Printf("Updating XIVCrafter settings to: { start_pause: %s, stop: %s, confirm: %s, cancel: %s }\n", m.startPause, m.stop, m.confirm, m.cancel)
-				}
+				utils.Log("Infow", "updating xivcrafter settings",
+					"delay", m.delay,
+					"key_delay", m.keyDelay,
+					"start_pause", m.startPause,
+					"stop", m.stop,
+					"confirm", m.confirm,
+					"cancel", m.cancel,
+				)
 
 				// Go back to list with new XIVCrafter settings
 				return Models[Recipes].Update(*NewSettings(m.startPause, m.stop, m.confirm, m.cancel))
@@ -171,9 +182,7 @@ func (m UpdateSettings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Edit recipe
 	case Settings:
-		if utils.Logger != nil {
-			utils.Logger.Println("Updating XIVCrafter settings")
-		}
+		utils.Log("Infow", "updating xivcrafter settings")
 
 		m.AddPlaceholders(msg)
 

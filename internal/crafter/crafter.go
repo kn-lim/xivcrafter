@@ -126,7 +126,7 @@ func (c *Crafter) SetRecipe(name string, amount int, food string, foodDuration i
 	c.macro3 = macro3
 	c.macro3Duration = time.Duration(macro3Duration) * time.Second
 
-	utils.Log("Infow", "Using recipe",
+	utils.Log("Infow", "using recipe",
 		"name", name,
 		"amount", amount,
 		"food", food,
