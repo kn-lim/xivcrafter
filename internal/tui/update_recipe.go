@@ -321,9 +321,18 @@ func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					Macro3Duration: m.macro3Duration,
 				}
 
-				if utils.Logger != nil {
-					utils.Logger.Printf("Creating recipe: { name: %s, food: %s, food_duration: %v, potion: %s, macro1: %s, macro1_duration: %v, macro2: %s, macro2_duration: %v, macro3: %s, macro3_duration: %v }\n", m.name, m.food, m.foodDuration, m.potion, m.macro1, m.macro1Duration, m.macro2, m.macro2Duration, m.macro3, m.macro3Duration)
-				}
+				utils.Log("Infow", "creating recipe",
+					"name", m.name,
+					"food", m.food,
+					"foodDuration", m.foodDuration,
+					"potion", m.potion,
+					"macro1", m.macro1,
+					"macro1Duration", m.macro1Duration,
+					"macro2", m.macro2,
+					"macro2Duration", m.macro2Duration,
+					"macro3", m.macro3,
+					"macro3Duration", m.macro3Duration,
+				)
 
 				// Go back to list with new recipe
 				return Models[Recipes].Update(recipe)
@@ -340,9 +349,9 @@ func (m UpdateRecipe) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Edit recipe
 	case Item:
-		if utils.Logger != nil {
-			utils.Logger.Printf("Editing recipe: %s\n", msg.Name)
-		}
+		utils.Log("Infow", "editing recipe",
+			"recipe", msg.Name,
+		)
 
 		m.AddPlaceholders(msg)
 

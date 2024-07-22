@@ -60,9 +60,9 @@ func (m Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 
-				if utils.Logger != nil {
-					utils.Logger.Printf("Amount to craft: %v\n", amount)
-				}
+				utils.Log("Infow", "amount to craft",
+					"amount", amount,
+				)
 
 				// Go to Progress model
 				m.msg = ""

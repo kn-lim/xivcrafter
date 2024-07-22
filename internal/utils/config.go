@@ -11,6 +11,8 @@ var ConfigPath string
 type Config struct {
 	// XIVCrafter Hotkeys
 
+	Delay      int    `json:"delay"`     // TODO
+	KeyDelay   int    `json:"key_delay"` // TODO
 	StartPause string `json:"start_pause"`
 	Stop       string `json:"stop"`
 
@@ -29,6 +31,8 @@ func NewConfig() *Config {
 	recipes = append(recipes, *NewRecipe())
 
 	return &Config{
+		Delay:      1000,
+		KeyDelay:   500,
 		StartPause: "",
 		Stop:       "",
 		Confirm:    "",
@@ -74,6 +78,8 @@ func NewRecipe() *Recipe {
 // WriteToConfig attempts to save the hotkeys and recipes into the config file
 func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string, Recipes []Recipe) error {
 	config := Config{
+		1000, // TODO
+		500,  // TODO
 		StartPause,
 		Stop,
 		Confirm,
@@ -84,9 +90,9 @@ func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string
 	// Marshal recipe into JSON
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		if Logger != nil {
-			Logger.Println("Error parsing data to JSON")
-		}
+		Log("Errorw", "error parsing data to json",
+			"error", err,
+		)
 
 		return err
 	}
@@ -94,16 +100,17 @@ func WriteToConfig(StartPause string, Stop string, Confirm string, Cancel string
 	// Write JSON data to the file
 	err = os.WriteFile(ConfigPath, data, os.ModePerm)
 	if err != nil {
-		if Logger != nil {
-			Logger.Printf("Error writing JSON data to config: %s", ConfigPath)
-		}
+		Log("Errorw", "error writing json data to config",
+			"config", ConfigPath,
+			"error", err,
+		)
 
 		return err
 	}
 
-	if Logger != nil {
-		Logger.Printf("Done writing JSON data to config: %s", ConfigPath)
-	}
+	Log("Infow", "done writing json data to config",
+		"config", ConfigPath,
+	)
 
 	return nil
 }
