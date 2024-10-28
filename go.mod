@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.1.1
-	github.com/charmbracelet/lipgloss v0.13.0
+	github.com/charmbracelet/lipgloss v0.13.1
 	github.com/go-vgo/robotgo v0.110.5
 	github.com/robotn/gohook v0.41.0
 	github.com/spf13/cobra v1.8.1
